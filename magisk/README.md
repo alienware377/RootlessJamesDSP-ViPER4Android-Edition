@@ -18,6 +18,16 @@ descriptor the app looks up, so no app-side change is needed.
 
 ## Building
 
+Run `magisk/build-module.sh` from the repository root: it builds every ABI and
+writes `build/rv4a-engine-module.zip`.
+
+If you package by hand, zip with forward-slash separators. Windows'
+`Compress-Archive` writes backslashes, and a module zipped that way extracts as
+files with literal backslashes in their names rather than directories, so it
+installs without error and does nothing.
+
+### Manual
+
 ```
 ./gradlew :app:externalNativeBuildRootFdroidRelease   # or build the target directly
 cmake --build <build-dir> --target jamesdsp_hal
