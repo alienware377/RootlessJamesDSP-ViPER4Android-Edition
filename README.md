@@ -131,6 +131,7 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - **Search, sorting & hiding on the presets screen** — the convolver and DDC libraries have this now; presets are next
 - **Minimum-phase toggle** for the graphic EQ
 - **GitHub search for new profile sources** — built but parked while its edge cases are ironed out; adding your own repository link already works
+- **Built-in media player** *(after everything above)* — a library browser in the spirit of jetAudio, with independent tempo and pitch control as well as combined speed, and a now-playing screen modelled on vintage turntables: platter wow and flutter, motor speed drift, surface noise and other period defects as deliberate, adjustable colour
 - **Remember effect on/off states** across a ViPER4Android-only mode round trip — your settings already survive, but effects switched off by the mode stay off when you leave it
 
 ## 📲 Download & Install
