@@ -103,12 +103,12 @@ static void applyParam(rv4a_context *c, int32_t id, int16_t sv, bool on)
     {
     /* --- enable flags --------------------------------------------------- */
     case 1200: if (on) CompressorEnable(d, 1); else CompressorEnable(d, 0); break;
-    case 1201: if (on) BassBoostEnable(d, 1); else BassBoostEnable(d, 0); break;
+    case 1201: if (on) BassBoostEnable(d); else BassBoostDisable(d); break;
     case 1202: if (on) MultimodalEqualizerEnable(d, 1); else MultimodalEqualizerEnable(d, 0); break;
     case 1203: if (on) ReverbEnable(d); else ReverbDisable(d); break;
-    case 1204: if (on) StereoEnhancementEnable(d, 1); else StereoEnhancementEnable(d, 0); break;
+    case 1204: if (on) StereoEnhancementEnable(d); else StereoEnhancementDisable(d); break;
     case 1205: if (on) Convolver1DEnable(d); else Convolver1DDisable(d); break;
-    case 1206: if (on) VacuumTubeEnable(d, 1); else VacuumTubeEnable(d, 0); break;
+    case 1206: if (on) VacuumTubeEnable(d); else VacuumTubeDisable(d); break;
     case 1208: if (on) CrossfeedEnable(d, 1); else CrossfeedEnable(d, 0); break;
     case 1210: if (on) ArbitraryResponseEqualizerEnable(d, 1); else ArbitraryResponseEqualizerDisable(d); break;
     case 1212: DDCEnable(d, on ? 1 : 0); break;
