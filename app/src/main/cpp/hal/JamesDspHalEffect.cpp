@@ -17,6 +17,9 @@
 
 extern "C" {
 #include "jdsp_header.h"
+// Defined in jdspController.c but not exposed by the header, so declare it here
+// rather than editing the vendored engine.
+void JamesDSPProcess(JamesDSPLib *jdsp, size_t n);
 }
 
 static effect_descriptor_t rv4a_descriptor =
