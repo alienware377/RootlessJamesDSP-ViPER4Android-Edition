@@ -1,33 +1,51 @@
 #!/system/bin/sh
 # Installs the effect library and registers it with the audio HAL.
+#
+# Only one copy of audio_effects.xml can be mounted at a time, so a module that
+# overlays it directly fights with every other audio mod on the device. When
+# Audio Modification Library is present we hand it our fragment and let it do
+# the merging; only without AML do we overlay the file ourselves.
 
 SKIPUNZIP=0
 
-ARCH_DIR=""
 case "$ARCH" in
-  arm64) ARCH_DIR="arm64-v8a"; LIBDIR="lib64" ;;
-  arm)   ARCH_DIR="armeabi-v7a"; LIBDIR="lib" ;;
-  x64)   ARCH_DIR="x86_64"; LIBDIR="lib64" ;;
-  x86)   ARCH_DIR="x86"; LIBDIR="lib" ;;
+  arm64) ABI_DIR="arm64-v8a";   LIBDIR="lib64" ;;
+  arm)   ABI_DIR="armeabi-v7a"; LIBDIR="lib"   ;;
+  x64)   ABI_DIR="x86_64";      LIBDIR="lib64" ;;
+  x86)   ABI_DIR="x86";         LIBDIR="lib"   ;;
   *)     abort "! Unsupported architecture: $ARCH" ;;
 esac
 
-ui_print "- Architecture: $ARCH ($ARCH_DIR)"
+ui_print "- Architecture: $ARCH ($ABI_DIR)"
 
-# Android 10+ requires the effect to live where the audio server can load it.
-mkdir -p "$MODPATH/system/$LIBDIR/soundfx"
-if [ ! -f "$MODPATH/libs/$ARCH_DIR/libjamesdsp.so" ]; then
-  abort "! No engine build for $ARCH_DIR in this package"
-fi
-mv "$MODPATH/libs/$ARCH_DIR/libjamesdsp.so" "$MODPATH/system/$LIBDIR/soundfx/libjamesdsp.so"
-set_perm "$MODPATH/system/$LIBDIR/soundfx/libjamesdsp.so" 0 0 0644 u:object_r:system_lib_file:s0
+SO="$MODPATH/libs/$ABI_DIR/libjamesdsp.so"
+[ -f "$SO" ] || abort "! No engine build for $ABI_DIR in this package"
 
-# Drop the architectures we don't need, so the module stays small on device
+# Install to both system and vendor soundfx: which one the audio server loads
+# from depends on where the device's config lives, and this costs one file.
+for D in "$MODPATH/system/$LIBDIR/soundfx" "$MODPATH/system/vendor/$LIBDIR/soundfx"; do
+  mkdir -p "$D"
+  cp "$SO" "$D/libjamesdsp.so"
+  set_perm "$D/libjamesdsp.so" 0 0 0644 u:object_r:system_lib_file:s0
+done
 rm -rf "$MODPATH/libs"
+ui_print "- Engine installed to $LIBDIR/soundfx"
 
-# The audio config lives in different places depending on the device, and may
-# be XML (newer) or conf (older). Patch whichever this device actually uses.
 . "$MODPATH/common/patch_audio_config.sh"
-patch_audio_config
+
+if [ -d /data/adb/modules/aml ] || [ -d /data/adb/modules/AML ]; then
+  # AML sweeps modules for audio config files and merges them into one set,
+  # so leaving ours in place is exactly what it expects. Patching /vendor
+  # ourselves as well would give the device two competing mounts.
+  ui_print "- Audio Modification Library detected"
+  ui_print "  Leaving the merge to AML; both mods can coexist"
+  write_effect_fragment
+else
+  patch_audio_config
+fi
 
 ui_print "- Reboot to load the engine"
+ui_print " "
+ui_print "  If the device fails to boot, connect it and run:"
+ui_print "    adb wait-for-device shell magisk --remove-modules"
+ui_print "  or boot into Safe Mode, which disables all modules."

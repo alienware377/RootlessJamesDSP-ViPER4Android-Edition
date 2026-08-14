@@ -45,6 +45,40 @@ Flash in Magisk, then reboot. The installer copies the library into
 device uses — XML on Android 9+, the older `.conf` on some vendor images —
 overlaying the file rather than editing the real one.
 
+## If the device won't boot
+
+An audio module can leave the audio server crashing on every boot, which looks
+like a bootloop. Recovery, easiest first:
+
+1. **ADB** — with USB debugging on, plug in and run
+   `adb wait-for-device shell magisk --remove-modules`. It runs the moment the
+   device is reachable and disables every module.
+2. **Safe Mode** — hold the key combo your device uses at boot. Magisk detects
+   Safe Mode and disables all modules; the state persists after a normal
+   reboot, so you can then remove this one from the Magisk app.
+3. **Recovery** — delete `/data/adb/modules/rv4a_engine` from a file manager in
+   TWRP, or `rm -rf /data/adb/modules/rv4a_engine` from its shell.
+
+The module also defends itself: `post-fs-data.sh` runs before the audio server
+starts and moves aside any audio config of ours that fails validation, so the
+device boots with the stock configuration instead. It writes `boot.log` in the
+module folder recording what it checked.
+
+## Coexisting with other audio mods
+
+Only one copy of `audio_effects.xml` can be mounted at a time, so audio mods
+overwrite each other by nature. **Audio Modification Library** exists to solve
+this: it collects the audio configs from every installed mod and merges them
+into a single set.
+
+This module checks for AML at install time. If AML is present it writes an
+`aml.sh` describing its library and effect and leaves the merging alone, so
+ViPER4Android, Dolby and others keep working alongside it. Without AML it
+overlays the config itself.
+
+**If you run more than one audio mod, install AML.** Without it, whichever mod
+was installed last wins and the others fall silent.
+
 ## Status
 
 The library loads, initialises the engine and processes audio. Parameter
