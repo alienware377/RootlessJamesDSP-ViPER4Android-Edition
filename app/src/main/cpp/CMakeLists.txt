@@ -48,3 +48,27 @@ target_link_libraries( # Specifies the target library.
         # Links the target library to the log library
         # included in the NDK.
         ${log-lib})
+
+
+# ---------------------------------------------------------------------------
+# System-wide effect library for the Magisk module.
+#
+# Not linked into the APK: this builds the same DSP core as a HAL audio effect
+# so a Magisk module can install it into /system/lib*/soundfx, which is what
+# makes root mode run this fork's engine rather than the stock one. Excluded
+# from the default build so ordinary APK builds are unaffected.
+# ---------------------------------------------------------------------------
+add_library(
+        jamesdsp_hal
+        SHARED
+        EXCLUDE_FROM_ALL
+        ${LIBJAMESDSP_SOURCE_FILES}
+        EELStdOutExtension.c
+        hal/JamesDspHalEffect.cpp)
+
+target_compile_options(jamesdsp_hal PRIVATE -O2 -fvisibility=hidden)
+target_include_directories(jamesdsp_hal PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp/
+        ${CMAKE_CURRENT_SOURCE_DIR}/libjamesdsp/VeryOldOpen_source_edition/Audio_Engine/eclipse_libjamesdsp_free_bp/jni/)
+set_target_properties(jamesdsp_hal PROPERTIES OUTPUT_NAME "jamesdsp")
+target_link_libraries(jamesdsp_hal ${log-lib})

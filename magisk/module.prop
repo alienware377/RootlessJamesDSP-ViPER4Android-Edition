@@ -1,0 +1,6 @@
+id=rv4a_engine
+name=RootlessViPER4Android engine
+version=v2.14.7
+versionCode=92
+author=alienware377
+description=Installs the RootlessViPER4Android DSP engine as a system-wide audio effect, so root mode runs this fork's own effects (extra reverb rooms, the ViPER classic limiter, the rebuilt delay and the retuned speaker optimisation) instead of the stock JamesDSP set.
