@@ -13,6 +13,7 @@ import me.timschneeberger.rootlessjamesdsp.utils.extensions.AudioEffectExtension
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.AudioEffectExtensions.setParameter
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.AudioEffectExtensions.setParameterCharBuffer
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.AudioEffectExtensions.setParameterFloatArray
+import me.timschneeberger.rootlessjamesdsp.utils.extensions.AudioEffectExtensions.setParameterIntArray
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.AudioEffectExtensions.setParameterImpulseResponseBuffer
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.registerLocalReceiver
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.showAlert
