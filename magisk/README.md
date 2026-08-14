@@ -23,8 +23,10 @@ descriptor the app looks up, so no app-side change is needed.
 cmake --build <build-dir> --target jamesdsp_hal
 ```
 
-Collect `libjamesdsp.so` for each ABI into `magisk/libs/<abi>/`, then zip the
-`magisk/` directory.
+The target emits `libjamesdsp_hal.so` (it cannot be called `libjamesdsp.so` in
+the build tree without colliding with the APK's own library of that name).
+Copy it to `magisk/libs/<abi>/libjamesdsp.so` — renaming as you go, since that
+is the filename the audio server expects — then zip the `magisk/` directory.
 
 ## Installing
 

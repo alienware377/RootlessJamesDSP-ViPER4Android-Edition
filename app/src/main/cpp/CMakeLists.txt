@@ -70,5 +70,7 @@ target_compile_options(jamesdsp_hal PRIVATE -O2 -fvisibility=hidden)
 target_include_directories(jamesdsp_hal PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp/
         ${CMAKE_CURRENT_SOURCE_DIR}/libjamesdsp/VeryOldOpen_source_edition/Audio_Engine/eclipse_libjamesdsp_free_bp/jni/)
-set_target_properties(jamesdsp_hal PROPERTIES OUTPUT_NAME "jamesdsp")
+# Deliberately NOT named libjamesdsp.so here: that would collide with the APK's
+# own target, which emits the same filename. The packaging step renames it when
+# copying into the module, where the audio server expects libjamesdsp.so.
 target_link_libraries(jamesdsp_hal ${log-lib})
