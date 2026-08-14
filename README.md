@@ -115,7 +115,9 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 
 - **Global "Poweramp-style" mode** — process the whole output mix with Android's built-in effect API instead of audio capture: no capture permission, no persistent notification, and apps that block capture (Spotify) would work. Trade-off: only EQ/bass/limiter-class effects can run there — the ViPER effects need the capture engine. Deprecated by Google and device-dependent (works on many Samsungs, often not Pixels), so it'll ship clearly labelled as experimental.
 - **Multiband distortion** — pick frequency ranges to drive, with several distortion models, chorus, and a global mix, built on the interactive EQ editor with cutoff-type handles
-- **Mastering suite** — an Ozone-style chain: multiband compression, dynamic EQ, exciter, stereo imaging by band, and a maximiser
+- **Dynamic EQ** — bands that move with the signal, the main Ozone-style tool the app has no equivalent for
+- **Multiband stereo imaging** — width per frequency band; the current widener works across the whole spectrum at once
+- **Binaural upmix** — build a surround bed from stereo, then fold it back to headphones through HRTF/BRIR convolution so sources can sit behind and above you. Headphones only; two speakers can't do this without crosstalk cancellation
 - **Rooted mode** — for devices with the JamesDSP magisk module (testers welcome!)
 - **Search, sorting & hiding on the presets screen** — the convolver and DDC libraries have this now; presets are next
 - **Minimum-phase toggle** for the graphic EQ
