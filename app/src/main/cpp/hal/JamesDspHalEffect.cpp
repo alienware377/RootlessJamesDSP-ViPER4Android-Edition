@@ -85,6 +85,49 @@ static int32_t rv4a_process(effect_handle_t self, audio_buffer_t *in, audio_buff
     return 0;
 }
 
+/*
+ * Maps the ids the app sends over AudioEffect onto the engine's own setters.
+ *
+ * The ids come from JamesDspRemoteEngine: the 12xx range switches an effect on
+ * or off, while the lower ids carry that effect's value. Values arrive as
+ * shorts, scaled the way the app scales them - vacuum tube level is sent
+ * multiplied by a thousand, for instance, so it is divided back here.
+ *
+ * Effects the app currently stubs out in root mode (the fork's own additions)
+ * have no ids to receive yet; they are handled once the app side sends them.
+ */
+static void applyParam(rv4a_context *c, int32_t id, int16_t sv, bool on)
+{
+    JamesDSPLib *d = &c->dsp;
+    switch (id)
+    {
+    /* --- enable flags --------------------------------------------------- */
+    case 1200: if (on) CompressorEnable(d, 1); else CompressorEnable(d, 0); break;
+    case 1201: if (on) BassBoostEnable(d, 1); else BassBoostEnable(d, 0); break;
+    case 1202: if (on) MultimodalEqualizerEnable(d, 1); else MultimodalEqualizerEnable(d, 0); break;
+    case 1203: if (on) ReverbEnable(d); else ReverbDisable(d); break;
+    case 1204: if (on) StereoEnhancementEnable(d, 1); else StereoEnhancementEnable(d, 0); break;
+    case 1205: if (on) Convolver1DEnable(d); else Convolver1DDisable(d); break;
+    case 1206: if (on) VacuumTubeEnable(d, 1); else VacuumTubeEnable(d, 0); break;
+    case 1208: if (on) CrossfeedEnable(d, 1); else CrossfeedEnable(d, 0); break;
+    case 1210: if (on) ArbitraryResponseEqualizerEnable(d, 1); else ArbitraryResponseEqualizerDisable(d); break;
+    case 1212: DDCEnable(d, on ? 1 : 0); break;
+    case 1213: if (on) LiveProgEnable(d); else LiveProgDisable(d); break;
+
+    /* --- values --------------------------------------------------------- */
+    case 112: BassBoostSetParam(d, (float)sv); break;                 /* max gain, dB */
+    case 128: Reverb_SetParam(d, sv); break;                          /* preset index */
+    case 137: StereoEnhancementSetParam(d, (float)sv); break;         /* width */
+    case 150: VacuumTubeSetGain(d, (double)sv / 1000.0); break;       /* sent x1000 */
+    case 188: CrossfeedChangeMode(d, sv); break;                      /* mode index */
+
+    default:
+        /* Unknown ids are accepted rather than refused: returning an error
+           here makes the audio server tear the effect down entirely. */
+        break;
+    }
+}
+
 static int32_t rv4a_command(effect_handle_t self, uint32_t cmdCode, uint32_t cmdSize,
                             void *pCmdData, uint32_t *replySize, void *pReplyData)
 {
@@ -123,12 +166,27 @@ static int32_t rv4a_command(effect_handle_t self, uint32_t cmdCode, uint32_t cmd
         return 0;
 
     case EFFECT_CMD_SET_PARAM:
-        /* Parameter dispatch shares the id space used by the JNI wrapper.
-           Wired up per effect in the follow-up work; acknowledged here so the
-           audio server doesn't treat unknown ids as a failure and drop us. */
+    {
+        /* AudioEffect packs the id and value into effect_param_t: the id is a
+           4-byte int, the value follows it aligned to 4 bytes, and vsize says
+           how wide it is (2 for the short overload the app mostly uses). */
+        if (!pCmdData || cmdSize < sizeof(effect_param_t))
+            return -EINVAL;
+        effect_param_t *p = (effect_param_t *)pCmdData;
+        if (p->psize != sizeof(int32_t))
+            return -EINVAL;
+
+        const int32_t id = *(int32_t *)p->data;
+        const void *val = p->data + ((p->psize + 3) & ~3);
+        const int16_t sv = (p->vsize >= sizeof(int16_t)) ? *(const int16_t *)val : 0;
+        const bool on = sv != 0;
+
+        applyParam(c, id, sv, on);
+
         if (pReplyData && replySize && *replySize == sizeof(int))
             *(int *)pReplyData = 0;
         return 0;
+    }
 
     default:
         return -EINVAL;
