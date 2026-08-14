@@ -29,7 +29,11 @@ for ABI in arm64-v8a armeabi-v7a x86_64 x86; do
   echo "built $ABI"
 done
 
-cp magisk/module.prop magisk/customize.sh magisk/service.sh magisk/README.md "$OUT/"
+# post-fs-data.sh is the boot safety net - it quarantines a bad audio config
+# before the audio server starts. Leaving it out of the package would ship the
+# module without its only defence against an unrecoverable bootloop.
+cp magisk/module.prop magisk/customize.sh magisk/service.sh \
+   magisk/post-fs-data.sh magisk/README.md "$OUT/"
 mkdir -p "$OUT/common"; cp magisk/common/* "$OUT/common/"
 
 # zip -r keeps forward slashes. Windows' Compress-Archive does not, and a module
