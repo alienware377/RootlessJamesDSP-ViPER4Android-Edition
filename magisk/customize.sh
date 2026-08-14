@@ -26,7 +26,11 @@ SO="$MODPATH/libs/$ABI_DIR/libjamesdsp.so"
 for D in "$MODPATH/system/$LIBDIR/soundfx" "$MODPATH/system/vendor/$LIBDIR/soundfx"; do
   mkdir -p "$D"
   cp "$SO" "$D/libjamesdsp.so"
-  set_perm "$D/libjamesdsp.so" 0 0 0644 u:object_r:system_lib_file:s0
+  # No explicit SELinux label: the same file is installed under both system
+  # and vendor, and those take different contexts. Magisk applies the correct
+  # one for each mount point; forcing system_lib_file onto the vendor copy
+  # risks a denial when the audio server tries to load it.
+  set_perm "$D/libjamesdsp.so" 0 0 0644
 done
 rm -rf "$MODPATH/libs"
 ui_print "- Engine installed to $LIBDIR/soundfx"
