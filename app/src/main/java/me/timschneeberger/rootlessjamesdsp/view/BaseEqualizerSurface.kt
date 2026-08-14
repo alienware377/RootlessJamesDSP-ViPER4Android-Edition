@@ -46,10 +46,24 @@ abstract class BaseEqualizerSurface(
     // Declared ahead of the paint setup that reads it
     protected var accentOverride: Int? = null
 
-    /** Overrides the curve, knob and fill colour; used by hand-set themes. */
+    /**
+     * Overrides the curve, knob and fill colour; used by hand-set themes.
+     * The paints take their colour in init and the gradient is rebuilt in
+     * onLayout, so calling onSizeChanged did nothing - both have to be updated
+     * here directly, with a re-layout to regenerate the shader.
+     */
     fun setAccentColor(color: Int) {
         accentOverride = color
-        onSizeChanged(width, height, width, height)
+        mControlBarKnob.color = color
+        mFrequencyResponseHighlight.color = color
+        if (mHeight > 0f) {
+            mFrequencyResponseBg.shader = getLinearGradient(
+                mHeight,
+                intArrayOf(color, getColor(android.R.color.transparent)),
+                floatArrayOf(0.0f, 1f)
+            )
+        }
+        requestLayout()
         invalidate()
     }
     private var mGridLines = Paint()

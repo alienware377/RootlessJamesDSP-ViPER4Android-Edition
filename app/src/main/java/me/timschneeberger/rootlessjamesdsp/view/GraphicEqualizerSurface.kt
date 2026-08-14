@@ -21,10 +21,22 @@ class GraphicEqualizerSurface(context: Context?, attrs: AttributeSet?) : View(co
     // Declared ahead of the paint setup that reads it
     private var accentOverride: Int? = null
 
-    /** Overrides the curve and fill colour; used by hand-set themes. */
+    /**
+     * Overrides the curve and fill colour; used by hand-set themes. Same
+     * reasoning as the base surface: the paint colour is assigned in init and
+     * the gradient in onLayout, so both are refreshed here.
+     */
     fun setAccentColor(color: Int) {
         accentOverride = color
-        onSizeChanged(width, height, width, height)
+        mFrequencyResponseHighlight.color = color
+        if (mHeight > 0f) {
+            mFrequencyResponseBg.shader = getLinearGradient(
+                mHeight,
+                intArrayOf(color, getColor(android.R.color.transparent)),
+                floatArrayOf(0.0f, 1f)
+            )
+        }
+        requestLayout()
         invalidate()
     }
     private var mGridLines = Paint()
