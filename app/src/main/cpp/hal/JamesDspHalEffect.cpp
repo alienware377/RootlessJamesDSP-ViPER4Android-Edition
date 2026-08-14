@@ -151,9 +151,15 @@ static const struct effect_interface_s rv4a_interface =
     NULL
 };
 
+/* The library is built with hidden visibility so the engine's internals stay
+ * private, which means the four symbols the audio server looks up must be
+ * marked visible explicitly - without this the module loads but exports
+ * nothing, and the effect silently never appears. */
+#define HAL_EXPORT __attribute__((visibility("default")))
+
 extern "C" {
 
-int32_t EffectCreate(const effect_uuid_t *uuid, int32_t sessionId, int32_t ioId,
+HAL_EXPORT int32_t EffectCreate(const effect_uuid_t *uuid, int32_t sessionId, int32_t ioId,
                      effect_handle_t *pHandle)
 {
     (void)sessionId; (void)ioId;
@@ -173,7 +179,7 @@ int32_t EffectCreate(const effect_uuid_t *uuid, int32_t sessionId, int32_t ioId,
     return 0;
 }
 
-int32_t EffectRelease(effect_handle_t handle)
+HAL_EXPORT int32_t EffectRelease(effect_handle_t handle)
 {
     rv4a_context *c = reinterpret_cast<rv4a_context *>(handle);
     if (!c)
@@ -183,7 +189,7 @@ int32_t EffectRelease(effect_handle_t handle)
     return 0;
 }
 
-int32_t EffectGetDescriptor(const effect_uuid_t *uuid, effect_descriptor_t *pDescriptor)
+HAL_EXPORT int32_t EffectGetDescriptor(const effect_uuid_t *uuid, effect_descriptor_t *pDescriptor)
 {
     if (!pDescriptor || !uuid)
         return -EINVAL;
@@ -191,7 +197,7 @@ int32_t EffectGetDescriptor(const effect_uuid_t *uuid, effect_descriptor_t *pDes
     return 0;
 }
 
-audio_effect_library_t AUDIO_EFFECT_LIBRARY_INFO_SYM =
+HAL_EXPORT audio_effect_library_t AUDIO_EFFECT_LIBRARY_INFO_SYM =
 {
     .tag = AUDIO_EFFECT_LIBRARY_TAG,
     .version = EFFECT_LIBRARY_API_VERSION,
