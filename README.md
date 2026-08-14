@@ -115,8 +115,17 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 
 - **Global "Poweramp-style" mode** — process the whole output mix with Android's built-in effect API instead of audio capture: no capture permission, no persistent notification, and apps that block capture (Spotify) would work. Trade-off: only EQ/bass/limiter-class effects can run there — the ViPER effects need the capture engine. Deprecated by Google and device-dependent (works on many Samsungs, often not Pixels), so it'll ship clearly labelled as experimental.
 - **Multiband distortion** — pick frequency ranges to drive, with several distortion models, chorus, and a global mix, built on the interactive EQ editor with cutoff-type handles
+- **Full maximiser** — several limiting algorithms rather than one, with character, transient emphasis, true-peak detection, stereo linking and oversampling
+- **Full exciter** — four bands with selectable saturation characters (warm, retro, tape, tube, triode) and per-band mix, replacing the current two-band bass-only design
 - **Dynamic EQ** — bands that move with the signal, the main Ozone-style tool the app has no equivalent for
 - **Multiband stereo imaging** — width per frequency band; the current widener works across the whole spectrum at once
+- **Impact / transient shaper** — multiband punch and attack-sustain control, one of the most useful things on playback
+- **Spectral shaper** — dynamic taming of harshness and resonances, especially handy on bright IEMs
+- **Low-end control** — mono-below-frequency, punch versus smoothness, and dynamic bass handling
+- **Soft clipper** — shaped clipping to reclaim headroom alongside the limiter
+- **Match EQ** — match playback to a target curve, pairing naturally with the AutoEq and DDC profiles already supported
+- **Vintage tape** — wow, flutter, bias and tape saturation as a colour effect
+- **Mid/side and transient/sustain modes** — a cross-cutting option for the EQ and dynamics rather than a module of its own
 - **Binaural upmix** — build a surround bed from stereo, then fold it back to headphones through HRTF/BRIR convolution so sources can sit behind and above you. Headphones only; two speakers can't do this without crosstalk cancellation
 - **Rooted mode** — for devices with the JamesDSP magisk module (testers welcome!)
 - **Search, sorting & hiding on the presets screen** — the convolver and DDC libraries have this now; presets are next
