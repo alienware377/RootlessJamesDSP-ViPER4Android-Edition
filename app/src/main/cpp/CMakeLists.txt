@@ -66,7 +66,15 @@ add_library(
         EELStdOutExtension.c
         hal/JamesDspHalEffect.cpp)
 
-target_compile_options(jamesdsp_hal PRIVATE -O2 -fvisibility=hidden)
+# The engine sources predate current clang defaults, which promoted implicit
+# declarations and mismatched function pointers to errors. The APK target gets
+# past this with -std=gnu11; apply the same to the C sources only, since the
+# wrapper itself is C++, and relax the specific checks upstream code trips.
+target_compile_options(jamesdsp_hal PRIVATE -O2 -fvisibility=hidden
+        $<$<COMPILE_LANGUAGE:C>:-std=gnu11>
+        $<$<COMPILE_LANGUAGE:C>:-Wno-error=implicit-function-declaration>
+        $<$<COMPILE_LANGUAGE:C>:-Wno-error=implicit-int>
+        $<$<COMPILE_LANGUAGE:C>:-Wno-error=incompatible-function-pointer-types>)
 target_include_directories(jamesdsp_hal PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp/
         ${CMAKE_CURRENT_SOURCE_DIR}/libjamesdsp/VeryOldOpen_source_edition/Audio_Engine/eclipse_libjamesdsp_free_bp/jni/)
