@@ -139,31 +139,62 @@ class JamesDspRemoteEngine(
         return true
     }
 
-    override fun setViperClarity(enable: Boolean, mode: Int, gain: Float): Boolean = true
+    override fun setViperClarity(enable: Boolean, mode: Int, gain: Float): Boolean =
+        sendForkEffect(PARAM_CLARITY, enable, floatArrayOf(mode.toFloat(), gain))
 
-    override fun setFieldSurround(enable: Boolean, strength: Float, midImage: Float): Boolean = true
+    override fun setFieldSurround(enable: Boolean, strength: Float, midImage: Float): Boolean =
+        sendForkEffect(PARAM_FIELD_SURROUND, enable, floatArrayOf(strength, midImage))
 
-    override fun setAgc(enable: Boolean, target: Float, maxBoost: Float): Boolean = true
+    override fun setAgc(enable: Boolean, target: Float, maxBoost: Float): Boolean =
+        sendForkEffect(PARAM_AGC, enable, floatArrayOf(target, maxBoost))
 
-    override fun setHpSurround(enable: Boolean, strength: Float, room: Float): Boolean = true
+    override fun setHpSurround(enable: Boolean, strength: Float, room: Float): Boolean =
+        sendForkEffect(PARAM_HP_SURROUND, enable, floatArrayOf(strength, room))
 
-    override fun setFetComp(enable: Boolean, threshold: Float, ratio: Float, attack: Float, release: Float, makeup: Float): Boolean = true
+    override fun setFetComp(enable: Boolean, threshold: Float, ratio: Float, attack: Float, release: Float, makeup: Float): Boolean =
+        sendForkEffect(PARAM_FET_COMP, enable, floatArrayOf(threshold, ratio, attack, release, makeup))
 
-    override fun setCure(enable: Boolean, level: Int): Boolean = true
+    override fun setCure(enable: Boolean, level: Int): Boolean =
+        sendForkEffect(PARAM_CURE, enable, floatArrayOf(level.toFloat()))
 
-    override fun setViperBass(enable: Boolean, mode: Int, freq: Float, gain: Float): Boolean = true
+    override fun setViperBass(enable: Boolean, mode: Int, freq: Float, gain: Float): Boolean =
+        sendForkEffect(PARAM_VIPER_BASS, enable, floatArrayOf(mode.toFloat(), freq, gain))
 
     override fun setVReverb(enable: Boolean, model: Int, room: Float, damp: Float,
                             width: Float, predelay: Float, decay: Float, diffusion: Float,
-                            mod: Float, bass: Float, er: Float, wet: Float, dry: Float): Boolean = true
+                            mod: Float, bass: Float, er: Float, wet: Float, dry: Float): Boolean =
+        sendForkEffect(PARAM_VREVERB, enable, floatArrayOf(
+            model.toFloat(), room, damp, width, predelay, decay,
+            diffusion, mod, bass, er, wet, dry))
 
-    override fun setSpeakerOpt(enable: Boolean, strength: Float): Boolean = true
+    override fun setSpeakerOpt(enable: Boolean, strength: Float): Boolean =
+        sendForkEffect(PARAM_SPEAKER_OPT, enable, floatArrayOf(strength))
 
-    override fun setEchoDelay(enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean = true
+    override fun setEchoDelay(enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean =
+        sendForkEffect(PARAM_ECHO_DELAY, enable, floatArrayOf(
+            input, time, smoothing, offset, if (keepPitch) 1f else 0f, model.toFloat(),
+            stereo, feedback, cutoff, res, filter.toFloat(), smpRate, bits,
+            modRate, modTime, modCutoff, diffusion, spread, distMode.toFloat(),
+            distLevel, knee, symmetry, tone, wet, dry))
 
-    override fun setPitchShift(enable: Boolean, semitones: Float, mix: Float): Boolean = true
+    override fun setPitchShift(enable: Boolean, semitones: Float, mix: Float): Boolean =
+        sendForkEffect(PARAM_PITCH_SHIFT, enable, floatArrayOf(semitones, mix))
 
-    override fun setChainOrder(order: IntArray?): Boolean = true
+    /**
+     * Sends one fork effect: its values as a float array, then its enable flag.
+     * Values go first so the effect is never switched on with stale settings.
+     */
+    private fun sendForkEffect(param: Int, enable: Boolean, values: FloatArray): Boolean {
+        val ok = effect.setParameterFloatArray(param, values) == AudioEffect.SUCCESS
+        return ok and (effect.setParameter(
+            param + PARAM_FORK_ENABLE_OFFSET, (if (enable) 1 else 0).toShort()
+        ) == AudioEffect.SUCCESS)
+    }
+
+    override fun setChainOrder(order: IntArray?): Boolean {
+        order ?: return true
+        return effect.setParameterIntArray(PARAM_CHAIN_ORDER, order) == AudioEffect.SUCCESS
+    }
 
     override fun setSpectrumExtension(enable: Boolean, barkFreq: Float, strength: Float): Boolean {
         // Spectrum extension is unsupported in root/plugin mode (remote engine)
@@ -294,7 +325,8 @@ class JamesDspRemoteEngine(
         }
     }
 
-    override fun setEqPhaseMode(linearPhase: Boolean): Boolean = true
+    override fun setEqPhaseMode(linearPhase: Boolean): Boolean =
+        effect.setParameter(PARAM_EQ_PHASE, (if (linearPhase) 1 else 0).toShort()) == AudioEffect.SUCCESS
 
     override fun setGraphicEqInternal(enable: Boolean, bands: String): Boolean {
         val prevCrc = this.graphicEqHash
@@ -364,6 +396,31 @@ class JamesDspRemoteEngine(
     }
 
     companion object {
+        /*
+         * Ids for the effects this fork adds. They sit well clear of the
+         * upstream range (which tops out in the 25000s) so a stock module and
+         * this one can't misread each other's parameters. Each effect sends
+         * its values as one float array rather than an id per value, which
+         * keeps the two sides in step: adding a parameter changes the array,
+         * not the id space.
+         */
+        private const val PARAM_FORK_BASE = 26000
+        private const val PARAM_CLARITY = PARAM_FORK_BASE + 0
+        private const val PARAM_FIELD_SURROUND = PARAM_FORK_BASE + 1
+        private const val PARAM_AGC = PARAM_FORK_BASE + 2
+        private const val PARAM_HP_SURROUND = PARAM_FORK_BASE + 3
+        private const val PARAM_FET_COMP = PARAM_FORK_BASE + 4
+        private const val PARAM_CURE = PARAM_FORK_BASE + 5
+        private const val PARAM_VIPER_BASS = PARAM_FORK_BASE + 6
+        private const val PARAM_VREVERB = PARAM_FORK_BASE + 7
+        private const val PARAM_SPEAKER_OPT = PARAM_FORK_BASE + 8
+        private const val PARAM_PITCH_SHIFT = PARAM_FORK_BASE + 9
+        private const val PARAM_ECHO_DELAY = PARAM_FORK_BASE + 10
+        private const val PARAM_EQ_PHASE = PARAM_FORK_BASE + 11
+        private const val PARAM_CHAIN_ORDER = PARAM_FORK_BASE + 12
+        /** Enable flags live one hundred above their value id. */
+        private const val PARAM_FORK_ENABLE_OFFSET = 100
+
         private val EFFECT_TYPE_CUSTOM = UUID.fromString("f98765f4-c321-5de6-9a45-123459495ab2")
         private val EFFECT_JAMESDSP = UUID.fromString("f27317f4-c984-4de6-9a90-545759495bf2")
 
