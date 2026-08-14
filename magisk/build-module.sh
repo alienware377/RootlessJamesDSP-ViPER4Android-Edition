@@ -5,7 +5,8 @@
 # with an ndk/ directory) and a cmake with ninja.
 set -euo pipefail
 
-NDK="${ANDROID_NDK_HOME:-${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}/ndk}"
+# CI exposes the NDK under several names; take whichever is set.
+NDK="${ANDROID_NDK_HOME:-${ANDROID_NDK_LATEST_HOME:-${ANDROID_NDK_ROOT:-${ANDROID_SDK_ROOT:-$HOME/Android/Sdk}/ndk}}}"
 [ -d "$NDK/build/cmake" ] || NDK="$(ls -d "$NDK"/* | sort -V | tail -1)"
 TOOLCHAIN="$NDK/build/cmake/android.toolchain.cmake"
 [ -f "$TOOLCHAIN" ] || { echo "No NDK toolchain at $TOOLCHAIN"; exit 1; }

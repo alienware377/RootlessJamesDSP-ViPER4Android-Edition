@@ -13,10 +13,37 @@ jobs:
         with:
           java-version: 17
           distribution: adopt
+
       - name: Build rootless release APK (FOSS, optimized)
         run: ./gradlew assembleRootlessFdroidRelease --no-daemon
-      - name: Upload APK
+
+      - name: Upload rootless APK
         uses: actions/upload-artifact@v4
         with:
           name: RootlessViPER4Android-release
           path: app/build/outputs/apk/rootlessFdroid/release/*.apk
+
+      # Root testers need the root-flavour APK, which is a different package
+      # (james.dsp.v4a) and installs alongside the rootless build.
+      - name: Build root release APK
+        run: ./gradlew assembleRootFdroidRelease --no-daemon
+
+      - name: Upload root APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RootlessViPER4Android-root-release
+          path: app/build/outputs/apk/rootFdroid/release/*.apk
+
+      # The Magisk module carries this fork's engine as a system-wide effect,
+      # so root mode runs our effects rather than the stock JamesDSP set.
+      - name: Install ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build zip
+
+      - name: Build Magisk module
+        run: bash magisk/build-module.sh
+
+      - name: Upload Magisk module
+        uses: actions/upload-artifact@v4
+        with:
+          name: RootlessViPER4Android-magisk-module
+          path: build/rv4a-engine-module.zip
