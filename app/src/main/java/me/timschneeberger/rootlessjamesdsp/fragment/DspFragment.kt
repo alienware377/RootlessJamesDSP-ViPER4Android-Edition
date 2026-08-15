@@ -311,6 +311,13 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
     private var idlePrefetchQueued = false
 
     /**
+     * Pause between background card installs. Long enough that frames and
+     * touches get serviced in between, so the work is invisible rather than a
+     * freeze.
+     */
+    private val PREFETCH_GAP_MS = 140L
+
+    /**
      * Installs the remaining cards while the UI thread has nothing else to do.
      *
      * Scrolling into a card that hasn't been built yet means inflating it right
