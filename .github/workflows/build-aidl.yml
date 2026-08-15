@@ -33,21 +33,40 @@ jobs:
           bash magisk/aidl/generate.sh
           find magisk/aidl/generated -type f | wc -l
 
-      - name: Configure
+      # Only 64-bit: the AIDL effect HAL exists on Android 14 and later, and
+      # every device that ships it is 64-bit, so a 32-bit build would be dead
+      # weight in the package.
+      - name: Build all ABIs
         run: |
-          cmake -S magisk/aidl -B build/aidl -G Ninja \
-            -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake" \
-            -DANDROID_ABI=arm64-v8a \
-            -DANDROID_PLATFORM=android-33
+          for abi in arm64-v8a x86_64; do
+            cmake -S magisk/aidl -B "build/$abi" -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake" \
+              -DANDROID_ABI="$abi" \
+              -DANDROID_PLATFORM=android-33
+            cmake --build "build/$abi"
+          done
 
-      - name: Build
-        # No pipe: piping to tail discards the exit status, so a failed compile
-        # would pass the job. Failures show up in the step log anyway.
-        run: cmake --build build/aidl
+      # The binary is ~30MB unstripped, almost all debug info. Stripping takes
+      # it to a size worth shipping in a module.
+      - name: Strip and stage
+        run: |
+          STRIP="$(find "$ANDROID_NDK_LATEST_HOME" -name 'llvm-strip' | head -1)"
+          OUT=build/module
+          mkdir -p "$OUT/libs/arm64-v8a" "$OUT/libs/x86_64"
+          for abi in arm64-v8a x86_64; do
+            "$STRIP" "build/$abi/rv4a-effect-service" -o "$OUT/libs/$abi/rv4a-effect-service"
+            ls -la "$OUT/libs/$abi/rv4a-effect-service"
+          done
+          cp magisk/aidl/module/module.prop magisk/aidl/module/customize.sh \
+             magisk/aidl/module/post-fs-data.sh magisk/aidl/module/service.sh \
+             magisk/aidl/module/rv4a-effect.rc "$OUT/"
+          cp magisk/aidl/DESIGN.md "$OUT/README.md"
 
-      - name: Upload service binary
-        if: success()
+      - name: Package module
+        run: cd build/module && zip -qr ../rv4a-effect-aidl.zip . && unzip -l ../rv4a-effect-aidl.zip
+
+      - name: Upload module
         uses: actions/upload-artifact@v4
         with:
-          name: rv4a-effect-service-arm64
-          path: build/aidl/rv4a-effect-service
+          name: RootlessViPER4Android-aidl-module
+          path: build/rv4a-effect-aidl.zip
