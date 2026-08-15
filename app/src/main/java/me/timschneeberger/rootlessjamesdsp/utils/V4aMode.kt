@@ -11,9 +11,21 @@ import me.timschneeberger.rootlessjamesdsp.R
 object V4aMode {
     const val KEY = "v4a_only_mode"
 
-    fun isOn(ctx: Context): Boolean =
-        ctx.getSharedPreferences(Constants.PREF_APP, Context.MODE_MULTI_PROCESS)
-            .getBoolean(KEY, false)
+    /**
+     * Cached deliberately. This is read from preference row binding, which runs
+     * for every row of every card while scrolling, and MODE_MULTI_PROCESS
+     * re-parses the whole file from disk on each call - the app is single
+     * process, so that cost bought nothing at all.
+     */
+    @Volatile private var cached: Boolean? = null
+
+    fun isOn(ctx: Context): Boolean = cached ?: ctx
+        .getSharedPreferences(Constants.PREF_APP, Context.MODE_PRIVATE)
+        .getBoolean(KEY, false)
+        .also { cached = it }
+
+    /** Called when the setting changes, so the next read picks it up. */
+    fun invalidate() { cached = null }
 
     /** Effects the original ViPER4Android did NOT have: namespace + enable key. */
     private fun nonV4a(ctx: Context) = listOf(

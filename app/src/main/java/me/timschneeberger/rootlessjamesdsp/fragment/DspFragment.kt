@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -129,7 +130,12 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
         binding.dspScrollview.viewTreeObserver.addOnScrollChangedListener {
             installVisibleCards()
         }
-        binding.root.post { installVisibleCards() }
+        binding.root.post {
+            installVisibleCards()
+            // Build the rest during idle time rather than waiting for the user
+            // to scroll into them.
+            scheduleIdlePrefetch()
+        }
 
         // Load initial preferences
         arrayOf(R.string.key_device_profiles_enable).forEach {
@@ -298,6 +304,43 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
      * screen height of the viewport. Keeps startup cheap without the user ever
      * seeing an empty card.
      */
+    private val cardViews = HashMap<Int, View?>()
+    private var idlePrefetchQueued = false
+
+    /**
+     * Installs the remaining cards while the UI thread has nothing else to do.
+     *
+     * Scrolling into a card that hasn't been built yet means inflating it right
+     * when frames matter most, which is what the stutter is. An idle handler
+     * only runs when no work is pending - including no pending frame - so the
+     * cards are quietly built during the pauses instead, and by the time the
+     * user scrolls down they already exist. One per pass keeps any single stall
+     * to a single card if the user starts scrolling mid-inflation.
+     */
+    private fun scheduleIdlePrefetch() {
+        if (idlePrefetchQueued || deferredCards.isEmpty()) return
+        idlePrefetchQueued = true
+        Looper.myQueue().addIdleHandler {
+            idlePrefetchQueued = false
+            if (!isAdded || deferredCards.isEmpty()) return@addIdleHandler false
+
+            val spec = deferredCards.first()
+            deferredCards.remove(spec)
+            childFragmentManager.beginTransaction()
+                .setReorderingAllowed(true)
+                .replace(spec.viewId, PreferenceGroupFragment.newInstance(spec.prefName, spec.xmlRes))
+                .commitAllowingStateLoss()
+
+            if (deferredCards.isEmpty()) {
+                layoutManager?.applyLayout()
+                applyLiveprogSlotVisibility()
+            } else {
+                scheduleIdlePrefetch()
+            }
+            false   // one card per idle pass
+        }
+    }
+
     private fun installVisibleCards() {
         if (installingCards || deferredCards.isEmpty() || !isAdded) return
         installingCards = true
@@ -307,14 +350,20 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
             val bottom = top + scroll.height + scroll.height / 2 // half a screen of lookahead
 
             val ready = deferredCards.filter { spec ->
-                val card = binding.root.findViewById<View>(spec.viewId)?.parent as? View
-                    ?: return@filter false
+                // Cached: this runs on every scroll event, and searching the
+                // view tree for each of ~26 cards each time is real work during
+                // exactly the frames that must stay smooth.
+                val card = cardViews.getOrPut(spec.viewId) {
+                    binding.root.findViewById<View>(spec.viewId)?.parent as? View
+                } ?: return@filter false
                 card.top < bottom && card.bottom > top - scroll.height
             }
             if (ready.isEmpty()) return
 
-            // Cap per pass so a fling never triggers a long stall
-            val batch = ready.take(2)
+            // One per pass, not two: a preference screen costs around 145ms to
+            // inflate, so a pair of them lands as a ~290ms stall right in the
+            // middle of a scroll. Idle prefetch below usually gets there first.
+            val batch = ready.take(1)
             val tx = childFragmentManager.beginTransaction().setReorderingAllowed(true)
             batch.forEach { spec ->
                 tx.replace(
@@ -327,6 +376,7 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
 
             if (deferredCards.isNotEmpty()) {
                 binding.root.postDelayed({ installVisibleCards() }, 48)
+                scheduleIdlePrefetch()
             } else {
                 layoutManager?.applyLayout()
                 applyLiveprogSlotVisibility()

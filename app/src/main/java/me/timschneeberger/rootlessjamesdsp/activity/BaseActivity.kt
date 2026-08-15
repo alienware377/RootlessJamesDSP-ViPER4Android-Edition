@@ -62,6 +62,9 @@ abstract class BaseActivity :
             key == getString(R.string.key_appearance_app_theme) ||
             key == me.timschneeberger.rootlessjamesdsp.utils.V4aMode.KEY ||
             key == me.timschneeberger.rootlessjamesdsp.utils.V4aIconColors.KEY_LAYOUT) {
+            // Drop the cached copies before the screen rebuilds with them
+            me.timschneeberger.rootlessjamesdsp.utils.V4aMode.invalidate()
+            me.timschneeberger.rootlessjamesdsp.utils.V4aIconColors.invalidate()
             if(!disableAppTheme)
                 ActivityCompat.recreate(this)
         }
