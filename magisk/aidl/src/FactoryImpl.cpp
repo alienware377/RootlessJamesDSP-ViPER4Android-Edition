@@ -24,12 +24,14 @@
 #include <android/binder_manager.h>
 #include <android-base/logging.h>
 
+#include "EffectImpl.h"
+
 namespace aidl::android::hardware::audio::effect {
 
 using ::aidl::android::media::audio::common::AudioUuid;
 
 static const AudioUuid kOurUuid = {
-    0xf27317f4, 0xc984, 0x4de6, 0x9a90, {0x54, 0x57, 0x59, 0x49, 0x5b, 0xf2}};
+    static_cast<int32_t>(0xf27317f4), 0xc984, 0x4de6, 0x9a90, {0x54, 0x57, 0x59, 0x49, 0x5b, 0xf2}};
 
 /* Where the module's init script leaves the stock implementation. */
 static constexpr const char* kVendorInstance =
@@ -109,7 +111,7 @@ class Rv4aFactory : public BnFactory {
   private:
     Descriptor ourDescriptor() const {
         Descriptor d;
-        d.common.id.type = {0xf98765f4, 0xc321, 0x5de6, 0x9a45,
+        d.common.id.type = {static_cast<int32_t>(0xf98765f4), 0xc321, 0x5de6, 0x9a45,
                             {0x12, 0x34, 0x59, 0x49, 0x5a, 0xb2}};
         d.common.id.uuid = kOurUuid;
         d.common.name = "RootlessViPER4Android";

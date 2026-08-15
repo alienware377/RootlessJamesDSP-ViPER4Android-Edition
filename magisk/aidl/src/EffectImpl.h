@@ -18,6 +18,7 @@
  * mapping onto the engine's setters - carries over from
  * app/src/main/cpp/hal/JamesDspHalEffect.cpp unchanged in spirit.
  */
+#pragma once
 #include <aidl/android/hardware/audio/effect/BnEffect.h>
 #include <fmq/AidlMessageQueue.h>
 #include <android/binder_manager.h>
@@ -40,9 +41,11 @@ using ::aidl::android::media::audio::common::AudioUuid;
 
 /* Same identity the app already looks for, so nothing changes app-side. */
 static const AudioUuid kEffectUuid = {
-    0xf27317f4, 0xc984, 0x4de6, 0x9a90, {0x54, 0x57, 0x59, 0x49, 0x5b, 0xf2}};
+    // timeLow is int32_t, and these UUIDs have the high bit set, so the value
+    // has to be written as the signed pattern rather than narrowed implicitly.
+    static_cast<int32_t>(0xf27317f4), 0xc984, 0x4de6, 0x9a90, {0x54, 0x57, 0x59, 0x49, 0x5b, 0xf2}};
 static const AudioUuid kEffectType = {
-    0xf98765f4, 0xc321, 0x5de6, 0x9a45, {0x12, 0x34, 0x59, 0x49, 0x5a, 0xb2}};
+    static_cast<int32_t>(0xf98765f4), 0xc321, 0x5de6, 0x9a45, {0x12, 0x34, 0x59, 0x49, 0x5a, 0xb2}};
 
 /* The engine sizes its internals from the block given at init, so never hand
    it more than this in one call regardless of what arrives. */
@@ -214,7 +217,15 @@ class Rv4aEffect : public BnEffect {
         }
     }
 
-    void applyVendorParameter(const Parameter&);
+    /*
+     * Placeholder until the app sends parameters over this path.
+     * JamesDspRemoteEngine currently drives the legacy AudioEffect API, so
+     * nothing reaches an AIDL effect yet; wiring that is its own piece of work.
+     * Logging what arrives makes it obvious the moment it does.
+     */
+    void applyVendorParameter(const Parameter& p) {
+        LOG(DEBUG) << "rv4a: parameter received, tag " << static_cast<int>(p.getTag());
+    }
 
     JamesDSPLib mDsp{};
     std::mutex mMutex;

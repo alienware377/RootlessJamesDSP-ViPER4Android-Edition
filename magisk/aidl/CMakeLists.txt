@@ -19,7 +19,6 @@ file(GLOB ENGINE_SRC ${ENGINE}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp/*.
 
 add_executable(rv4a-effect-service
         src/service.cpp
-        src/EffectImpl.cpp
         fmq/EventFlag.cpp
         ${AIDL_SRC}
         ${ENGINE_SRC})
