@@ -22,6 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import me.timschneeberger.rootlessjamesdsp.R
@@ -181,7 +182,14 @@ abstract class BaseSessionManager(protected val context: Context) : DumpManager.
         }
 
         pollingMutex.withLock {
-            handleSessionDump(dumpManager.dumpSessions())
+            // The dump itself is the expensive part - it reads and parses the
+            // audio service's state, measured at nearly five seconds on a cold
+            // start - and this scope runs on the main thread, so it froze the
+            // UI for that whole time. Do the reading off the main thread and
+            // hand only the result back, since handleSessionDump touches
+            // session state the UI observes.
+            val dump = withContext(Dispatchers.IO) { dumpManager.dumpSessions() }
+            handleSessionDump(dump)
         }
     }
 
