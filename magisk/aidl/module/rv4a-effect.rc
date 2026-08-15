@@ -1,0 +1,29 @@
+# init script for the AIDL effect HAL.
+#
+# Two services, deliberately. The stock implementation keeps running, moved to
+# the vendor_original instance name, and ours takes over the default name the
+# framework looks up. Everything we do not implement is delegated to it, so a
+# device keeps every effect it had.
+#
+# Order matters: the stock service must be up before ours resolves it, hence
+# the explicit dependency rather than trusting start order.
+
+service rv4a_vendor_effect /vendor/bin/hw/android.hardware.audio.effect.service-aidl.vendor vendor_original
+    class hal
+    user audioserver
+    group audio
+    capabilities SYS_NICE
+    ioprio rt 4
+    task_profiles ProcessCapacityHigh HighPerformance
+
+service rv4a_effect /system/bin/rv4a-effect-service
+    class hal
+    user audioserver
+    group audio
+    capabilities SYS_NICE
+    ioprio rt 4
+    task_profiles ProcessCapacityHigh HighPerformance
+    # If our service dies repeatedly, init gives up on it rather than looping.
+    # The device is then left with the stock effects only, which is the right
+    # way to fail: quieter than crashing the audio server on every boot.
+    onrestart restart audioserver

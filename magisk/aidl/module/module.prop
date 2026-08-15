@@ -1,0 +1,6 @@
+id=rv4a_effect_aidl
+name=RootlessViPER4Android engine (AIDL)
+version=v2.17.1
+versionCode=104
+author=alienware377
+description=Adds this fork's DSP engine to devices using the AIDL audio effect HAL (Android 14+). Replaces the effect factory with one that keeps the stock implementation behind it, so every existing effect keeps working. Do not install alongside the standard module.
