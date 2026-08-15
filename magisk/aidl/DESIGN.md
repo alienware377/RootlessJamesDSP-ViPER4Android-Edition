@@ -97,7 +97,50 @@ file**, not the HAL's library list. Under AIDL the framework asks the service
 via `queryEffects` and `queryProcessing` instead, so patching it registers
 nothing.
 
-## Consequence: a config patch cannot work here
+## Blocker: the proxy design does not work as specified
+
+Read from AOSP's `EffectMain.cpp`, which is what the stock service runs:
+
+```cpp
+std::string serviceName = std::string() + effectFactory->descriptor + "/default";
+binder_status_t status = AServiceManager_addService(..., serviceName.c_str());
+CHECK_EQ(STATUS_OK, status);
+```
+
+The instance name is **hardcoded**. The service takes no argument for it, so the
+plan of starting the stock binary under `vendor_original` and delegating to it
+cannot work: it would register `/default` regardless, race ours for the name,
+and `CHECK_EQ` would abort whichever lost. A crash loop in the audio HAL is a
+worse outcome than not installing.
+
+The same file shows it exits if no config file is found. So the service on a
+device with no `audio_effects_config.xml` is **not** this AOSP one - it is the
+vendor's own, whose binary name and behaviour we cannot assume either.
+
+### What this rules out
+
+Proxying by re-registering the stock service under another name. That was the
+only route identified for devices with no config to patch, which is exactly the
+Pixel case this was aimed at.
+
+### What remains viable
+
+For devices that *do* ship `audio_effects_config.xml` - the majority of AIDL
+devices - no proxy is needed at all. The stock service loads libraries listed in
+that config, so shipping our effect as a library and adding an entry is both
+simpler and far safer: nothing takes over a service, and a failure means our
+effect is missing rather than the device having no effect HAL.
+
+That is the design to build next, and it serves everyone except Pixel.
+
+### Pixel
+
+Currently no route. Not a packaging problem to solve with more care: there is no
+config to declare an effect in, and the one interposition point available is
+closed by a hardcoded name. Worth revisiting only with new information about how
+Google's own effect service discovers effects.
+
+## Original reasoning, kept for context: why a config patch cannot work on Pixel
 
 On vendors that ship `audio_effects_config.xml`, an AIDL module can declare
 itself in that file and be loaded by the stock service. That is the cheap path,

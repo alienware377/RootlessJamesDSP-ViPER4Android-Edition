@@ -5,6 +5,20 @@
 # replaced audio service and nothing to show for it.
 
 SKIPUNZIP=0
+
+# --- not ready ------------------------------------------------------------
+# The stock effect service hardcodes its instance name and takes no argument
+# for it (AOSP EffectMain.cpp), so starting it under a second name to delegate
+# to is impossible: both services would claim the same name and the loser
+# aborts. Installing this would risk an audio HAL crash loop, which is worse
+# than not installing at all.
+ui_print "! This module is not ready to install."
+ui_print "  The stock effect service cannot be run under a"
+ui_print "  second name, so taking over its name would leave"
+ui_print "  the device with no working effect HAL."
+ui_print "  See DESIGN.md for what replaces this approach."
+abort "! Aborting deliberately"
+
 API=$(getprop ro.build.version.sdk)
 
 case "$ARCH" in
