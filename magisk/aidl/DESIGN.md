@@ -71,6 +71,73 @@ is registered and under what instance name. If there is a service but no
 config, the next question is whether that service loads anything beyond what
 the vendor built in.
 
+## Field data: Pixel 9 Pro XL, Android 17
+
+```
+ls /vendor/etc/audio_effects_config.xml   -> No such file or directory
+ls /vendor/etc/audio_effects.xml          -> No such file or directory
+service list | grep audio.effect
+  -> android.hardware.audio.effect.IFactory/default
+find /system -name "*audio_effects*.xml"
+  -> /system/etc/audio_effects.xml
+```
+
+Three things follow, and they decide the design.
+
+**The AIDL effect service is running**, registered under the instance name
+`default`. So the device does host effects through the modern interface.
+
+**There is no vendor config to patch.** The AOSP reference service learns which
+libraries to load by reading `audio_effects_config.xml`; this device has none,
+so there is no file into which our effect could be declared. Adding a library
+to the filesystem would leave it unreferenced and unloaded.
+
+**The `/system/etc/audio_effects.xml` that does exist is the framework-side
+file**, not the HAL's library list. Under AIDL the framework asks the service
+via `queryEffects` and `queryProcessing` instead, so patching it registers
+nothing.
+
+## Consequence: a config patch cannot work here
+
+On vendors that ship `audio_effects_config.xml`, an AIDL module can declare
+itself in that file and be loaded by the stock service. That is the cheap path,
+and it is what other AIDL audio mods rely on.
+
+This device offers no such hook. The only remaining way in is to **become the
+service**: publish our own implementation of
+`android.hardware.audio.effect.IFactory/default`, hold a handle to the vendor
+implementation behind it, and answer:
+
+- `queryEffects` — the vendor's list plus ours
+- `queryProcessing` — the vendor's answer, unchanged
+- `createEffect` — ours for our UUID, delegated for everything else
+
+Effectively an effect proxy. It keeps every stock effect working while adding
+one, which also means a failure in our path degrades to "our effect missing"
+rather than "no audio effects at all".
+
+Costs to be honest about, since this is a large step up from the legacy module:
+
+- Only one process may hold an interface instance name, so the vendor service
+  has to be stopped and ours started in its place, via an init script the
+  module installs.
+- A new service needs an SELinux domain permitted to talk to audioserver and
+  to hold that interface. Root can add policy live, but it has to be right.
+- If our service fails to start, the device has **no** effect HAL. That is a
+  worse failure than the legacy module could produce, so the boot watchdog
+  matters more here, not less.
+
+## Order of work
+
+1. Generate the NDK backend from vendored `.aidl` files, pinned to a version.
+2. Implement `IEffect` over FMQ around the existing engine wrapper.
+3. Implement the proxying `IFactory`.
+4. Package as a separate module, refusing to install where the stock service
+   cannot be located.
+
+Vendors that *do* ship `audio_effects_config.xml` can be served by steps 1-2
+alone with a config patch, so those devices are reachable well before Pixel is.
+
 ## Status
 
-Design only. Nothing here is built yet.
+Design only. Nothing built yet.
