@@ -180,7 +180,22 @@ alone with a config patch, so those devices are reachable well before Pixel is.
   and silently emits only part of the package, which then fails much later as
   missing headers.
 
-**Two build issues remain, both understood**
+**Both build issues addressed; compile not yet reconfirmed**
+
+`cutils/native_handle.h` is vendored, and the full current `binder_ndk` header
+set was taken from AOSP rather than patching individual gaps, so the generator
+and the declarations come from the same platform level. The build was
+interrupted before it could be rerun, so the next step is simply:
+
+```
+magisk/aidl/generate.sh          # build-tools 37, not 34
+cmake -S magisk/aidl -B <dir> -G Ninja \
+      -DCMAKE_TOOLCHAIN_FILE=$NDK/build/cmake/android.toolchain.cmake \
+      -DANDROID_ABI=arm64-v8a -DANDROID_PLATFORM=android-33
+cmake --build <dir>
+```
+
+**For the record, the issues that were resolved**
 
 1. `cutils/native_handle.h` — one more platform header to vendor or shim,
    same category as the four already handled for libfmq.
