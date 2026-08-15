@@ -170,7 +170,10 @@ object ContextExtensions {
     // Very simple & naive app cloner checks; please don't use multiple instances at once
     private val PKGNAME_REFS = setOf("bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3A=",
         "bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3AuZGVidWc=",
-        "amFtZXMuZHNw", "amFtZXMuZHNwLmRlYnVn", "bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3AudjRh")
+        "amFtZXMuZHNw", "amFtZXMuZHNwLmRlYnVn", "bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3AudjRh",
+        // Root flavour of this fork: james.dsp + the .v4a suffix every build
+        // carries. Without it the launch check fails with code 1.
+        "amFtZXMuZHNwLnY0YQ==")
     private val APPNAME_REFS = setOf("Um9vdGxlc3NKYW1lc0RTUA==", "SmFtZXNEU1A=", "Um9vdGxlc3NWaVBFUjRBbmRyb2lk")
     fun Context.check(): Int {
         val appName = getAppName()
