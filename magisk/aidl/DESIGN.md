@@ -180,7 +180,29 @@ alone with a config patch, so those devices are reachable well before Pixel is.
   and silently emits only part of the package, which then fails much later as
   missing headers.
 
-**Both build issues addressed; compile not yet reconfirmed**
+**Build progress**
+
+Every external dependency now resolves — interfaces, fmq, binder, native_handle
+and logging. The compiler reached our own sources and found three real faults,
+all fixed:
+
+- The effect UUIDs have the high bit set, and `AudioUuid.timeLow` is a signed
+  32-bit field, so they must be written as the signed pattern rather than
+  narrowed implicitly.
+- The effect class became a header, so the factory can construct it without a
+  second translation unit defining the same symbols.
+- The parameter hook was declared but never defined, which would have failed at
+  link time.
+
+**Worth knowing about parameters**
+
+Nothing reaches an AIDL effect from the app yet: `JamesDspRemoteEngine` drives
+the legacy `AudioEffect` API, which has no path to a binder service. So an AIDL
+build will process audio but ignore settings until that half is written. The
+hook logs whatever arrives, so the moment the app side exists it will be
+obvious.
+
+**Earlier issues, resolved**
 
 `cutils/native_handle.h` is vendored, and the full current `binder_ndk` header
 set was taken from AOSP rather than patching individual gaps, so the generator
