@@ -1,0 +1,51 @@
+name: Build AIDL effect service
+
+# Separate from the app workflow: this builds a standalone HAL binary, needs a
+# different toolchain setup, and should not slow down or break APK builds while
+# it is still being brought up.
+on:
+  push:
+    branches: [ viper-extras ]
+    paths:
+      - 'magisk/aidl/**'
+      - '.github/workflows/build-aidl.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install ninja
+        run: sudo apt-get update && sudo apt-get install -y ninja-build
+
+      # build-tools 34 must not be used: it does not recognise a suppression
+      # annotation in AudioChannelLayout.aidl, reports it as an error, and
+      # silently emits only part of the package.
+      - name: Install build-tools 37
+        run: |
+          yes | "$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager" "build-tools;37.0.0" >/dev/null
+          ls "$ANDROID_SDK_ROOT/build-tools/"
+
+      - name: Generate AIDL NDK backend
+        run: |
+          bash magisk/aidl/generate.sh
+          find magisk/aidl/generated -type f | wc -l
+
+      - name: Configure
+        run: |
+          cmake -S magisk/aidl -B build/aidl -G Ninja \
+            -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK_LATEST_HOME/build/cmake/android.toolchain.cmake" \
+            -DANDROID_ABI=arm64-v8a \
+            -DANDROID_PLATFORM=android-33
+
+      - name: Build
+        run: cmake --build build/aidl 2>&1 | tail -40
+
+      - name: Upload service binary
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rv4a-effect-service-arm64
+          path: build/aidl/rv4a-effect-service
