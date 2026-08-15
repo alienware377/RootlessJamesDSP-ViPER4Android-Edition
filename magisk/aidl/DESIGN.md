@@ -160,6 +160,19 @@ alone with a config patch, so those devices are reachable well before Pixel is.
   (reached through `Parameter`), the FMQ descriptors (how `IEffect` carries
   audio), and the audio common metadata types.
 
+- **`IFactory` implemented** in `src/FactoryImpl.cpp`, proxying the vendor's.
+  The rule it follows throughout: never leave the device worse than it was.
+  Everything that is not ours is delegated verbatim; a vendor failure is logged
+  and tolerated rather than propagated, because a device with only our effect
+  is poor while a device the framework believes has no effect HAL is broken.
+  `queryProcessing` passes straight through - we add an effect, we do not
+  change routing rules.
+
+  Instance naming is settled: the init script starts the stock binary as
+  `IFactory/vendor_original` and this service as `/default`, so the delegation
+  target is explicit rather than trying to hold a handle to a service we are in
+  the middle of replacing.
+
 **Next**
 
 - **`IEffect` implemented** in `src/EffectImpl.cpp`: all eight methods, the
