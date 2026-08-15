@@ -35,7 +35,13 @@ class FileLibraryPreference(context: Context, attrs: AttributeSet?) :
             directory = File(context.getExternalFilesDir(null), type)
             if(type.lowercase() != "unknown")
                 directory?.mkdir()
-            refresh()
+            // Off the main thread: this runs while the preference inflates, and
+            // listing a populated library over external storage is slow - the
+            // DDC card measured three seconds on its own, which is most of the
+            // stutter when scrolling in after a cold open. The dialog paths
+            // refresh synchronously before showing, so entries are always
+            // current by the time they are actually needed.
+            refreshAsync()
         }
 
     init {
@@ -67,6 +73,24 @@ class FileLibraryPreference(context: Context, attrs: AttributeSet?) :
         preferenceManager.showDialog(this)
     }
 
+    /**
+     * Builds the file list on a background thread and applies it on the main
+     * one, since entries and entryValues belong to the view layer.
+     */
+    fun refreshAsync() {
+        val dir = directory ?: return
+        Thread {
+            val built = runCatching { buildFileList(dir) }.getOrNull()
+            if (built != null) {
+                android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    entries = built.first
+                    entryValues = built.second
+                    notifyChanged()
+                }
+            }
+        }.apply { priority = Thread.MIN_PRIORITY }.start()
+    }
+
     fun refresh() {
         if(directory == null)
         {
@@ -78,19 +102,26 @@ class FileLibraryPreference(context: Context, attrs: AttributeSet?) :
     }
 
     private fun initFileList() {
+        val dir = directory ?: return
+        val (names, paths) = buildFileList(dir)
+        entries = names
+        entryValues = paths
+    }
+
+    /** Pure file work, safe to call from any thread. */
+    private fun buildFileList(dir: File): Pair<Array<String>, Array<String>> {
+        val base = context.getExternalFilesDir(null)
         val result = hashMapOf<String, String>()
-        directory?.list()?.forEach {
+        dir.list()?.forEach {
             if(hasCorrectExtension(it))
             {
                 val name = it.substringBeforeLast('.')
-                val path = File(directory!!, it).toRelativeString(context.getExternalFilesDir(null)!!)
+                val path = File(dir, it).toRelativeString(base!!)
                 result[name] = path
             }
         }
-
         val sorted = result.toSortedMap()
-        entries = sorted.keys.toTypedArray()
-        entryValues = sorted.values.toTypedArray()
+        return sorted.keys.toTypedArray() to sorted.values.toTypedArray()
     }
 
     fun hasCorrectExtension(it: String): Boolean {
