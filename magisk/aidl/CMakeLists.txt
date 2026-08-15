@@ -29,6 +29,7 @@ target_include_directories(rv4a-effect-service PRIVATE
         fmq/include
         fmq/base
         fmq/compat            # stand-ins for platform headers absent from the NDK
+        compat                # binder service APIs, vendored from AOSP
         ${ENGINE}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp)
 
 # The engine sources predate current clang defaults, same as in the app build.
