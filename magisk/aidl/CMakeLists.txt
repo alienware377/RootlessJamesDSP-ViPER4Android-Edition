@@ -19,6 +19,18 @@ file(GLOB_RECURSE AIDL_SRC ${GEN}/src/*.cpp)
 # subdirectories, and a shallow glob leaves their symbols undefined at link.
 file(GLOB_RECURSE ENGINE_SRC ${ENGINE}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp/*.c)
 
+# Report what the glob found, and fail early with a clear reason rather than
+# letting a short list surface much later as undefined symbols at link - which
+# is indistinguishable from a stale build directory when reading a log tail.
+list(LENGTH ENGINE_SRC ENGINE_COUNT)
+message(STATUS "engine sources found: ${ENGINE_COUNT}")
+if(ENGINE_COUNT LESS 40)
+    message(FATAL_ERROR
+        "Only ${ENGINE_COUNT} engine sources matched - the effects in "
+        "jdsp/Effects are missing, so the link would fail on AgcProcess and "
+        "friends. Check the ENGINE path: ${ENGINE}")
+endif()
+
 add_executable(rv4a-effect-service
         src/service.cpp
         fmq/EventFlag.cpp

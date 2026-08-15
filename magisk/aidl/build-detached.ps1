@@ -24,8 +24,8 @@ $script = @"
 & '$cmake' -S '$src' -B '$bd' -G Ninja ``
     '-DCMAKE_TOOLCHAIN_FILE=$ndk/build/cmake/android.toolchain.cmake' ``
     '-DANDROID_ABI=$Abi' '-DANDROID_PLATFORM=android-33' ``
-    '-DCMAKE_MAKE_PROGRAM=$ninja' *>&1 | Tee-Object -FilePath '$log'
-& '$cmake' --build '$bd' *>&1 | Tee-Object -FilePath '$log' -Append
+    '-DCMAKE_MAKE_PROGRAM=$ninja' *>&1 | Out-File -Encoding utf8 -FilePath '$log'
+& '$cmake' --build '$bd' *>&1 | Out-File -Encoding utf8 -FilePath '$log' -Append
 'BUILD_FINISHED' | Out-File -FilePath '$log' -Append
 "@
 
