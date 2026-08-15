@@ -7,6 +7,8 @@ rather than the live tree, so the definitions cannot shift under us:
 - `android.media.audio.common.types-V3` — the types it references
 - `android.media.audio.eraser-V1` — needed because `Parameter.aidl` references
   `Eraser`, so it cannot simply be left out of the generation
+- `android.hardware.common.fmq-V1` and `android.hardware.common-V2` — the fast
+  message queue descriptor types, which `IEffect` uses to carry audio
 
 **V3 is the version to target.** Its `queryEffects` takes three parameters
 (type, implementation, proxy); V1 and V2 took fewer, and a device expecting one
@@ -20,6 +22,8 @@ aidl --lang=ndk --structured --stability=vintf --version=3 \
      -I android.hardware.audio.effect-V3 \
      -I android.media.audio.common.types-V3 \
      -I android.media.audio.eraser-V1 \
+     -I android.hardware.common.fmq-V1 \
+     -I android.hardware.common-V2 \
      -o out/src -h out/include <files>
 ```
 
