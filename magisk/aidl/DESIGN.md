@@ -153,9 +153,16 @@ alone with a config patch, so those devices are reachable well before Pixel is.
   unknown, and it removes the worst of the three options in the notes above.
 - The interface is small: `IFactory` is four methods.
 
+- **Backend generates cleanly**: 29 sources and 87 headers, including
+  `BnFactory.h` and `BnEffect.h`, the base classes to implement. Run
+  `magisk/aidl/generate.sh`. Five further packages had to be vendored to get
+  there, each discovered by generation failing in turn: the eraser types
+  (reached through `Parameter`), the FMQ descriptors (how `IEffect` carries
+  audio), and the audio common metadata types.
+
 **Next**
 
-1. Generate the NDK backend and commit it, or wire generation into the build:
+1. ~~Generate the NDK backend~~ — done, see `generate.sh`. Remaining:
    ```
    aidl --lang=ndk --structured --stability=vintf --version=3 \
         -I magisk/aidl/interfaces/android.hardware.audio.effect-V3 \
