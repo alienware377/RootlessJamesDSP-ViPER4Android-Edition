@@ -351,10 +351,12 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
 
             val spec = deferredCards.first()
             deferredCards.remove(spec)
+            val t0 = android.os.SystemClock.uptimeMillis()
             childFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
                 .replace(spec.viewId, PreferenceGroupFragment.newInstance(spec.prefName, spec.xmlRes))
-                .commitAllowingStateLoss()
+                .commitNowAllowingStateLoss()
+            Timber.d("PERF prefetch ${spec.prefName} commit=${android.os.SystemClock.uptimeMillis() - t0}ms remaining=${deferredCards.size}")
 
             if (deferredCards.isEmpty()) onAllCardsInstalled()
             // Breathe: without this pause the next idle pass fires immediately
