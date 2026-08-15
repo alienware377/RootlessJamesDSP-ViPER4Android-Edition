@@ -138,6 +138,32 @@ Costs to be honest about, since this is a large step up from the legacy module:
 Vendors that *do* ship `audio_effects_config.xml` can be served by steps 1-2
 alone with a config patch, so those devices are reachable well before Pixel is.
 
-## Status
+## Progress
 
-Design only. Nothing built yet.
+**Done**
+
+- Interfaces vendored and pinned: `android.hardware.audio.effect-V3` and
+  `android.media.audio.common.types-V3`, taken from AOSP's frozen `aidl_api`
+  snapshots (commit `1a56e38`) rather than the live tree, so they cannot shift.
+  98 files, laid out under their package paths so the include roots resolve.
+- Version settled: **V3**, whose `queryEffects` takes three parameters. V1 and
+  V2 differ, and a service built against the wrong one will not be talked to.
+- Toolchain settled: the **SDK's own `aidl`** supports `--lang=ndk`, so the
+  NDK backend can be generated without an AOSP build. This was the main
+  unknown, and it removes the worst of the three options in the notes above.
+- The interface is small: `IFactory` is four methods.
+
+**Next**
+
+1. Generate the NDK backend and commit it, or wire generation into the build:
+   ```
+   aidl --lang=ndk --structured --stability=vintf --version=3 \
+        -I magisk/aidl/interfaces/android.hardware.audio.effect-V3 \
+        -I magisk/aidl/interfaces/android.media.audio.common.types-V3 \
+        -o out/src -h out/include <effect aidl files>
+   ```
+2. Implement `IEffect` over FMQ, reusing the engine setup, block-bounded
+   processing and parameter dispatch already written in
+   `app/src/main/cpp/hal/JamesDspHalEffect.cpp`.
+3. Implement the proxying `IFactory` for devices with no config to patch.
+4. Package separately, refusing to install where the stock service is absent.
