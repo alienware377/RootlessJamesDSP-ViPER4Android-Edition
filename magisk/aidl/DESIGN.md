@@ -162,7 +162,21 @@ alone with a config patch, so those devices are reachable well before Pixel is.
 
 **Next**
 
-1. ~~Generate the NDK backend~~ — done, see `generate.sh`. Remaining:
+- **`IEffect` implemented** in `src/EffectImpl.cpp`: all eight methods, the
+  three message queues created and sized from the negotiated frame count, and a
+  worker thread that deinterleaves, processes in engine-sized chunks and
+  reports consumed/produced back through the status queue.
+
+**Remaining dependency: libfmq**
+
+`AidlMessageQueue` lives in `system/libfmq`, which does not ship in the NDK
+either. Same problem as the interfaces, and the same shape of answer: vendor
+it, or hand-roll the ring buffer from the grantor descriptors. Vendoring is
+preferable - the descriptor layout is not something to reimplement from
+guesswork, and getting it subtly wrong would surface as audio corruption rather
+than a clean failure.
+
+**Next**
    ```
    aidl --lang=ndk --structured --stability=vintf --version=3 \
         -I magisk/aidl/interfaces/android.hardware.audio.effect-V3 \
