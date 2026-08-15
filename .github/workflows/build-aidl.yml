@@ -41,7 +41,9 @@ jobs:
             -DANDROID_PLATFORM=android-33
 
       - name: Build
-        run: cmake --build build/aidl 2>&1 | tail -40
+        # No pipe: piping to tail discards the exit status, so a failed compile
+        # would pass the job. Failures show up in the step log anyway.
+        run: cmake --build build/aidl
 
       - name: Upload service binary
         if: success()

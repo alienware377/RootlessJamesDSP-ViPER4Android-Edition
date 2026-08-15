@@ -4,7 +4,7 @@
  * The NDK ships libbinder_ndk for apps, which deliberately omits the service
  * registration entry points - an app has no business publishing a system
  * service. A HAL does exactly that, so those symbols are missing at link time
- * even though they are present in /system/lib*/libbinder_ndk.so on device.
+ * even though they are present in libbinder_ndk.so on device.
  *
  * This builds a stub carrying the same soname. The linker is satisfied by it,
  * the executable records a dependency on libbinder_ndk.so, and at runtime the
