@@ -127,6 +127,7 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - **Vintage tape** — wow, flutter, bias and tape saturation as a colour effect
 - **Mid/side and transient/sustain modes** — a cross-cutting option for the EQ and dynamics rather than a module of its own
 - **Binaural upmix** — build a surround bed from stereo, then fold it back to headphones through HRTF/BRIR convolution so sources can sit behind and above you. Headphones only; two speakers can't do this without crosstalk cancellation
+- **AIDL effect HAL** — a second module for Android 15 and newer, where the effect framework moved from the legacy plugin interface to a binder service. Not a port of the existing one: the engine has to be exposed behind a new interface and driven from fast message queues rather than a process callback
 - **Rooted mode** — for devices with the JamesDSP magisk module (testers welcome!)
 - **Search, sorting & hiding on the presets screen** — the convolver and DDC libraries have this now; presets are next
 - **Minimum-phase toggle** for the graphic EQ
