@@ -12,6 +12,12 @@ extern "C" {
 #include "jdsp_header.h"
 }
 
+/* The legacy HAL defines these; the AIDL one logs through its own mechanism, so
+   they fall away to nothing there rather than each HAL needing the other's. */
+#ifndef LOGD
+#define LOGD(...) ((void)0)
+#endif
+
 static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
                               const float *fv, uint32_t fn)
 {

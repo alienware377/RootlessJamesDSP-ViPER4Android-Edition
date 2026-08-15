@@ -235,16 +235,17 @@ class Rv4aEffect : public BnEffect {
         const auto& specific = param.get<Parameter::specific>();
         if (specific.getTag() != Parameter::Specific::vendorEffect) return;
 
-        DefaultExtension payload;
+        std::optional<DefaultExtension> payload;
         if (specific.get<Parameter::Specific::vendorEffect>()
-                    .extension.getParcelable(&payload) != STATUS_OK) {
+                    .extension.getParcelable(&payload) != STATUS_OK ||
+            !payload.has_value()) {
             LOG(WARNING) << "rv4a: vendor parameter carried no default extension";
             return;
         }
 
         /* Same layout as the legacy path: a four-byte id, then the value
            aligned to four bytes, with vsize giving its width. */
-        const auto& bytes = payload.bytes;
+        const auto& bytes = payload->bytes;
         if (bytes.size() < sizeof(effect_param_t)) return;
         auto* p = reinterpret_cast<const effect_param_t*>(bytes.data());
         if (p->psize != sizeof(int32_t)) return;
