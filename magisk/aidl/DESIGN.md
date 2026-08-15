@@ -135,7 +135,11 @@ That is the design to build next, and it serves everyone except Pixel.
 
 ### Pixel
 
-Currently no route. Not a packaging problem to solve with more care: there is no
+**Superseded — see PIXEL-ROUTE.md.** The premise below was wrong: the config is
+not absent, it lives inside the audio APEX, which is where the service looks
+first and where nobody thought to check.
+
+Previous conclusion, kept for the reasoning: Not a packaging problem to solve with more care: there is no
 config to declare an effect in, and the one interposition point available is
 closed by a hardcoded name. Worth revisiting only with new information about how
 Google's own effect service discovers effects.
