@@ -350,7 +350,10 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
                 .commitAllowingStateLoss()
 
             if (deferredCards.isEmpty()) onAllCardsInstalled()
-            else scheduleIdlePrefetch()
+            // Breathe: without this pause the next idle pass fires immediately
+            // (nothing else is pending), so every card inflates in one
+            // unbroken run and the app is frozen for seconds.
+            else binding.root.postDelayed({ scheduleIdlePrefetch() }, PREFETCH_GAP_MS)
             false   // one card per idle pass
         }
     }
