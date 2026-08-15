@@ -34,6 +34,39 @@ if ! (service list 2>/dev/null | grep -q "android.hardware.audio.effect.IFactory
 fi
 ui_print "- Stock effect factory found"
 
+# --- back up what we displace -------------------------------------------
+#
+# Nothing of the stock HAL is deleted or overwritten: its binary stays where it
+# is, and Magisk overlays rather than modifies. What we do displace is the init
+# entry that starts it under the default instance name, since two services
+# cannot hold one name. That file is backed up before anything is overlaid, to
+# a location outside the module so it survives the module being removed.
+BACKUP="/data/adb/rv4a-aidl-backup"
+mkdir -p "$BACKUP"
+
+STOCK_RC=""
+for d in /vendor/etc/init /system/etc/init /odm/etc/init; do
+  [ -d "$d" ] || continue
+  f=$(grep -rl "audio.effect" "$d" 2>/dev/null | head -1)
+  [ -n "$f" ] && { STOCK_RC="$f"; break; }
+done
+
+if [ -n "$STOCK_RC" ]; then
+  cp "$STOCK_RC" "$BACKUP/$(basename "$STOCK_RC").orig"
+  echo "$STOCK_RC" > "$BACKUP/stock_rc_path"
+  ui_print "- Backed up $(basename "$STOCK_RC")"
+else
+  # Without it we cannot free the default name, and our service would lose the
+  # race to register. Better to stop than to install something that cannot work.
+  ui_print "! Could not find the stock effect service init entry."
+  ui_print "  Without it the default instance name cannot be freed."
+  abort "! Aborting"
+fi
+
+# Record the pre-install state, so a later comparison has something to compare to
+service list 2>/dev/null | grep -i "audio.effect" > "$BACKUP/services_before" 2>/dev/null
+getprop | grep -i "audio" > "$BACKUP/props_before" 2>/dev/null
+
 BIN="$MODPATH/libs/$ABI_DIR/rv4a-effect-service"
 [ -f "$BIN" ] || abort "! No service build for $ABI_DIR"
 
