@@ -52,12 +52,22 @@ target_compile_options(rv4a-effect-service PRIVATE -O2
         $<$<COMPILE_LANGUAGE:C>:-Wno-error=implicit-int>
         $<$<COMPILE_LANGUAGE:C>:-Wno-error=incompatible-function-pointer-types>)
 
-# Stub carrying libbinder_ndk's soname, so the service registration symbols the
-# NDK omits resolve at link while the real platform library loads at runtime.
-add_library(binder_ndk_stub SHARED stubs/binder_ndk_stub.c)
-set_target_properties(binder_ndk_stub PROPERTIES
-        OUTPUT_NAME "binder_ndk"
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/stub)
-
 find_library(log-lib log)
-target_link_libraries(rv4a-effect-service ${log-lib} binder_ndk_stub)
+find_library(binder-lib binder_ndk)
+target_link_libraries(rv4a-effect-service ${log-lib} ${binder-lib})
+
+# The NDK's libbinder_ndk provides the app-facing half of the API but omits the
+# service registration entry points, since an app has no business publishing a
+# system service - which is exactly what a HAL does. Linking a stub instead
+# traded one missing set for the other, because both carry the same soname and
+# only one can be linked.
+#
+# So link the real NDK library and let the few platform-only symbols stay
+# unresolved: the binary records a dependency on libbinder_ndk.so, and on device
+# that resolves to the platform copy, which has all of them.
+#
+# The cost is that a genuine typo in a symbol name would also link quietly and
+# fail at load instead. CI catching the rest is what makes that acceptable, and
+# the service logs and exits if registration ever comes back unresolved.
+target_link_options(rv4a-effect-service PRIVATE
+        -Wl,--unresolved-symbols=ignore-in-object-files)
