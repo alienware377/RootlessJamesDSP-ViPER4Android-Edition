@@ -180,7 +180,31 @@ alone with a config patch, so those devices are reachable well before Pixel is.
   and silently emits only part of the package, which then fails much later as
   missing headers.
 
-**Build progress**
+**Build state (latest)**
+
+The detached build pattern works and produced a full log. Progress since:
+
+- Binder service symbols now resolve — the soname stub does its job.
+- The convolver symbols resolved once the engine glob was made recursive.
+- Still failing: `AgcProcess`, `DDCProcess` and friends are undefined at link.
+
+That last one needs a careful look rather than another guess. Those symbols live
+in `jdsp/Effects/viperextras.c`, which the recursive glob *should* already
+match, and the app build compiles the identical pattern successfully. Two
+possibilities worth separating before changing anything:
+
+1. The log read may predate the glob fix landing, in which case it is stale.
+2. Or the file compiles with an error earlier in the log and only shows up as a
+   missing symbol at link, which would mean the tail is misleading.
+
+Check the head of the log for compile failures before touching the glob again -
+the tail alone does not distinguish these.
+
+Note: `Tee-Object` writes UTF-16, which makes the log awkward to read through
+the filesystem connector. Worth switching the detached script to
+`Out-File -Encoding utf8`.
+
+**Earlier build progress**
 
 Every external dependency now resolves — interfaces, fmq, binder, native_handle
 and logging. The compiler reached our own sources and found three real faults,
