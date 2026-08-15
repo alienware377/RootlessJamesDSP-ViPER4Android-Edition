@@ -45,6 +45,36 @@ Flash in Magisk, then reboot. The installer copies the library into
 device uses — XML on Android 9+, the older `.conf` on some vendor images —
 overlaying the file rather than editing the real one.
 
+## Which devices this works on
+
+The engine here is a **legacy audio effect library**: the audio server finds it
+through `audio_effects.xml` (or the older `.conf`). That is the interface
+Android used up to and including 14.
+
+**Android 15 moved audio effects to an AIDL HAL.** Devices that ship only the
+AIDL path never read those files, so the engine cannot be found there no matter
+where it is installed — the app reports no driver. This is the same wall every
+legacy audio mod hit, and it is why ViPER4Android now ships separate non-AIDL
+and AIDL modules. There is **no AIDL build of this module yet**; supporting it
+means implementing the AIDL effect HAL, not relocating a file.
+
+The installer checks for a legacy config and refuses to install rather than
+leaving something inert on the device.
+
+Not affected either way: **rootless mode**, which processes audio inside the app
+and needs none of this.
+
+## Root implementations
+
+Built and verified against **Magisk**. The module format is understood by
+**KernelSU**, **KernelSU Next** and **APatch** too, and the installer adapts its
+recovery advice to whichever it finds.
+
+One caveat worth knowing before you try: on KernelSU and APatch, mounting files
+into `/vendor` and `/system` can require a **metamodule**. If the module
+installs cleanly but the effect never appears, check that first — it is the
+usual cause, and it is reported for other audio modules as well.
+
 ## If the device won't boot
 
 An audio module can leave the audio server crashing on every boot, which looks

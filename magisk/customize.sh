@@ -8,6 +8,40 @@
 
 SKIPUNZIP=0
 
+# --- what are we installing under, and onto? ------------------------------
+API=$(getprop ro.build.version.sdk)
+
+if [ -d /data/adb/ksu ] || [ -n "$KSU" ]; then
+  ROOT_IMPL="KernelSU"
+elif [ -d /data/adb/ap ] || [ -n "$APATCH" ]; then
+  ROOT_IMPL="APatch"
+else
+  ROOT_IMPL="Magisk"
+fi
+ui_print "- Root: $ROOT_IMPL, Android API $API"
+
+# The effect is a legacy audio-effect library: the audio server discovers it
+# through audio_effects.xml or .conf. Android 15 moved effects to an AIDL HAL,
+# and devices that ship only the AIDL path never read those files, so nothing
+# would load the engine no matter where it is placed.
+HAS_LEGACY_CONFIG=0
+for f in /vendor/etc/audio_effects.xml /vendor/etc/audio_effects.conf \
+         /system/vendor/etc/audio_effects.xml /system/vendor/etc/audio_effects.conf \
+         /system/etc/audio_effects.xml /system/etc/audio_effects.conf; do
+  [ -f "$f" ] && HAS_LEGACY_CONFIG=1
+done
+
+if [ "$HAS_LEGACY_CONFIG" = "0" ]; then
+  ui_print " "
+  ui_print "! This device has no legacy audio effects config."
+  ui_print "  Its audio HAL is AIDL-only, which does not load"
+  ui_print "  effect libraries like this one. Android 15 moved"
+  ui_print "  effects to AIDL and this engine implements the"
+  ui_print "  older interface, so it cannot be found here."
+  ui_print "  Rootless mode still works and is unaffected."
+  abort "! Aborting rather than installing something inert"
+fi
+
 case "$ARCH" in
   arm64) ABI_DIR="arm64-v8a";   LIBDIR="lib64" ;;
   arm)   ABI_DIR="armeabi-v7a"; LIBDIR="lib"   ;;
