@@ -189,7 +189,10 @@ abstract class BaseSessionManager(protected val context: Context) : DumpManager.
             // hand only the result back, since handleSessionDump touches
             // session state the UI observes.
             val dump = withContext(Dispatchers.IO) { dumpManager.dumpSessions() }
+            val t0 = android.os.SystemClock.uptimeMillis()
             handleSessionDump(dump)
+            val took = android.os.SystemClock.uptimeMillis() - t0
+            if (took > 8) Timber.d("PERF handleSessionDump ${took}ms on main")
         }
     }
 
