@@ -127,6 +127,9 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
         // time (measured), which is what froze the UI on startup.
         deferredCards.clear()
         deferredCards.addAll(deferredCardSpecs)
+        // Fresh queue, so the completion step is owed again
+        cardsFinalised = false
+        cardViews.clear()
         binding.dspScrollview.viewTreeObserver.addOnScrollChangedListener {
             installVisibleCards()
         }
@@ -317,6 +320,21 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
      * user scrolls down they already exist. One per pass keeps any single stall
      * to a single card if the user starts scrolling mid-inflation.
      */
+    private var cardsFinalised = false
+
+    /**
+     * Runs once, after the last card is installed. Both the scroll-driven and
+     * idle-driven installers can drain the queue, so without this the layout
+     * was applied twice - which is what crashed, since re-parenting views that
+     * had already been re-parented is not a no-op.
+     */
+    private fun onAllCardsInstalled() {
+        if (cardsFinalised || !isAdded) return
+        cardsFinalised = true
+        layoutManager?.applyLayout()
+        applyLiveprogSlotVisibility()
+    }
+
     private fun scheduleIdlePrefetch() {
         if (idlePrefetchQueued || deferredCards.isEmpty()) return
         idlePrefetchQueued = true
@@ -331,12 +349,8 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
                 .replace(spec.viewId, PreferenceGroupFragment.newInstance(spec.prefName, spec.xmlRes))
                 .commitAllowingStateLoss()
 
-            if (deferredCards.isEmpty()) {
-                layoutManager?.applyLayout()
-                applyLiveprogSlotVisibility()
-            } else {
-                scheduleIdlePrefetch()
-            }
+            if (deferredCards.isEmpty()) onAllCardsInstalled()
+            else scheduleIdlePrefetch()
             false   // one card per idle pass
         }
     }
@@ -378,8 +392,7 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
                 binding.root.postDelayed({ installVisibleCards() }, 48)
                 scheduleIdlePrefetch()
             } else {
-                layoutManager?.applyLayout()
-                applyLiveprogSlotVisibility()
+                onAllCardsInstalled()
             }
         } finally {
             installingCards = false

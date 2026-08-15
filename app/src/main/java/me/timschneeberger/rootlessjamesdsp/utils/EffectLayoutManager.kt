@@ -297,7 +297,12 @@ class EffectLayoutManager(
             .filter { it >= 0 }
             .minOrNull() ?: return
 
-        ordered.forEach { container.removeView(it) }
+        // Detach from whatever currently holds each view, not just from the
+        // root container. A card that has been moved into a group container is
+        // not a child here, so removeView would quietly do nothing and the
+        // addView below would then throw for still having a parent. This also
+        // makes a second applyLayout call harmless.
+        ordered.forEach { (it.parent as? ViewGroup)?.removeView(it) }
         var index = startIndex
         ordered.forEach { view ->
             container.addView(view, index.coerceAtMost(container.childCount))
