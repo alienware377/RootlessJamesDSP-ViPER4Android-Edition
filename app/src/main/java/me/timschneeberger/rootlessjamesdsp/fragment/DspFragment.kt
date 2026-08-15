@@ -397,7 +397,15 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
                     PreferenceGroupFragment.newInstance(spec.prefName, spec.xmlRes)
                 )
             }
-            tx.commitAllowingStateLoss()
+            // Commit now rather than scheduling it. A plain commit only queues
+            // the transaction, so several can pile up and inflate together in
+            // one frame - which is the long frame seen while scrolling. Doing
+            // it here bounds the cost to a single card, measured in single-
+            // digit milliseconds.
+            val t0 = android.os.SystemClock.uptimeMillis()
+            tx.commitNowAllowingStateLoss()
+            val took = android.os.SystemClock.uptimeMillis() - t0
+            if (took > 8) Timber.d("PERF scroll-install ${batch.firstOrNull()?.prefName} ${took}ms")
             deferredCards.removeAll(batch.toSet())
 
             if (deferredCards.isNotEmpty()) {
