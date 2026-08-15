@@ -303,7 +303,7 @@ tasks.register("verifyLaunchAllowlist") {
                 .find(text)?.groupValues?.get(1)
                 ?: throw GradleException("Could not locate $name in ContextExtensions.kt")
             return Regex("\"([A-Za-z0-9+/=]+)\"").findAll(block)
-                .map { String(java.util.Base64.getDecoder().decode(it.groupValues[1])) }
+                .map { java.util.Base64.getDecoder().decode(it.groupValues[1]).toString(Charsets.UTF_8) }
                 .toSet()
         }
 
@@ -319,12 +319,12 @@ tasks.register("verifyLaunchAllowlist") {
         expected.forEach { (appId, label) ->
             listOf(appId, "$appId.v4a").forEach { pkg ->
                 if (pkg !in packages) {
-                    val enc = java.util.Base64.getEncoder().encodeToString(pkg.toByteArray())
+                    val enc = java.util.Base64.getEncoder().encodeToString(pkg.toByteArray(Charsets.UTF_8))
                     missing += "package '$pkg' -> add \"$enc\" to PKGNAME_REFS"
                 }
             }
             if (label !in labels) {
-                val enc = java.util.Base64.getEncoder().encodeToString(label.toByteArray())
+                val enc = java.util.Base64.getEncoder().encodeToString(label.toByteArray(Charsets.UTF_8))
                 missing += "label '$label' -> add \"$enc\" to APPNAME_REFS"
             }
         }
