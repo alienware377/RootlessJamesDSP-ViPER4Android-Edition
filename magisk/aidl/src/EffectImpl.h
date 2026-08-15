@@ -28,6 +28,11 @@
 #include <thread>
 #include <vector>
 
+#include <aidl/android/hardware/audio/effect/DefaultExtension.h>
+#include <hardware/audio_effect.h>
+
+#include "EffectParams.h"   // the dispatch the legacy HAL uses, shared
+
 extern "C" {
 #include "jdsp_header.h"
 void JamesDSPProcess(JamesDSPLib *jdsp, size_t n);
@@ -218,13 +223,40 @@ class Rv4aEffect : public BnEffect {
     }
 
     /*
-     * Placeholder until the app sends parameters over this path.
-     * JamesDspRemoteEngine currently drives the legacy AudioEffect API, so
-     * nothing reaches an AIDL effect yet; wiring that is its own piece of work.
-     * Logging what arrives makes it obvious the moment it does.
+     * The framework does not stop speaking the old language just because the
+     * HAL is new: an app calling AudioEffect.setParameter has its legacy
+     * effect_param_t wrapped into a VendorExtension and delivered here. So the
+     * app needs no AIDL of its own, and the payload is byte-for-byte what the
+     * legacy HAL already parses - which is why the dispatch is shared rather
+     * than written twice.
      */
-    void applyVendorParameter(const Parameter& p) {
-        LOG(DEBUG) << "rv4a: parameter received, tag " << static_cast<int>(p.getTag());
+    void applyVendorParameter(const Parameter& param) {
+        if (param.getTag() != Parameter::specific) return;
+        const auto& specific = param.get<Parameter::specific>();
+        if (specific.getTag() != Parameter::Specific::vendorEffect) return;
+
+        DefaultExtension payload;
+        if (specific.get<Parameter::Specific::vendorEffect>()
+                    .extension.getParcelable(&payload) != STATUS_OK) {
+            LOG(WARNING) << "rv4a: vendor parameter carried no default extension";
+            return;
+        }
+
+        /* Same layout as the legacy path: a four-byte id, then the value
+           aligned to four bytes, with vsize giving its width. */
+        const auto& bytes = payload.bytes;
+        if (bytes.size() < sizeof(effect_param_t)) return;
+        auto* p = reinterpret_cast<const effect_param_t*>(bytes.data());
+        if (p->psize != sizeof(int32_t)) return;
+
+        const int32_t id = *reinterpret_cast<const int32_t*>(p->data);
+        const void* val = p->data + ((p->psize + 3) & ~3);
+        const int16_t sv = (p->vsize >= sizeof(int16_t))
+                               ? *reinterpret_cast<const int16_t*>(val) : 0;
+
+        LOG(DEBUG) << "rv4a: parameter id " << id << " vsize " << p->vsize;
+        applyParam(&mDsp, id, sv, sv != 0,
+                   reinterpret_cast<const float*>(val), p->vsize / sizeof(float));
     }
 
     JamesDSPLib mDsp{};

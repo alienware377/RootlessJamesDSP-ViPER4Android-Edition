@@ -43,7 +43,9 @@ target_include_directories(rv4a-effect-service PRIVATE
         fmq/base
         fmq/compat            # stand-ins for platform headers absent from the NDK
         compat                # binder service APIs, vendored from AOSP
-        ${ENGINE}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp)
+        ${ENGINE}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp
+        ${ENGINE}/hal                    # shared parameter dispatch
+        ${ENGINE}/libjamesdsp/VeryOldOpen_source_edition/Audio_Engine/eclipse_libjamesdsp_free_bp/jni)  # audio_effect.h
 
 # The engine sources predate current clang defaults, same as in the app build.
 target_compile_options(rv4a-effect-service PRIVATE -O2
