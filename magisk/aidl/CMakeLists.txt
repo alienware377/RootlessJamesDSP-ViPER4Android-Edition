@@ -15,7 +15,9 @@ if(NOT EXISTS ${GEN}/include)
 endif()
 
 file(GLOB_RECURSE AIDL_SRC ${GEN}/src/*.cpp)
-file(GLOB ENGINE_SRC ${ENGINE}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp/*.c)
+# Recursive: the engine is not flat - the convolver and several others sit in
+# subdirectories, and a shallow glob leaves their symbols undefined at link.
+file(GLOB_RECURSE ENGINE_SRC ${ENGINE}/libjamesdsp/Main/libjamesdsp/jni/jamesdsp/jdsp/*.c)
 
 add_executable(rv4a-effect-service
         src/service.cpp
@@ -38,6 +40,12 @@ target_compile_options(rv4a-effect-service PRIVATE -O2
         $<$<COMPILE_LANGUAGE:C>:-Wno-error=implicit-int>
         $<$<COMPILE_LANGUAGE:C>:-Wno-error=incompatible-function-pointer-types>)
 
+# Stub carrying libbinder_ndk's soname, so the service registration symbols the
+# NDK omits resolve at link while the real platform library loads at runtime.
+add_library(binder_ndk_stub SHARED stubs/binder_ndk_stub.c)
+set_target_properties(binder_ndk_stub PROPERTIES
+        OUTPUT_NAME "binder_ndk"
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/stub)
+
 find_library(log-lib log)
-find_library(binder-lib binder_ndk)
-target_link_libraries(rv4a-effect-service ${log-lib} ${binder-lib})
+target_link_libraries(rv4a-effect-service ${log-lib} binder_ndk_stub)
