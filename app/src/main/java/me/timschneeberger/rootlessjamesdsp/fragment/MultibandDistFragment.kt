@@ -16,6 +16,7 @@ import me.timschneeberger.rootlessjamesdsp.databinding.FragmentMbdPanelBinding
 import me.timschneeberger.rootlessjamesdsp.model.ParametricEqBand
 import me.timschneeberger.rootlessjamesdsp.model.ParametricEqBandList
 import me.timschneeberger.rootlessjamesdsp.model.ParametricEqFilterType
+import me.timschneeberger.rootlessjamesdsp.utils.BiquadUtils
 import me.timschneeberger.rootlessjamesdsp.utils.Constants
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.sendLocalBroadcast
 import me.timschneeberger.rootlessjamesdsp.view.KnobView
@@ -211,26 +212,51 @@ class MultibandDistFragment : Fragment() {
             getString(if (cutoff) R.string.mbd_knob_cutoff else R.string.peq_frequency)
         binding.mbdBandFreq.value = band.frequency.toFloat()
         binding.mbdBandQ.value = band.q.toFloat()
-        // Range before value: the knob clamps on assignment, so setting 48 while
-        // the range is still the gain's would land on 30.
-        if (cutoff) {
-            binding.mbdBandGain.label = getString(R.string.mbd_knob_slope)
-            binding.mbdBandGain.unit = "dB/oct"
-            binding.mbdBandGain.precision = 0
-            binding.mbdBandGain.minValue = 12f
-            binding.mbdBandGain.maxValue = 96f
-            binding.mbdBandGain.value = if (band.gain < 6.0) 48f else band.gain.toFloat()
-        } else {
-            binding.mbdBandGain.label = getString(R.string.peq_gain)
-            binding.mbdBandGain.unit = "dB"
-            binding.mbdBandGain.precision = 1
-            binding.mbdBandGain.minValue = -30f
-            binding.mbdBandGain.maxValue = 30f
-            binding.mbdBandGain.value = band.gain.toFloat()
-        }
+        applyGainRole(band.gain)
         filterButtons.firstOrNull { it.first == band.filterType }
             ?.let { binding.mbdFilterGroup.check(it.second) }
         suppressBandWrite = false
+    }
+
+    /**
+     * Point the gain dial at whichever quantity the current filter type has.
+     *
+     * A cutoff has no gain - the coefficients ignore the term - but it does
+     * have a slope, and without a control for it a cutoff is stuck at
+     * 12 dB/octave, which is a tilt across the whole spectrum rather than a
+     * corner. The band's gain field is what carries the slope; see
+     * BiquadUtils.cascadeFor.
+     *
+     * @param gain the band's stored value, or null to keep what the dial shows
+     */
+    private fun applyGainRole(gain: Double? = null) {
+        val cutoff = currentFilterType().let {
+            it == ParametricEqFilterType.LOW_PASS || it == ParametricEqFilterType.HIGH_PASS
+        }
+        val wasSlope = binding.mbdBandGain.unit == SLOPE_UNIT
+        // Range before value: the knob clamps on assignment, so setting 48
+        // while the range is still the gain's would land on 30.
+        with(binding.mbdBandGain) {
+            if (cutoff) {
+                // Carrying a gain over into the slope would read as a slope
+                // nobody picked, so a fresh cutoff starts at the default.
+                val v = gain ?: if (wasSlope) value.toDouble() else 0.0
+                label = getString(R.string.mbd_knob_slope)
+                unit = SLOPE_UNIT
+                precision = 0
+                minValue = 12f
+                maxValue = BiquadUtils.MAX_CUTOFF_SLOPE.toFloat()
+                this.value = if (v < 6.0) 48f else v.toFloat()
+            } else {
+                val v = gain ?: if (wasSlope) 0.0 else value.toDouble()
+                label = getString(R.string.peq_gain)
+                unit = "dB"
+                precision = 1
+                minValue = -30f
+                maxValue = 30f
+                this.value = v.toFloat()
+            }
+        }
     }
 
     /** A new cutoff starts steep; a new peaking band starts flat. */
@@ -247,8 +273,14 @@ class MultibandDistFragment : Fragment() {
         val band = selectedBand() ?: return
         band.frequency = binding.mbdBandFreq.value.toDouble()
         band.q = binding.mbdBandQ.value.toDouble()
-        band.gain = binding.mbdBandGain.value.toDouble()
         band.filterType = currentFilterType()
+        // The filter-type toggle lands here too, and it can flip the gain dial
+        // between gain and slope. Re-point it before reading, or a low-pass
+        // would be handed whatever dB the dial happened to be showing.
+        suppressBandWrite = true
+        applyGainRole()
+        suppressBandWrite = false
+        band.gain = binding.mbdBandGain.value.toDouble()
         refreshSurface()
         saveBands()
         refreshUsability()
@@ -452,6 +484,9 @@ class MultibandDistFragment : Fragment() {
     companion object {
         /** Matches MBD_MODEL_CRUSH in the engine. */
         private const val MODEL_CRUSH = 7
+
+        /** Marks the gain dial as currently showing a cutoff slope. */
+        private const val SLOPE_UNIT = "dB/oct"
 
         fun newInstance() = MultibandDistFragment()
     }
