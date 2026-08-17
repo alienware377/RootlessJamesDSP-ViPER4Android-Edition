@@ -186,7 +186,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val mbdBands = cache.get(R.string.key_mbd_bands, Constants.DEFAULT_MBD_BANDS)
             val mbdRouting = cache.get(R.string.key_mbd_routing, "0").toInt()
             val mbdModel = cache.get(R.string.key_mbd_model, "0").toInt()
-            val mbdDrive = cache.get(R.string.key_mbd_drive, 0f)
+            val mbdDrive = cache.get(R.string.key_mbd_drive, 35f)
             val mbdBias = cache.get(R.string.key_mbd_bias, 0f)
             val mbdShape = cache.get(R.string.key_mbd_shape, 50f)
             val mbdBits = cache.get(R.string.key_mbd_bits, 16f)

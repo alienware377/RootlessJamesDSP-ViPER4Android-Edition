@@ -2,9 +2,16 @@
 // extracted from the ViperFX differential surround concept.
 #include <math.h>
 #include <string.h>
+#include <stdlib.h>
 #include "../jdsp_header.h"
 
-#define DSUR_BUFLEN 8192
+// 50ms is 9600 samples at 192kHz, so the old 8192 could not actually reach the
+// top of the range there - it silently clamped to 42ms. 16384 covers the whole
+// range at every sample rate the engine accepts, and the pair is now allocated
+// on enable rather than sitting in the library struct: 128KB resident per
+// instance, times a session for every app playing audio, is real memory to be
+// holding for an effect that is switched off.
+#define DSUR_BUFLEN 16384
 
 void DiffSurroundSetParam(JamesDSPLib *jdsp, float delayLms, float delayRms)
 {
@@ -28,6 +35,8 @@ void DiffSurroundProcess(JamesDSPLib *jdsp, size_t n)
 	DiffSurround *ds = &jdsp->diffSurround;
 	size_t i;
 	if (!jdsp->tmpBuffer[0] || !jdsp->tmpBuffer[1])
+		return;
+	if (!ds->bufL || !ds->bufR)
 		return;
 	for (i = 0; i < n; i++)
 	{
@@ -55,16 +64,35 @@ void DiffSurroundProcess(JamesDSPLib *jdsp, size_t n)
 
 void DiffSurroundEnable(JamesDSPLib *jdsp)
 {
+	DiffSurround *ds = &jdsp->diffSurround;
 	if (!jdsp->diffSurroundEnabled)
 	{
-		memset(jdsp->diffSurround.bufL, 0, sizeof(jdsp->diffSurround.bufL));
-		memset(jdsp->diffSurround.bufR, 0, sizeof(jdsp->diffSurround.bufR));
-		jdsp->diffSurround.widx = 0;
+		if (!ds->bufL) ds->bufL = (float*)calloc(DSUR_BUFLEN, sizeof(float));
+		if (!ds->bufR) ds->bufR = (float*)calloc(DSUR_BUFLEN, sizeof(float));
+		if (!ds->bufL || !ds->bufR)
+		{
+			// Refuse to run half allocated rather than dereference a null on
+			// the audio thread.
+			DiffSurroundDisable(jdsp);
+			return;
+		}
+		ds->widx = 0;
+		// The delays were computed against whatever sample rate was current
+		// when they were last set; re-clamp them here so a rate change cannot
+		// leave a read pointer outside the ring.
+		float fs = (float)jdsp->fs;
+		if (fs < 8000.0f) fs = 48000.0f;
+		float maxDelay = (float)(DSUR_BUFLEN - 4);
+		if (ds->delayL > maxDelay) ds->delayL = maxDelay;
+		if (ds->delayR > maxDelay) ds->delayR = maxDelay;
 	}
 	jdsp->diffSurroundEnabled = 1;
 }
 
 void DiffSurroundDisable(JamesDSPLib *jdsp)
 {
+	DiffSurround *ds = &jdsp->diffSurround;
 	jdsp->diffSurroundEnabled = 0;
+	if (ds->bufL) { free(ds->bufL); ds->bufL = 0; }
+	if (ds->bufR) { free(ds->bufR); ds->bufR = 0; }
 }

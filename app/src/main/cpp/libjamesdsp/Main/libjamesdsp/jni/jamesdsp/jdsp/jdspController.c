@@ -1358,6 +1358,8 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 		0.0f, 0.0f,
 		1, 0.0f, 50.0f, 0.0f,
 		0.0f, 35.0f, 100.0f);
+	jdsp->diffSurround.bufL = 0;
+	jdsp->diffSurround.bufR = 0;
 	jdsp->maximizerEnabled = 0;
 	jdsp->maximizer.buf[0] = 0;
 	jdsp->maximizer.buf[1] = 0;
@@ -1372,7 +1374,7 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	jdsp->multibandDist.chBufR = 0;
 	jdsp->multibandDist.numBands = 0;
 	MultibandDistSetParam(jdsp, MBD_ROUTING_SPLIT, MBD_MODEL_SOFT,
-		0.0f, 0.0f, 50.0f,
+		35.0f, 0.0f, 50.0f,
 		16.0f, 0.0f,
 		50.0f, 100.0f,
 		0.6f, 6.0f, 0.0f,
@@ -1502,6 +1504,7 @@ void JamesDSPReleaseEffectBuffers(JamesDSPLib *jdsp)
 	EchoDelayDisable(jdsp);
 	MultibandDistDisable(jdsp);
 	MaximizerDisable(jdsp);
+	DiffSurroundDisable(jdsp);
 	VReverbDisable(jdsp);
 	PitchShiftDisable(jdsp);
 	HpSurroundDisable(jdsp);

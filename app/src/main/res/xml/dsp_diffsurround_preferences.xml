@@ -18,14 +18,14 @@
             android:key="@string/key_diffsurround_delay_l"
             android:title="@string/diffsurround_delay_l"
             android:defaultValue="0"
-            app:minValue="0" app:maxValue="40" app:unit="ms" app:precision="1"
+            app:minValue="0" app:maxValue="50" app:unit="ms" app:precision="1"
             app:allowDividerAbove="false" app:updatesContinuously="true"
             app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
         <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
             android:key="@string/key_diffsurround_delay_r"
             android:title="@string/diffsurround_delay_r"
             android:defaultValue="10"
-            app:minValue="0" app:maxValue="40" app:unit="ms" app:precision="1"
+            app:minValue="0" app:maxValue="50" app:unit="ms" app:precision="1"
             app:allowDividerAbove="false" app:updatesContinuously="true"
             app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
     </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>

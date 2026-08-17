@@ -88,7 +88,7 @@ typedef struct
 } VDynamicBass;
 typedef struct
 {
-	float bufL[8192], bufR[8192];
+	float *bufL, *bufR;
 	int widx;
 	float delayL, delayR;
 } DiffSurround;

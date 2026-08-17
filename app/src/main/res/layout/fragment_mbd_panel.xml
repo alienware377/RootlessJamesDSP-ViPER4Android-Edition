@@ -333,7 +333,7 @@
                     app:knobMin="0"
                     app:knobPrecision="0"
                     app:knobUnit="%"
-                    app:knobValue="0" />
+                    app:knobValue="35" />
 
                 <me.timschneeberger.rootlessjamesdsp.view.KnobView
                     android:id="@+id/knob_bias"

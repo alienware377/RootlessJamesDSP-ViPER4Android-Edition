@@ -65,16 +65,24 @@ static inline float mbdShape(int model, float x, float shape)
 
 	case MBD_MODEL_OVERDRIVE:
 	{
-		// The classic piecewise cubic. shape moves where the cubic region
-		// starts, so low values stay clean longer before breaking up.
-		float t = 0.20f + shape * 0.25f;
-		float a = fabsf(x);
-		float s = (x < 0.0f) ? -1.0f : 1.0f;
-		if (a < t)
-			return 2.0f * x;
-		if (a < 2.0f * t)
+		// The canonical three-region cubic soft clipper. Its pieces only meet
+		// at 1/3 and 2/3 - the middle one is derived from those breakpoints -
+		// so moving the first breakpoint, as this did, leaves a step in the
+		// transfer curve. Measured, that step reached 0.27 at the ends of the
+		// shape range, which is heard as a buzz laid over the signal rather
+		// than as the gradual breakup an overdrive is supposed to give.
+		//
+		// shape now scales what goes into the curve instead of moving its
+		// joins, which controls how early it breaks up and cannot introduce a
+		// discontinuity.
+		float v = x * (0.6f + shape * 1.4f);
+		float a = fabsf(v);
+		float s = (v < 0.0f) ? -1.0f : 1.0f;
+		if (a < 1.0f / 3.0f)
+			return 2.0f * v;
+		if (a < 2.0f / 3.0f)
 		{
-			float u = 2.0f - a / t;
+			float u = 2.0f - 3.0f * a;
 			return s * (3.0f - u * u) / 3.0f;
 		}
 		return s;

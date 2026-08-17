@@ -283,7 +283,7 @@ class MultibandDistFragment : Fragment() {
     }
 
     private fun setupPanelKnobs() {
-        bindKnob(binding.knobDrive, R.string.key_mbd_drive, 0f)
+        bindKnob(binding.knobDrive, R.string.key_mbd_drive, 35f)
         bindKnob(binding.knobBias, R.string.key_mbd_bias, 0f)
         bindKnob(binding.knobShape, R.string.key_mbd_shape, 50f)
         bindKnob(binding.knobBits, R.string.key_mbd_bits, 16f)
@@ -383,6 +383,12 @@ class MultibandDistFragment : Fragment() {
         val driven = binding.knobDrive.value > 0f
         dim(binding.knobShape, driven)
         dim(binding.knobBias, driven)
+        // Character selects between shapers that are only reached once there
+        // is drive to feed them. Leaving the row lit at zero drive is what
+        // made this look broken: the buttons respond, and nothing happens.
+        dim(binding.mbdModelGroup, driven)
+        for (i in 0 until binding.mbdModelGroup.childCount)
+            binding.mbdModelGroup.getChildAt(i).isEnabled = driven
 
         val chorusOn = binding.knobChorusMix.value > 0f
         dim(binding.knobRate, chorusOn)
