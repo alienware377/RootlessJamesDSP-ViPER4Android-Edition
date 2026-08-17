@@ -157,7 +157,10 @@ class MultibandDistFragment : Fragment() {
             selectBand(index)
         }
         binding.mbdSurface.onSelectionCleared = {
-            selectBand(null)
+            // Fall back to a band rather than to nothing. The dials are the
+            // only way to set a corner frequency by number, and a dimmed knob
+            // no longer turns, so leaving nothing selected takes that away.
+            selectBand(if (bands.isEmpty()) null else 0)
         }
         binding.mbdSurface.onBandAddRequested = { freq, gain ->
             pushHistory(snapshot())
@@ -173,7 +176,7 @@ class MultibandDistFragment : Fragment() {
             if (index in bands.indices) bands.removeAt(index)
             refreshSurface()
             saveBands()
-            selectBand(null)
+            selectBand(if (bands.isEmpty()) null else 0)
         }
     }
 
@@ -199,6 +202,15 @@ class MultibandDistFragment : Fragment() {
     private fun syncKnobsFromSelection() {
         val band = selectedBand() ?: return
         suppressBandWrite = true
+        // A cutoff has a corner rather than a centre, and calling both of them
+        // "frequency" is what made the cutoff look like it had no control.
+        binding.mbdBandFreq.label = getString(
+            when (band.filterType) {
+                ParametricEqFilterType.LOW_PASS,
+                ParametricEqFilterType.HIGH_PASS -> R.string.mbd_knob_cutoff
+                else -> R.string.peq_frequency
+            }
+        )
         binding.mbdBandFreq.value = band.frequency.toFloat()
         binding.mbdBandQ.value = band.q.toFloat()
         binding.mbdBandGain.value = band.gain.toFloat()

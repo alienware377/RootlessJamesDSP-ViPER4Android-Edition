@@ -519,6 +519,9 @@ void MultibandDistProcess(JamesDSPLib *jdsp, size_t n)
 
 void MultibandDistEnable(JamesDSPLib *jdsp)
 {
+	// Under the lock: Process may be running on the audio thread, and it must
+	// not observe a half-built set of buffers.
+	jdsp_lock(jdsp);
 	MultibandDist *m = &jdsp->multibandDist;
 	if (!jdsp->multibandDistEnabled)
 	{
@@ -536,6 +539,7 @@ void MultibandDistEnable(JamesDSPLib *jdsp)
 			if (m->chBufL) { free(m->chBufL); m->chBufL = 0; }
 			if (m->chBufR) { free(m->chBufR); m->chBufR = 0; }
 			jdsp->multibandDistEnabled = 0;
+			jdsp_unlock(jdsp);
 			return;
 		}
 
@@ -562,12 +566,18 @@ void MultibandDistEnable(JamesDSPLib *jdsp)
 		m->chPhase = 0.0f;
 	}
 	jdsp->multibandDistEnabled = 1;
+	jdsp_unlock(jdsp);
 }
 
 void MultibandDistDisable(JamesDSPLib *jdsp)
 {
 	MultibandDist *m = &jdsp->multibandDist;
 	jdsp->multibandDistEnabled = 0;
+	// Clear the flag first so no further block enters, then take the lock,
+	// which waits for any block already inside Process to leave. Freeing
+	// without that wait is a use-after-free on the audio thread.
+	jdsp_lock(jdsp);
 	if (m->chBufL) { free(m->chBufL); m->chBufL = 0; }
 	if (m->chBufR) { free(m->chBufR); m->chBufR = 0; }
+	jdsp_unlock(jdsp);
 }

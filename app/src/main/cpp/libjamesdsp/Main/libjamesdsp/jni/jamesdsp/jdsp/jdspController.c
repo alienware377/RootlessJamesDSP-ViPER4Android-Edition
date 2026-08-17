@@ -388,13 +388,17 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->compEnabled) CompressorProcess(jdsp, n);
 		break;
 	case JDSP_EFX_PITCHSHIFT:
+		jdsp_lock(jdsp);
 		if (jdsp->pitchShiftEnabled) PitchShiftProcess(jdsp, n);
+		jdsp_unlock(jdsp);
 		break;
 	case JDSP_EFX_FETCOMP:
 		if (jdsp->fetCompEnabled) FetCompProcess(jdsp, n);
 		break;
 	case JDSP_EFX_DIFFSURROUND:
+		jdsp_lock(jdsp);
 		if (jdsp->diffSurroundEnabled) DiffSurroundProcess(jdsp, n);
+		jdsp_unlock(jdsp);
 		break;
 	case JDSP_EFX_BASSBOOST:
 		if (jdsp->bassBoostEnabled) BassBoostProcess(jdsp, n);
@@ -455,7 +459,9 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->fieldSurroundEnabled) FieldSurroundProcess(jdsp, n);
 		break;
 	case JDSP_EFX_HPSURROUND:
+		jdsp_lock(jdsp);
 		if (jdsp->hpSurroundEnabled) HpSurroundProcess(jdsp, n);
+		jdsp_unlock(jdsp);
 		break;
 	case JDSP_EFX_SPECTRUMEXT:
 		if (jdsp->spectrumExtEnabled) SpectrumExtensionProcess(jdsp, n);
@@ -473,16 +479,24 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->reverbEnabled) ReverbProcess(jdsp, n);
 		break;
 	case JDSP_EFX_VREVERB:
+		jdsp_lock(jdsp);
 		if (jdsp->vreverbEnabled) VReverbProcess(jdsp, n);
+		jdsp_unlock(jdsp);
 		break;
 	case JDSP_EFX_ECHODELAY:
+		jdsp_lock(jdsp);
 		if (jdsp->echoDelayEnabled) EchoDelayProcess(jdsp, n);
+		jdsp_unlock(jdsp);
 		break;
 	case JDSP_EFX_MULTIBANDDIST:
+		jdsp_lock(jdsp);
 		if (jdsp->multibandDistEnabled) MultibandDistProcess(jdsp, n);
+		jdsp_unlock(jdsp);
 		break;
 	case JDSP_EFX_MAXIMIZER:
+		jdsp_lock(jdsp);
 		if (jdsp->maximizerEnabled) MaximizerProcess(jdsp, n);
+		jdsp_unlock(jdsp);
 		break;
 	default:
 		break;

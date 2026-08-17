@@ -64,6 +64,9 @@ void DiffSurroundProcess(JamesDSPLib *jdsp, size_t n)
 
 void DiffSurroundEnable(JamesDSPLib *jdsp)
 {
+	// Under the lock: Process may be running on the audio thread, and it must
+	// not observe a half-built set of buffers.
+	jdsp_lock(jdsp);
 	DiffSurround *ds = &jdsp->diffSurround;
 	if (!jdsp->diffSurroundEnabled)
 	{
@@ -73,7 +76,12 @@ void DiffSurroundEnable(JamesDSPLib *jdsp)
 		{
 			// Refuse to run half allocated rather than dereference a null on
 			// the audio thread.
-			DiffSurroundDisable(jdsp);
+			// Inline rather than calling Disable: that would take the same
+			// non-recursive lock this function is already holding.
+			if (ds->bufL) { free(ds->bufL); ds->bufL = 0; }
+			if (ds->bufR) { free(ds->bufR); ds->bufR = 0; }
+			jdsp->diffSurroundEnabled = 0;
+			jdsp_unlock(jdsp);
 			return;
 		}
 		ds->widx = 0;
@@ -87,12 +95,18 @@ void DiffSurroundEnable(JamesDSPLib *jdsp)
 		if (ds->delayR > maxDelay) ds->delayR = maxDelay;
 	}
 	jdsp->diffSurroundEnabled = 1;
+	jdsp_unlock(jdsp);
 }
 
 void DiffSurroundDisable(JamesDSPLib *jdsp)
 {
 	DiffSurround *ds = &jdsp->diffSurround;
 	jdsp->diffSurroundEnabled = 0;
+	// Clear the flag first so no further block enters, then take the lock,
+	// which waits for any block already inside Process to leave. Freeing
+	// without that wait is a use-after-free on the audio thread.
+	jdsp_lock(jdsp);
 	if (ds->bufL) { free(ds->bufL); ds->bufL = 0; }
 	if (ds->bufR) { free(ds->bufR); ds->bufR = 0; }
+	jdsp_unlock(jdsp);
 }

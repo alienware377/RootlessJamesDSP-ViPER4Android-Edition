@@ -85,6 +85,9 @@ void PitchShiftProcess(JamesDSPLib *jdsp, size_t n)
 
 void PitchShiftEnable(JamesDSPLib *jdsp)
 {
+	// Under the lock: Process may be running on the audio thread, and it must
+	// not observe a half-built set of buffers.
+	jdsp_lock(jdsp);
 	if (!jdsp->pitchShiftEnabled)
 	{
 		PitchShift *ps = &jdsp->pitchShift;
@@ -94,6 +97,7 @@ void PitchShiftEnable(JamesDSPLib *jdsp)
 		if (!ps->buf[0] || !ps->buf[1])
 		{
 			jdsp->pitchShiftEnabled = 0;
+			jdsp_unlock(jdsp);
 			return;
 		}
 		for (int c = 0; c < 2; c++)
@@ -102,12 +106,18 @@ void PitchShiftEnable(JamesDSPLib *jdsp)
 		ps->phasor = 0.0f;
 	}
 	jdsp->pitchShiftEnabled = 1;
+	jdsp_unlock(jdsp);
 }
 
 void PitchShiftDisable(JamesDSPLib *jdsp)
 {
 	PitchShift *ps = &jdsp->pitchShift;
 	jdsp->pitchShiftEnabled = 0;
+	// Clear the flag first so no further block enters, then take the lock,
+	// which waits for any block already inside Process to leave. Freeing
+	// without that wait is a use-after-free on the audio thread.
+	jdsp_lock(jdsp);
 	for (int c = 0; c < 2; c++)
 		if (ps->buf[c]) { free(ps->buf[c]); ps->buf[c] = 0; }
+	jdsp_unlock(jdsp);
 }

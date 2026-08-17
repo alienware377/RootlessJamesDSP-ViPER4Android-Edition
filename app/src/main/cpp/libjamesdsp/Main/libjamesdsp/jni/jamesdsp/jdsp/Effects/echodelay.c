@@ -310,6 +310,9 @@ void EchoDelayProcess(JamesDSPLib *jdsp, size_t n)
 
 void EchoDelayEnable(JamesDSPLib *jdsp)
 {
+	// Under the lock: Process may be running on the audio thread, and it must
+	// not observe a half-built set of buffers.
+	jdsp_lock(jdsp);
 	EchoDelay *e = &jdsp->echoDelay;
 	if (!jdsp->echoDelayEnabled)
 	{
@@ -322,6 +325,7 @@ void EchoDelayEnable(JamesDSPLib *jdsp)
 		if (!e->bufL || !e->bufR)
 		{
 			jdsp->echoDelayEnabled = 0;
+			jdsp_unlock(jdsp);
 			return;
 		}
 		memset(e->bufL, 0, ECHO_BUFLEN * sizeof(float));
@@ -341,12 +345,18 @@ void EchoDelayEnable(JamesDSPLib *jdsp)
 		if (e->diffDelay < 8 || e->diffDelay >= ECHO_APLEN) e->diffDelay = 331;
 	}
 	jdsp->echoDelayEnabled = 1;
+	jdsp_unlock(jdsp);
 }
 
 void EchoDelayDisable(JamesDSPLib *jdsp)
 {
 	EchoDelay *e = &jdsp->echoDelay;
 	jdsp->echoDelayEnabled = 0;
+	// Clear the flag first so no further block enters, then take the lock,
+	// which waits for any block already inside Process to leave. Freeing
+	// without that wait is a use-after-free on the audio thread.
+	jdsp_lock(jdsp);
 	if (e->bufL) { free(e->bufL); e->bufL = 0; }
 	if (e->bufR) { free(e->bufR); e->bufR = 0; }
+	jdsp_unlock(jdsp);
 }

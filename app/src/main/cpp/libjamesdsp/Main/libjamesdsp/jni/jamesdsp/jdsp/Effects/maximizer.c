@@ -290,6 +290,9 @@ void MaximizerProcess(JamesDSPLib *jdsp, size_t n)
 
 void MaximizerEnable(JamesDSPLib *jdsp)
 {
+	// Under the lock: Process may be running on the audio thread, and it must
+	// not observe a half-built set of buffers.
+	jdsp_lock(jdsp);
 	Maximizer *m = &jdsp->maximizer;
 	if (!jdsp->maximizerEnabled)
 	{
@@ -304,7 +307,16 @@ void MaximizerEnable(JamesDSPLib *jdsp)
 		}
 		if (!m->buf[0] || !m->buf[1] || !m->dq[0] || !m->dq[1] || !m->dqVal[0] || !m->dqVal[1])
 		{
-			MaximizerDisable(jdsp);
+			// Inline rather than calling Disable: that would take the same
+			// non-recursive lock this function is already holding.
+			for (int c = 0; c < 2; c++)
+			{
+				if (m->buf[c]) { free(m->buf[c]); m->buf[c] = 0; }
+				if (m->dq[c]) { free(m->dq[c]); m->dq[c] = 0; }
+				if (m->dqVal[c]) { free(m->dqVal[c]); m->dqVal[c] = 0; }
+			}
+			jdsp->maximizerEnabled = 0;
+			jdsp_unlock(jdsp);
 			return;
 		}
 
@@ -319,16 +331,22 @@ void MaximizerEnable(JamesDSPLib *jdsp)
 		m->gainState[0] = m->gainState[1] = 1.0f;
 	}
 	jdsp->maximizerEnabled = 1;
+	jdsp_unlock(jdsp);
 }
 
 void MaximizerDisable(JamesDSPLib *jdsp)
 {
 	Maximizer *m = &jdsp->maximizer;
 	jdsp->maximizerEnabled = 0;
+	// Clear the flag first so no further block enters, then take the lock,
+	// which waits for any block already inside Process to leave. Freeing
+	// without that wait is a use-after-free on the audio thread.
+	jdsp_lock(jdsp);
 	for (int ch = 0; ch < 2; ch++)
 	{
 		if (m->buf[ch]) { free(m->buf[ch]); m->buf[ch] = 0; }
 		if (m->dq[ch]) { free(m->dq[ch]); m->dq[ch] = 0; }
 		if (m->dqVal[ch]) { free(m->dqVal[ch]); m->dqVal[ch] = 0; }
 	}
+	jdsp_unlock(jdsp);
 }

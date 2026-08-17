@@ -57,6 +57,12 @@ class KnobView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     var precision = 1
     var unit: String = ""
     var label: String = ""
+        set(newValue) {
+            if (field != newValue) {
+                field = newValue
+                invalidate()
+            }
+        }
     var logScale = false
 
     private var listener: (() -> Unit)? = null

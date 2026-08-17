@@ -577,6 +577,9 @@ void VReverbProcess(JamesDSPLib *jdsp, size_t n)
 
 void VReverbEnable(JamesDSPLib *jdsp)
 {
+	// Under the lock: Process may be running on the audio thread, and it must
+	// not observe a half-built set of buffers.
+	jdsp_lock(jdsp);
 	VReverb *rv = &jdsp->vreverb;
 	if (!jdsp->vreverbEnabled)
 	{
@@ -589,7 +592,7 @@ void VReverbEnable(JamesDSPLib *jdsp)
 		{
 			size_t total = (size_t)2 * 4 * VREV_COMBLEN + (size_t)2 * 2 * VREV_APLEN;
 			rv->combMem = (float*)calloc(total, sizeof(float));
-			if (!rv->combMem) { jdsp->vreverbEnabled = 0; return; }
+			if (!rv->combMem) { jdsp->vreverbEnabled = 0; jdsp_unlock(jdsp); return; }
 			float *p = rv->combMem;
 			int c;
 			for (c = 0; c < 2; c++)
@@ -635,6 +638,7 @@ void VReverbEnable(JamesDSPLib *jdsp)
 		if (!rv->preMem || !rv->datMem || !rv->fdnMem || !rv->erMem)
 		{
 			jdsp->vreverbEnabled = 0;
+			jdsp_unlock(jdsp);
 			return;
 		}
 
@@ -655,12 +659,17 @@ void VReverbEnable(JamesDSPLib *jdsp)
 		}
 	}
 	jdsp->vreverbEnabled = 1;
+	jdsp_unlock(jdsp);
 }
 
 void VReverbDisable(JamesDSPLib *jdsp)
 {
 	VReverb *rv = &jdsp->vreverb;
 	jdsp->vreverbEnabled = 0;
+	// Clear the flag first so no further block enters, then take the lock,
+	// which waits for any block already inside Process to leave. Freeing
+	// without that wait is a use-after-free on the audio thread.
+	jdsp_lock(jdsp);
 	if (rv->combMem)
 	{
 		free(rv->combMem);
@@ -681,6 +690,7 @@ void VReverbDisable(JamesDSPLib *jdsp)
 		memset(rv->fdn, 0, sizeof(rv->fdn));
 	}
 	if (rv->erMem) { free(rv->erMem); rv->erMem = 0; }
+	jdsp_unlock(jdsp);
 }
 
 // ---------------- Speaker optimization ----------------

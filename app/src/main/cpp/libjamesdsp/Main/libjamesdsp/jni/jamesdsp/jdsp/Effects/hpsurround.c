@@ -101,6 +101,9 @@ void HpSurroundProcess(JamesDSPLib *jdsp, size_t n)
 
 void HpSurroundEnable(JamesDSPLib *jdsp)
 {
+	// Under the lock: Process may be running on the audio thread, and it must
+	// not observe a half-built set of buffers.
+	jdsp_lock(jdsp);
 	if (!jdsp->hpSurroundEnabled)
 	{
 		HpSurround *hs = &jdsp->hpSurround;
@@ -109,6 +112,7 @@ void HpSurroundEnable(JamesDSPLib *jdsp)
 		if (!hs->bufL || !hs->bufR)
 		{
 			jdsp->hpSurroundEnabled = 0;
+			jdsp_unlock(jdsp);
 			return;
 		}
 		memset(hs->bufL, 0, HPS_BUFLEN * sizeof(float));
@@ -118,12 +122,18 @@ void HpSurroundEnable(JamesDSPLib *jdsp)
 		jdsp->hpSurround.widx = 0;
 	}
 	jdsp->hpSurroundEnabled = 1;
+	jdsp_unlock(jdsp);
 }
 
 void HpSurroundDisable(JamesDSPLib *jdsp)
 {
 	HpSurround *hs = &jdsp->hpSurround;
 	jdsp->hpSurroundEnabled = 0;
+	// Clear the flag first so no further block enters, then take the lock,
+	// which waits for any block already inside Process to leave. Freeing
+	// without that wait is a use-after-free on the audio thread.
+	jdsp_lock(jdsp);
 	if (hs->bufL) { free(hs->bufL); hs->bufL = 0; }
 	if (hs->bufR) { free(hs->bufR); hs->bufR = 0; }
+	jdsp_unlock(jdsp);
 }
