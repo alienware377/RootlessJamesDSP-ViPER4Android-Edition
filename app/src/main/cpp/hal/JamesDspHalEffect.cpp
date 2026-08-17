@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <hardware/audio_effect.h>
+#include <unistd.h>
 
 #include "EffectParams.h"
 
@@ -59,6 +60,23 @@ struct rv4a_context
     uint32_t channels;
     uint8_t outAccessMode;   /* write or accumulate */
     uint64_t blocks;         /* processed block counter, for log throttling */
+
+    /* The app writes a checksum of each large payload it pushes (DDC,
+       convolver, GraphicEQ, liveprog) and reads it back before deciding to
+       push again. Storing them here is what makes that skip work. */
+    int32_t hashSlot[4];
+    uint32_t paramCommits;
+};
+
+/* An effect_param_t whose parameter and value are both one 32-bit word. Every
+   status read the app performs has this shape. */
+struct rv4a_reply_1x4_1x4
+{
+    int32_t status;
+    uint32_t psize;
+    uint32_t vsize;
+    int32_t cmd;
+    int32_t data;
 };
 
 static int32_t rv4a_process(effect_handle_t self, audio_buffer_t *in, audio_buffer_t *out)
@@ -251,6 +269,21 @@ static int32_t rv4a_command(effect_handle_t self, uint32_t cmdCode, uint32_t cmd
         const int16_t sv = (p->vsize >= sizeof(int16_t)) ? *(const int16_t *)val : 0;
         const bool on = sv != 0;
 
+        c->paramCommits++;
+
+        /* Payload checksums are bookkeeping rather than DSP settings: the app
+           writes one after pushing a payload and reads it back next time to
+           decide whether the push can be skipped. Storing them here rather
+           than passing them to the engine keeps that round trip honest. */
+        if (id >= 25000 && id <= 25003)
+        {
+            if (p->vsize >= sizeof(int32_t))
+                c->hashSlot[id - 25000] = *(const int32_t *)val;
+            if (pReplyData && replySize && *replySize == sizeof(int))
+                *(int *)pReplyData = 0;
+            return 0;
+        }
+
         /* Fork effects arrive as one float array per effect rather than an id
            per value, so hand the payload through as well. */
         LOGD("SET_PARAM id=%d vsize=%u short=%d", id, p->vsize, sv);
@@ -258,6 +291,49 @@ static int32_t rv4a_command(effect_handle_t self, uint32_t cmdCode, uint32_t cmd
 
         if (pReplyData && replySize && *replySize == sizeof(int))
             *(int *)pReplyData = 0;
+        return 0;
+    }
+
+    case EFFECT_CMD_GET_PARAM:
+    {
+        /* Not optional. JamesDspRemoteEngine reads the pid (20002) and the
+           sample rate (20001) on every settings sync and treats a failure as
+           the engine having crashed - it toasts and re-creates the effect. An
+           unhandled GET_PARAM is therefore not a missing feature but a reboot
+           loop, with no settings ever surviving to be applied. */
+        if (!pCmdData || cmdSize < sizeof(effect_param_t) ||
+            !pReplyData || !replySize || *replySize < sizeof(rv4a_reply_1x4_1x4))
+            return -EINVAL;
+
+        effect_param_t *q = (effect_param_t *)pCmdData;
+        if (q->psize != sizeof(int32_t) || q->vsize != sizeof(int32_t))
+            return -EINVAL;
+
+        const int32_t cmd = *(const int32_t *)q->data;
+        int32_t data;
+        switch (cmd)
+        {
+        case 19998: data = (int32_t)c->paramCommits; break;
+        case 19999: data = RV4A_BLOCK; break;
+        case 20000: data = RV4A_BLOCK; break;
+        case 20001: data = (int32_t)c->sampleRate; break;
+        case 20002: data = (int32_t)getpid(); break;
+        case 30000:
+        case 30001:
+        case 30002:
+        case 30003: data = c->hashSlot[cmd - 30000]; break;
+        default:
+            LOGD("GET_PARAM %d not handled", cmd);
+            return -EINVAL;
+        }
+
+        rv4a_reply_1x4_1x4 *r = (rv4a_reply_1x4_1x4 *)pReplyData;
+        r->status = 0;
+        r->psize = sizeof(int32_t);
+        r->vsize = sizeof(int32_t);
+        r->cmd = cmd;
+        r->data = data;
+        *replySize = sizeof(rv4a_reply_1x4_1x4);
         return 0;
     }
 
