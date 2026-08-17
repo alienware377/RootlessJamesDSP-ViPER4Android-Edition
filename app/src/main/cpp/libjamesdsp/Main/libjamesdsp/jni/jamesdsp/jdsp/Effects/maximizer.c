@@ -58,6 +58,35 @@ static inline float maxrWindowMax(Maximizer *m, int ch)
 	return m->dqVal[ch][m->dqHead[ch] & MAX_MASK];
 }
 
+// --------------------------------------------------------- oversampling
+
+// Kept out of Enable, because the JNI path is always SetParam-then-Enable and
+// Enable only did this work on the transition into enabled: changing the
+// setting while playing updated the request and nothing else, so the control
+// did nothing until the card was switched off and on again.
+//
+// The new factor is published only after the filters behind it exist, so the
+// processing loop can never read a factor larger than what has been built.
+static void maxrUpdateOversampling(Maximizer *m, int request, int truePeak)
+{
+	// True peak means measuring between samples, which is upsampling. A
+	// true-peak switch that quietly does nothing unless a second control is
+	// also set is a trap, so asking for it is enough to get the minimum that
+	// makes it real.
+	if (truePeak && request < 1)
+		request = 1;
+
+	int want = (request == 2) ? 4 : (request == 1 ? 2 : 1);
+	if (want == m->osFactor)
+		return;
+	if (want > 1)
+	{
+		oversample_makeSmp(&m->smp[0], want);
+		oversample_makeSmp(&m->smp[1], want);
+	}
+	m->osFactor = want;
+}
+
 // ---------------------------------------------------------------- params
 
 void MaximizerSetParam(JamesDSPLib *jdsp,
@@ -101,6 +130,7 @@ void MaximizerSetParam(JamesDSPLib *jdsp,
 	if (oversample < 0) oversample = 0;
 	if (oversample > 2) oversample = 2;
 	m->osRequest = oversample;
+	maxrUpdateOversampling(m, m->osRequest, m->truePeak);
 
 	// Lookahead is how long the limiter has to bring the gain down before the
 	// peak arrives; longer is smoother and later. The modes want different
@@ -217,10 +247,25 @@ void MaximizerProcess(JamesDSPLib *jdsp, size_t n)
 			// Character trades clean gain reduction for saturation: the same
 			// loudness, arrived at by rounding the peaks instead of turning
 			// everything down around them. At zero this is inaudible.
+			//
+			// The curve has unity slope at the origin and approaches the
+			// ceiling asymptotically, so it rounds peaks without lifting
+			// everything underneath them. Driving a plain tanh harder as the
+			// control rises, which is what this did, is a level control
+			// wearing a saturator's name - it measured nine decibels of gain
+			// at low level, the opposite of what the dial claims.
 			if (m->character > 0.0f)
 			{
-				float driven = y / (ceiling > 1e-6f ? ceiling : 1e-6f);
-				float sat = tanhf(driven * (1.0f + m->character * 2.0f)) * ceiling;
+				// Scaled so that a signal already sitting on the ceiling comes
+				// out on the ceiling: a maximiser must not get quieter when a
+				// texture control is turned up. What is left is a 3dB lift of
+				// everything below the peak, which is what saturation is - it
+				// raises the average against a fixed maximum. The previous
+				// curve did that to the tune of nine decibels, which is a
+				// level control rather than a character one.
+				float c = (ceiling > 1e-6f) ? ceiling : 1e-6f;
+				float yn = y / c;
+				float sat = c * (yn / sqrtf(1.0f + yn * yn)) * 1.41421356f;
 				y = y * (1.0f - m->character) + sat * m->character;
 			}
 
@@ -263,15 +308,10 @@ void MaximizerEnable(JamesDSPLib *jdsp)
 			return;
 		}
 
-		// True-peak detection needs the upsampled copy; 4x resolves inter-
-		// sample peaks to within a fraction of a dB, which is as much as the
-		// ceiling control can act on anyway.
-		m->osFactor = (m->osRequest == 2) ? 4 : (m->osRequest == 1 ? 2 : 1);
-		if (m->osFactor > 1)
-		{
-			oversample_makeSmp(&m->smp[0], m->osFactor);
-			oversample_makeSmp(&m->smp[1], m->osFactor);
-		}
+		// Force a rebuild: the buffers were just allocated, so the filter
+		// state behind any previously matching factor is gone with them.
+		m->osFactor = 0;
+		maxrUpdateOversampling(m, m->osRequest, m->truePeak);
 
 		m->widx = 0;
 		m->dqHead[0] = m->dqTail[0] = 0;

@@ -361,36 +361,54 @@ class MultibandDistFragment : Fragment() {
             view.alpha = if (usable) 1f else 0.35f
         }
 
+        fun dimGroup(group: MaterialButtonToggleGroup, usable: Boolean) {
+            dim(group, usable)
+            for (i in 0 until group.childCount)
+                group.getChildAt(i).isEnabled = usable
+        }
+
+        // Mix is the master tap. At zero the engine skips the whole stage, so
+        // every other control on this panel is inert - one dial at one end
+        // killing sixteen others, with nothing to say so.
+        val wet = binding.knobMix.value > 0f
+
         val hasSelection = selectedBand() != null
         binding.mbdRemove.isEnabled = hasSelection
-        dim(binding.mbdBandFreq, hasSelection)
-        dim(binding.mbdBandQ, hasSelection)
+        dim(binding.mbdBandFreq, wet && hasSelection)
+        dim(binding.mbdBandQ, wet && hasSelection)
         // A cutoff has a corner, not a gain, and the coefficients ignore the
         // gain term outright.
         val cutoff = currentFilterType().let {
             it == ParametricEqFilterType.LOW_PASS || it == ParametricEqFilterType.HIGH_PASS
         }
-        dim(binding.mbdBandGain, hasSelection && !cutoff)
+        dim(binding.mbdBandGain, wet && hasSelection && !cutoff)
+        // The filter type applies to the selected handle, so with nothing
+        // selected the buttons latch and change nothing.
+        dimGroup(binding.mbdFilterGroup, wet && hasSelection)
 
         binding.mbdUndo.isEnabled = undoStack.isNotEmpty()
         binding.mbdRedo.isEnabled = redoStack.isNotEmpty()
 
+        val driven = wet && binding.knobDrive.value > 0f
         val model = (prefs.getString(getString(R.string.key_mbd_model), "0") ?: "0").toIntOrNull() ?: 0
-        val crush = model == MODEL_CRUSH
-        dim(binding.knobBits, crush)
-        dim(binding.knobDownsample, crush)
+        // Bit and rate reduction belong to one character, and like the rest of
+        // the shaper they are only reached once there is drive feeding it.
+        dim(binding.knobBits, driven && model == MODEL_CRUSH)
+        dim(binding.knobDownsample, driven && model == MODEL_CRUSH)
 
-        val driven = binding.knobDrive.value > 0f
         dim(binding.knobShape, driven)
         dim(binding.knobBias, driven)
         // Character selects between shapers that are only reached once there
         // is drive to feed them. Leaving the row lit at zero drive is what
         // made this look broken: the buttons respond, and nothing happens.
-        dim(binding.mbdModelGroup, driven)
-        for (i in 0 until binding.mbdModelGroup.childCount)
-            binding.mbdModelGroup.getChildAt(i).isEnabled = driven
+        dimGroup(binding.mbdModelGroup, driven)
+        dimGroup(binding.mbdRoutingGroup, wet)
+        dim(binding.knobTone, wet)
+        dim(binding.knobBandGain, wet)
+        dim(binding.knobDrive, wet)
 
-        val chorusOn = binding.knobChorusMix.value > 0f
+        val chorusOn = wet && binding.knobChorusMix.value > 0f
+        dim(binding.knobChorusMix, wet)
         dim(binding.knobRate, chorusOn)
         dim(binding.knobDepth, chorusOn)
         dim(binding.knobFeedback, chorusOn)

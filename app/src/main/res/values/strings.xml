@@ -1090,7 +1090,7 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="maxr_transient">Transient</string>
     <string name="maxr_transient_summary">Lets the leading edge of a hit through before the reduction lands, so drums keep their attack.</string>
     <string name="maxr_true_peak">True peak detection</string>
-    <string name="maxr_true_peak_summary">Measures the level between samples, not just at them, so peaks that only appear once a converter reconstructs the waveform are caught too.</string>
+    <string name="maxr_true_peak_summary">Measures the level between samples, not just at them, so peaks that only appear once a converter reconstructs the waveform are caught too. Needs oversampling, and switches it on by itself if it is off.</string>
     <string name="maxr_stereo_link">Stereo link</string>
     <string name="maxr_stereo_link_summary">How much a peak on one side turns the other down with it. Full keeps the stereo image still; none reduces less but lets it wander.</string>
     <string name="maxr_oversample">Oversampling</string>

@@ -33,8 +33,21 @@ static inline float mbdShape(int model, float x, float shape)
 	switch (model)
 	{
 	case MBD_MODEL_SOFT:
+	case MBD_MODEL_CRUSH:
 	default:
-		return tanhf(x);
+	{
+		// shape sets how hard the knee is, normalised so that moving it
+		// changes the character rather than the level: at full scale in, the
+		// curve reaches the same place whatever shape is set to.
+		//
+		// This was a bare tanh(x) ignoring shape entirely, which mattered more
+		// than it looks - soft is the character the card opens on, so the
+		// first dial a user reached for was dead while lit at full brightness.
+		// Crush shares the curve because bit and rate reduction happen after
+		// it, and its own two dials are the character there.
+		float k = 0.6f + shape * 4.0f;
+		return tanhf(x * k) / tanhf(k);
+	}
 
 	case MBD_MODEL_HARD:
 	{
@@ -136,10 +149,6 @@ static inline float mbdShape(int model, float x, float shape)
 		return t * (1.0f - shape) + r * shape;
 	}
 
-	case MBD_MODEL_CRUSH:
-		// Bit and rate reduction happen in the loop, where the state lives.
-		// Soft-limit here so a crushed signal still cannot exceed the rails.
-		return tanhf(x);
 	}
 }
 
@@ -407,7 +416,10 @@ void MultibandDistProcess(JamesDSPLib *jdsp, size_t n)
 			//    back down as aliasing, which is what makes cheap distortion
 			//    sound gritty in the wrong way.
 			float d;
-			float driven = b * m->drive + m->bias;
+			// Bias applies to the band before the gain rather than after, so
+			// its proportion stays constant as drive rises. Added afterwards,
+			// a fixed offset is decisive at low drive and invisible at high.
+			float driven = (b + m->bias) * m->drive;
 			if (m->osFactor > 1)
 			{
 				oversample_stepupSmp(&m->smpUp[ch], driven, upsample);
