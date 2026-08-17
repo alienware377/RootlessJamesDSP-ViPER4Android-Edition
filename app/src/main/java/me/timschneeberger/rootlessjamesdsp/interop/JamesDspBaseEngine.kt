@@ -74,7 +74,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val compTimeConst = cache.get(R.string.key_compander_timeconstant, 0.22f)
             val compGranularity = cache.get(R.string.key_compander_granularity, 2f).toInt()
             val compTfTransforms = cache.get(R.string.key_compander_tftransforms, "0").toInt()
-            val compResponse = cache.get(R.string.key_compander_response, "95.0;200.0;400.0;800.0;1600.0;3400.0;7500.0;0;0;0;0;0;0;0")
+            val compResponse = cache.get(R.string.key_compander_response, "95.0;200.0;400.0;800.0;1600.0;3400.0;7500.0;0.4;0.4;0.4;0.4;0.4;0.4;0.4")
 
             cache.select(Constants.PREF_BASS)
             val bassEnabled = cache.get(R.string.key_bass_enable, false)
@@ -110,7 +110,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             cache.select(Constants.PREF_CLARITY)
             val clEnabled = cache.get(R.string.key_clarity_enable, false)
             val clMode = cache.get(R.string.key_clarity_mode, "0").toInt()
-            val clGain = cache.get(R.string.key_clarity_gain, 3.5f)
+            val clGain = cache.get(R.string.key_clarity_gain, 6f)
 
             cache.select(Constants.PREF_FIELDSURROUND)
             val fsEnabled = cache.get(R.string.key_fieldsurround_enable, false)
@@ -160,7 +160,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val vrMod = cache.get(R.string.key_vreverb_mod, 30f)
             val vrBass = cache.get(R.string.key_vreverb_bass, 50f)
             val vrEr = cache.get(R.string.key_vreverb_er, 50f)
-            val vrWet = cache.get(R.string.key_vreverb_wet, 30f)
+            val vrWet = cache.get(R.string.key_vreverb_wet, 65f)
             val vrDry = cache.get(R.string.key_vreverb_dry, 100f)
 
             cache.select(Constants.PREF_SPEAKEROPT)
@@ -237,7 +237,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             cache.select(Constants.PREF_SPECTRUMEXT)
             val spxEnabled = cache.get(R.string.key_spectrumext_enable, false)
             val spxBark = cache.get(R.string.key_spectrumext_bark, 7600f)
-            val spxStrength = cache.get(R.string.key_spectrumext_strength, 15f)
+            val spxStrength = cache.get(R.string.key_spectrumext_strength, 45f)
 
             cache.select(Constants.PREF_EQ)
             val eqEnabled = cache.get(R.string.key_eq_enable, false)
@@ -248,7 +248,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             cache.select(Constants.PREF_GEQ)
             val geqEnabled = cache.get(R.string.key_geq_enable, false)
             val geqLinearPhase = cache.get(R.string.key_geq_linear_phase, false)
-            val geqBands = cache.get(R.string.key_geq_nodes, Constants.DEFAULT_GEQ_INTERNAL)
+            val geqBands = cache.get(R.string.key_geq_nodes, Constants.DEFAULT_GEQ)
 
             cache.select(Constants.PREF_PEQ)
             val peqEnabled = cache.get(R.string.key_peq_enable, false)
@@ -257,7 +257,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
 
             cache.select(Constants.PREF_REVERB)
             val reverbEnabled = cache.get(R.string.key_reverb_enable, false)
-            val reverbPreset = cache.get(R.string.key_reverb_preset, "0").toInt()
+            val reverbPreset = cache.get(R.string.key_reverb_preset, "15").toInt()
 
             cache.select(Constants.PREF_STEREOWIDE)
             val swEnabled = cache.get(R.string.key_stereowide_enable, false)
@@ -265,7 +265,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
 
             cache.select(Constants.PREF_CROSSFEED)
             val crossfeedEnabled = cache.get(R.string.key_crossfeed_enable, false)
-            val crossfeedMode = cache.get(R.string.key_crossfeed_mode, "0").toInt()
+            val crossfeedMode = cache.get(R.string.key_crossfeed_mode, "5").toInt()
 
             cache.select(Constants.PREF_TUBE)
             val tubeEnabled = cache.get(R.string.key_tube_enable, false)

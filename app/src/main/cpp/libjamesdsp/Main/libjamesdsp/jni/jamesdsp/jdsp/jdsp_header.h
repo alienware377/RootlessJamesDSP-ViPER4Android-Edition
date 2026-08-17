@@ -211,7 +211,7 @@ typedef struct
 	int w;
 	float phasor;
 	float rate, mix;
-	int win;
+	int win, bypass;
 } PitchShift;
 #define VREV_COMBLEN 8192
 #define VREV_APLEN 2048
@@ -660,7 +660,10 @@ typedef struct
 // limiter) always runs last and is deliberately not part of this list.
 // ---------------------------------------------------------------------------
 #define JDSP_LIVEPROG_EXTRA 3
-#define JDSP_EFX_MAX 32
+// Headroom over JDSP_EFX_COUNT. The chain is completed by appending any effect
+// the caller omitted, so this has to be at least the number of effects or the
+// append truncates and drops one again - the exact fault it exists to prevent.
+#define JDSP_EFX_MAX 48
 enum JdspEffectId
 {
 	JDSP_EFX_TUBE = 0,

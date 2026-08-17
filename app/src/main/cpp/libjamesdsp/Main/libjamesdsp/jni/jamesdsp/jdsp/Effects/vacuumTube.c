@@ -17,8 +17,9 @@ static inline double tubeSat(double x)
 
 void VTInit(VacuumTube *tb, double fs)
 {
-	tb->pregain = 1.0f;
-	tb->postgain = 1.0f;
+	// Deliberately does not touch pregain or postgain: this runs from Enable,
+	// which the JNI calls immediately after SetGain, so resetting them here
+	// discards the drive the user just set.
 	tb->needOversample = 0;
 	if (fs >= 30000.0 && fs < 65000.0)
 	{
@@ -116,7 +117,10 @@ void VTProcess(VacuumTube *tb, float *x1, float *x2, float *out1, float *out2, s
 }
 void VacuumTubeEnable(JamesDSPLib *jdsp)
 {
-	VTInit(&jdsp->tube, jdsp->fs);
+	// Only on the off->on transition. Re-running the oversampler setup on
+	// every parameter change would also clear its filter state mid-stream.
+	if (!jdsp->tubeEnabled)
+		VTInit(&jdsp->tube, jdsp->fs);
 	jdsp->tubeEnabled = 1;
 }
 void VacuumTubeDisable(JamesDSPLib *jdsp)

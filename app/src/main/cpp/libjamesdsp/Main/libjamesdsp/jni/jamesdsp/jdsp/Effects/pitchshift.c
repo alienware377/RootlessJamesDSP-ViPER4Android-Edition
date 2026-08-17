@@ -22,6 +22,12 @@ void PitchShiftSetParam(JamesDSPLib *jdsp, float semitones, float mixPct)
 	if (win > PS_BUFLEN - 200) win = PS_BUFLEN - 200;
 	if (win < 256) win = 256;
 	p->win = win;
+	// No shift asked for and nothing to blend against: skip the stage rather
+	// than run it. It is not a null - at 44.1kHz the half-window makes the
+	// read interpolate between neighbouring samples, which is a two-tap
+	// lowpass six decibels down at 15kHz, so leaving it running costs treble
+	// and 25ms of latency to achieve nothing.
+	p->bypass = (fabsf(semitones) < 1e-6f && p->mix >= 0.999f) ? 1 : 0;
 }
 
 static inline float psRead(const float *buf, float pos)
@@ -37,6 +43,8 @@ void PitchShiftProcess(JamesDSPLib *jdsp, size_t n)
 	PitchShift *p = &jdsp->pitchShift;
 	size_t i;
 	if (!jdsp->tmpBuffer[0] || !jdsp->tmpBuffer[1])
+		return;
+	if (p->bypass)
 		return;
 	if (!p->buf[0] || !p->buf[1])
 		return;

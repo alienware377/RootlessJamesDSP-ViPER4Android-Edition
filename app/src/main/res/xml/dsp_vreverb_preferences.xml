@@ -41,7 +41,7 @@
             android:defaultValue="100" app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
             app:allowDividerAbove="false" app:updatesContinuously="true" app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
         <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference android:key="@string/key_vreverb_wet" android:title="@string/vreverb_wet"
-            android:defaultValue="30" app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            android:defaultValue="65" app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
             app:allowDividerAbove="false" app:updatesContinuously="true" app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
         <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference android:key="@string/key_vreverb_dry" android:title="@string/vreverb_dry"
             android:defaultValue="100" app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"

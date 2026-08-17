@@ -49,7 +49,6 @@ object Constants {
     // Default string values
     const val DEFAULT_CONVOLVER_ADVIMP = "-80;-100;0;0;0;0"
     const val DEFAULT_GEQ = "GraphicEQ: "
-    const val DEFAULT_GEQ_INTERNAL = "GraphicEQ: 0.0 0.0;"
     const val DEFAULT_PEQ = "PEQ: "
 
     /**

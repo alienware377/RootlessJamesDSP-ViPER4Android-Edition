@@ -339,13 +339,33 @@ void JamesDSPSetChainOrder(JamesDSPLib *jdsp, const int *order, int count)
 	}
 	if (count > JDSP_EFX_MAX)
 		count = JDSP_EFX_MAX;
+	char seen[JDSP_EFX_COUNT];
+	memset(seen, 0, sizeof(seen));
 	int written = 0;
-	for (int i = 0; i < count; i++)
+	for (int i = 0; i < count && written < JDSP_EFX_MAX; i++)
 	{
 		int id = order[i];
 		if (id < 0 || id >= JDSP_EFX_COUNT)
 			continue;
+		if (seen[id])
+			continue;
+		seen[id] = 1;
 		jdsp->chainOrder[written++] = id;
+	}
+	// Anything the caller left out is appended in declaration order, so the
+	// chain is always complete.
+	//
+	// This is not defensive tidying. The order is persisted by id, so a list
+	// saved by an older build cannot mention an effect that did not exist when
+	// it was written - and passing that list through verbatim left every newly
+	// added effect enabled, configured, receiving its parameters, and never
+	// dispatched. From the user's side that is indistinguishable from the
+	// effect being broken, and it applied silently to every effect added after
+	// the first time they arranged the chain.
+	for (int id = 0; id < JDSP_EFX_COUNT && written < JDSP_EFX_MAX; id++)
+	{
+		if (!seen[id])
+			jdsp->chainOrder[written++] = id;
 	}
 	if (!written)
 	{
@@ -1322,20 +1342,20 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	jdsp->bassExEnabled = 0;
 	BassExciterSetParam(jdsp, 100.0f, 40.0f, 50.0f);
 	jdsp->spectrumExtEnabled = 0;
-	SpectrumExtensionSetParam(jdsp, 7600.0f, 15.0f);
+	SpectrumExtensionSetParam(jdsp, 7600.0f, 45.0f);
 	BassExciterSetParam2(jdsp, 0, 60.0f, 40.0f, 40.0f);
 	jdsp->vdynBassEnabled = 0;
 	VDynBassSetParam(jdsp, 33.0f, 1000.0f, 6200.0f, 50.0f, 90.0f, 30.0f, 10.0f);
 	jdsp->diffSurroundEnabled = 0;
 	DiffSurroundSetParam(jdsp, 0.0f, 10.0f);
 	jdsp->viperClarityEnabled = 0;
-	ViperClaritySetParam(jdsp, 0, 3.5f);
+	ViperClaritySetParam(jdsp, 0, 6.0f);
 	jdsp->fieldSurroundEnabled = 0;
 	FieldSurroundSetParam(jdsp, 30.0f, 50.0f);
 	jdsp->agcEnabled = 0;
 	AgcSetParam(jdsp, 30.0f, 12.0f);
 	jdsp->hpSurroundEnabled = 0;
-	HpSurroundSetParam(jdsp, 60.0f, 35.0f);
+	HpSurroundSetParam(jdsp, 60.0f, 30.0f);
 	jdsp->fetCompEnabled = 0;
 	FetCompSetParam(jdsp, -18.0f, 4.0f, 5.0f, 120.0f, 0.0f);
 	jdsp->cureEnabled = 0;
@@ -1383,22 +1403,27 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	for (int i = 0; i < JDSP_LIVEPROG_EXTRA; i++)
 		jdsp->liveprogExtraEnabled[i] = 0;
 	JamesDSPResetChainOrder(jdsp);
-	JLimiterSetCoefficients(jdsp, -(double)(FLT_EPSILON * 10.0f), 100.0);
+	JLimiterSetCoefficients(jdsp, -0.1, 60.0);
 	jdsp->postGain = 1.0f;
 	// Init effect
 	LiveProgConstructor(jdsp);
 	CompressorConstructor(jdsp);
 	CompressorDisable(jdsp);
 	BassBoostConstructor(jdsp);
+	BassBoostSetParam(jdsp, 5.0f);
 	BassBoostDisable(jdsp);
+	Reverb_SetParam(jdsp, SF_REVERB_PRESET_PLATEHIGH);
 	ReverbDisable(jdsp);
 	StereoEnhancementConstructor(jdsp);
+	StereoEnhancementSetParam(jdsp, 0.6f);
 	StereoEnhancementDisable(jdsp);
+	VacuumTubeSetGain(jdsp, 2.0);
 	VacuumTubeDisable(jdsp);
 	LiveProgDisable(jdsp);
 	DDCConstructor(jdsp);
 	DDCDisable(jdsp);
 	CrossfeedConstructor(jdsp);
+	CrossfeedChangeMode(jdsp, 5);
 	CrossfeedDisable(jdsp);
 	Convolver1DConstructor(jdsp);
 	ArbitraryResponseEqualizerConstructor(jdsp);

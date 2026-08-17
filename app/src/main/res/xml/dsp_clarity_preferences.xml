@@ -26,7 +26,7 @@
         <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
             android:key="@string/key_clarity_gain"
             android:title="@string/clarity_gain"
-            android:defaultValue="3.5"
+            android:defaultValue="6"
             app:minValue="0" app:maxValue="14" app:unit="dB" app:precision="1"
             app:allowDividerAbove="false" app:updatesContinuously="true"
             app:showSeekBarValue="true" app:iconSpaceReserved="false"/>

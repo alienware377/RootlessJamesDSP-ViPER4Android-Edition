@@ -31,7 +31,7 @@
             android:key="@string/key_spectrumext_strength"
             android:title="@string/spectrumext_strength"
             android:summary="@string/spectrumext_strength_summary"
-            android:defaultValue="15"
+            android:defaultValue="45"
             app:minValue="0"
             app:maxValue="60"
             app:unit="%"

@@ -28,7 +28,7 @@
         <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
             android:key="@string/key_compander_granularity"
             android:title="@string/compander_granularity_v2"
-            android:defaultValue="0"
+            android:defaultValue="2"
             app:maxValue="4"
             app:allowDividerAbove="false"
             app:updatesContinuously="true"
@@ -46,7 +46,7 @@
             app:iconSpaceReserved="false"/>
         <me.timschneeberger.rootlessjamesdsp.preference.CompanderPreference
             android:key="@string/key_compander_response"
-            android:defaultValue="95.0;200.0;400.0;800.0;1600.0;3400.0;7500.0;0;0;0;0;0;0;0"
+            android:defaultValue="95.0;200.0;400.0;800.0;1600.0;3400.0;7500.0;0.4;0.4;0.4;0.4;0.4;0.4;0.4"
             app:iconSpaceReserved="false"/>
     </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
 </PreferenceScreen>

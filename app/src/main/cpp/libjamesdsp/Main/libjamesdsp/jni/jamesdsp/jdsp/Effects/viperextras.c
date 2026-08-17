@@ -37,8 +37,12 @@ void ViperClaritySetParam(JamesDSPLib *jdsp, int mode, float gainDb)
 	if (gainDb < 0.0f) gainDb = 0.0f;
 	if (gainDb > 14.0f) gainDb = 14.0f;
 	vc->mode = mode;
-	// Natural: derivative sharpening strength
-	vc->sharp = gainDb * 0.02f;
+	// Natural: derivative sharpening strength. The transfer is
+	// 1 + sharp * (1 - z^-1), which reaches 1 + 2 * sharp at Nyquist, so this
+	// scale is what decides whether the mode is audible at all. At the old
+	// 0.02 the shipped gain gave 0.07 - a third of a decibel at 8kHz, which
+	// is why Natural sounded like nothing.
+	vc->sharp = gainDb * 0.10f;
 	// OZone / XHiFi: high shelf at 4.5k
 	vcShelf(vc->shelf, fs, 4500.0f, gainDb * (mode == 2 ? 0.8f : 0.5f));
 }

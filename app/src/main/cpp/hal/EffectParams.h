@@ -39,7 +39,7 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
     /* --- values --------------------------------------------------------- */
     case 112: BassBoostSetParam(d, (float)sv); break;                 /* max gain, dB */
     case 128: Reverb_SetParam(d, sv); break;                          /* preset index */
-    case 137: StereoEnhancementSetParam(d, (float)sv); break;         /* width */
+    case 137: StereoEnhancementSetParam(d, (float)sv / 100.0f); break; /* width, sent x100 */
     case 150: VacuumTubeSetGain(d, (double)sv / 1000.0); break;       /* sent x1000 */
     case 188: CrossfeedChangeMode(d, sv); break;                      /* mode index */
 
