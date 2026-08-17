@@ -6,7 +6,12 @@ import java.util.*
 enum class ParametricEqFilterType(val code: Int, val apoLabel: String, val displayLabel: String) {
     PEAKING(0, "PK", "PK"),
     LOW_SHELF(1, "LSC", "LS"),
-    HIGH_SHELF(2, "HSC", "HS");
+    HIGH_SHELF(2, "HSC", "HS"),
+    // Cutoffs. EqualizerAPO writes these as LPQ/HPQ for the Q-specified form,
+    // which is the one that round-trips with a biquad; the plain LP/HP labels
+    // are read as well since exports in the wild use both.
+    LOW_PASS(3, "LPQ", "LP"),
+    HIGH_PASS(4, "HPQ", "HP");
 
     companion object {
         fun fromCode(code: Int) = entries.firstOrNull { it.code == code } ?: PEAKING
@@ -14,6 +19,8 @@ enum class ParametricEqFilterType(val code: Int, val apoLabel: String, val displ
             "PK" -> PEAKING
             "LSC", "LS" -> LOW_SHELF
             "HSC", "HS" -> HIGH_SHELF
+            "LPQ", "LP" -> LOW_PASS
+            "HPQ", "HP" -> HIGH_PASS
             else -> null
         }
     }

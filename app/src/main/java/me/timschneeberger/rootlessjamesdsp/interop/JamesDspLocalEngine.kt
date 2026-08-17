@@ -148,6 +148,12 @@ class JamesDspLocalEngine(context: Context, callbacks: JamesDspWrapper.JamesDspC
         return JamesDspWrapper.setSpeakerOpt(handle, enable, strength)
     }
 
+    override fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean =
+        JamesDspWrapper.setMultibandDistBands(handle, bands)
+
+    override fun setMultibandDist(enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean =
+        JamesDspWrapper.setMultibandDist(handle, enable, routing, model, drive, bias, shape, bits, downsample, tone, bandGain, chorusRate, chorusDepth, chorusFeedback, chorusSpread, chorusVoices, chorusMix, mix)
+
     override fun setEchoDelay(enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean {
         return JamesDspWrapper.setEchoDelay(handle, enable, input, time, smoothing, offset, keepPitch, model, stereo, feedback, cutoff, res, filter, smpRate, bits, modRate, modTime, modCutoff, diffusion, spread, distMode, distLevel, knee, symmetry, tone, wet, dry)
     }

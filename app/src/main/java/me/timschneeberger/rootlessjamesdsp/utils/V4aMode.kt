@@ -34,6 +34,7 @@ object V4aMode {
         Constants.PREF_BASSEX to R.string.key_bassex_enable,
         Constants.PREF_PITCHSHIFT to R.string.key_pitchshift_enable,
         Constants.PREF_ECHODELAY to R.string.key_echo_enable,
+        Constants.PREF_MULTIBANDDIST to R.string.key_mbd_enable,
         Constants.PREF_GEQ to R.string.key_geq_enable,
         Constants.PREF_PEQ to R.string.key_peq_enable,
         Constants.PREF_LIVEPROG to R.string.key_liveprog_enable,
@@ -45,13 +46,21 @@ object V4aMode {
         Constants.PREF_REVERB to R.string.key_reverb_enable,
     )
 
-    /** Card containers that vanish in V4A mode (matches the list above). */
+    /**
+     * Card containers that vanish in V4A mode (matches the list above).
+     *
+     * Both lists are of what to exclude rather than what to keep, which means
+     * anything added to the app later is inside V4A mode until someone
+     * remembers to add it here. Worth knowing when adding an effect: a new card
+     * that is not an original V4A one belongs in both lists, or the mode shows
+     * it and its engine keeps running while the user believes neither.
+     */
     val hiddenCardIds = intArrayOf(
         R.id.card_compressor, R.id.card_bass, R.id.card_bassex,
-        R.id.card_pitchshift, R.id.card_echo, R.id.card_geq, R.id.card_peq,
-        R.id.card_liveprog, R.id.card_liveprog2, R.id.card_liveprog3,
-        R.id.card_liveprog4, R.id.card_stereowide, R.id.card_crossfeed,
-        R.id.card_reverb
+        R.id.card_pitchshift, R.id.card_echo, R.id.card_mbd, R.id.card_geq,
+        R.id.card_peq, R.id.card_liveprog, R.id.card_liveprog2,
+        R.id.card_liveprog3, R.id.card_liveprog4, R.id.card_stereowide,
+        R.id.card_crossfeed, R.id.card_reverb
     )
 
 

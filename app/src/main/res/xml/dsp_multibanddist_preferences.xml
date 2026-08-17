@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup
+        android:key="@string/key_mbd_enable"
+        android:disableDependentsState="false"
+        android:title="@string/mbd_enable"
+        android:icon="@drawable/ic_twotone_auto_fix_high_24"
+        app:iconSpaceReserved="false">
+        <Preference android:key="section_info" android:title="@string/section_info_title"
+            android:summary="@string/mbd_info" android:persistent="false"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        <Preference
+            android:key="@string/key_mbd_open_panel"
+            android:title="@string/mbd_open_panel"
+            android:summary="@string/mbd_open_panel_summary"
+            android:persistent="false"
+            app:allowDividerAbove="false"
+            app:iconSpaceReserved="false"/>
+    </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
+</PreferenceScreen>

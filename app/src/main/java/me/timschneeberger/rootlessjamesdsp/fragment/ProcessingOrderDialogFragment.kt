@@ -59,7 +59,8 @@ class ProcessingOrderDialogFragment : DialogFragment() {
         ChainEffect(25, R.string.speakeropt_enable),
         ChainEffect(26, R.string.reverb_enable),
         ChainEffect(27, R.string.vreverb_enable),
-        ChainEffect(28, R.string.echo_enable)
+        ChainEffect(28, R.string.echo_enable),
+        ChainEffect(29, R.string.mbd_enable)
     )
 
     /** Chained Liveprog slots only appear once they actually hold a script. */

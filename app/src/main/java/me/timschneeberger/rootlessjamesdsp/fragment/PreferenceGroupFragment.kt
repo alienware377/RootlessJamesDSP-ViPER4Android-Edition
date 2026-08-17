@@ -22,6 +22,7 @@ import me.timschneeberger.rootlessjamesdsp.activity.GraphicEqualizerActivity
 import me.timschneeberger.rootlessjamesdsp.activity.LiveprogEditorActivity
 import me.timschneeberger.rootlessjamesdsp.activity.ParametricEqualizerActivity
 import me.timschneeberger.rootlessjamesdsp.activity.EchoPanelActivity
+import me.timschneeberger.rootlessjamesdsp.activity.MultibandDistActivity
 import me.timschneeberger.rootlessjamesdsp.activity.LiveprogParamsActivity
 import me.timschneeberger.rootlessjamesdsp.adapter.RoundedRipplePreferenceGroupAdapter
 import me.timschneeberger.rootlessjamesdsp.liveprog.EelParser
@@ -258,6 +259,13 @@ class PreferenceGroupFragment : PreferenceFragmentCompat(), KoinComponent {
                 findPreference<Preference>(getString(R.string.key_echo_open_panel))
                     ?.setOnPreferenceClickListener {
                         startActivity(Intent(requireContext(), EchoPanelActivity::class.java))
+                        true
+                    }
+            }
+            R.xml.dsp_multibanddist_preferences -> {
+                findPreference<Preference>(getString(R.string.key_mbd_open_panel))
+                    ?.setOnPreferenceClickListener {
+                        startActivity(Intent(requireContext(), MultibandDistActivity::class.java))
                         true
                     }
             }

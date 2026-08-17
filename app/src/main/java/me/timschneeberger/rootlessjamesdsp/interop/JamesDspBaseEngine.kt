@@ -169,6 +169,26 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
 
             applyChainOrder()
 
+            cache.select(Constants.PREF_MULTIBANDDIST)
+            val mbdEnabled = cache.get(R.string.key_mbd_enable, false)
+            val mbdBands = cache.get(R.string.key_mbd_bands, Constants.DEFAULT_MBD_BANDS)
+            val mbdRouting = cache.get(R.string.key_mbd_routing, "0").toInt()
+            val mbdModel = cache.get(R.string.key_mbd_model, "0").toInt()
+            val mbdDrive = cache.get(R.string.key_mbd_drive, 0f)
+            val mbdBias = cache.get(R.string.key_mbd_bias, 0f)
+            val mbdShape = cache.get(R.string.key_mbd_shape, 50f)
+            val mbdBits = cache.get(R.string.key_mbd_bits, 16f)
+            val mbdDownsample = cache.get(R.string.key_mbd_downsample, 0f)
+            val mbdTone = cache.get(R.string.key_mbd_tone, 50f)
+            val mbdBandGain = cache.get(R.string.key_mbd_band_gain, 100f)
+            val mbdChorusRate = cache.get(R.string.key_mbd_chorus_rate, 0.6f)
+            val mbdChorusDepth = cache.get(R.string.key_mbd_chorus_depth, 6f)
+            val mbdChorusFeedback = cache.get(R.string.key_mbd_chorus_feedback, 0f)
+            val mbdChorusSpread = cache.get(R.string.key_mbd_chorus_spread, 50f)
+            val mbdChorusVoices = cache.get(R.string.key_mbd_chorus_voices, "1").toInt() + 1
+            val mbdChorusMix = cache.get(R.string.key_mbd_chorus_mix, 0f)
+            val mbdMix = cache.get(R.string.key_mbd_mix, 100f)
+
             cache.select(Constants.PREF_ECHODELAY)
             val echoEnabled = cache.get(R.string.key_echo_enable, false)
             val echoInput = cache.get(R.string.key_echo_input, 100f)
@@ -293,6 +313,17 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         vrDiffusion, vrMod, vrBass, vrEr, vrWet, vrDry)
                     Constants.PREF_SPEAKEROPT -> setSpeakerOpt(soEnabled, soStrength)
                     Constants.PREF_PITCHSHIFT -> setPitchShift(psEnabled, psSemitones, psMix)
+                    Constants.PREF_MULTIBANDDIST -> {
+                        // Bands first: the cascade has to be in place before
+                        // the stage that feeds off it is switched on.
+                        setMultibandDistBands(mbdBands)
+                        setMultibandDist(
+                            mbdEnabled, mbdRouting, mbdModel, mbdDrive, mbdBias, mbdShape,
+                            mbdBits, mbdDownsample, mbdTone, mbdBandGain,
+                            mbdChorusRate, mbdChorusDepth, mbdChorusFeedback,
+                            mbdChorusSpread, mbdChorusVoices, mbdChorusMix, mbdMix
+                        )
+                    }
                     Constants.PREF_ECHODELAY -> setEchoDelay(
                         echoEnabled, echoInput, echoTime, echoSmoothing, echoOffset, echoKeepPitch, echoModel, echoStereo, echoFeedback, echoCutoff, echoRes, echoFilter, echoSmpRate, echoBits, echoModRate, echoModTime, echoModCutoff, echoDiffusion, echoSpread, echoDistMode, echoDistLevel, echoKnee, echoSymmetry, echoTone, echoWet, echoDry
                     )
@@ -624,6 +655,29 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                             mod: Float, bass: Float, er: Float, wet: Float, dry: Float): Boolean
     abstract fun setSpeakerOpt(enable: Boolean, strength: Float): Boolean
     abstract fun setPitchShift(enable: Boolean, semitones: Float, mix: Float): Boolean
+    /**
+     * Hands the band-select cascade to the engine as a flat array of
+     * (frequency, gain, q, type) groups, in the same order the editor shows
+     * them. The type codes are [me.timschneeberger.rootlessjamesdsp.model.ParametricEqFilterType.code],
+     * which the engine mirrors as MbdFilterType - the two must not drift.
+     */
+    fun setMultibandDistBands(serialized: String): Boolean {
+        val bands = ParametricEqBandList()
+        bands.deserialize(serialized)
+        if (bands.isEmpty())
+            return setMultibandDistBandsInternal(null)
+        val flat = FloatArray(bands.size * 4)
+        for ((i, band) in bands.withIndex()) {
+            flat[i * 4] = band.frequency.toFloat()
+            flat[i * 4 + 1] = band.gain.toFloat()
+            flat[i * 4 + 2] = band.q.toFloat()
+            flat[i * 4 + 3] = band.filterType.code.toFloat()
+        }
+        return setMultibandDistBandsInternal(flat)
+    }
+
+    protected abstract fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean
+    abstract fun setMultibandDist(enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean
     abstract fun setEchoDelay(enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean
     abstract fun setChainOrder(order: IntArray?): Boolean
 

@@ -525,4 +525,25 @@
     <string-array name="vreverb_models_values" translatable="false">
         <item>0</item><item>1</item><item>2</item><item>3</item>
     </string-array>
+
+    <string-array name="mbd_models">
+        <item>@string/mbd_model_soft</item>
+        <item>@string/mbd_model_hard</item>
+        <item>@string/mbd_model_tube</item>
+        <item>@string/mbd_model_overdrive</item>
+        <item>@string/mbd_model_fold</item>
+        <item>@string/mbd_model_fuzz</item>
+        <item>@string/mbd_model_rectify</item>
+        <item>@string/mbd_model_crush</item>
+    </string-array>
+    <string-array name="mbd_models_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+    </string-array>
 </resources>

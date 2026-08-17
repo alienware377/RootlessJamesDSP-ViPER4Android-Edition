@@ -171,6 +171,14 @@ class JamesDspRemoteEngine(
     override fun setSpeakerOpt(enable: Boolean, strength: Float): Boolean =
         sendForkEffect(PARAM_SPEAKER_OPT, enable, floatArrayOf(strength))
 
+    // The legacy AudioEffect parameter path has no slot for an arbitrary
+    // array, and the plugin build has no multiband distortion behind it, so
+    // these succeed without doing anything rather than reporting a failure
+    // the user cannot act on.
+    override fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean = true
+
+    override fun setMultibandDist(enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean = true
+
     override fun setEchoDelay(enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean =
         sendForkEffect(PARAM_ECHO_DELAY, enable, floatArrayOf(
             input, time, smoothing, offset, if (keepPitch) 1f else 0f, model.toFloat(),

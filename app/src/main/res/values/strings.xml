@@ -1027,4 +1027,48 @@ Tap on \'Tutorial\' below for detailed instructions.</string>
     <string name="android_15_screenshare_keyguard_warning">Android 15 introduces a restriction that stops screen sharing when the device is locked. To workaround this issue, the \'PROJECT_MEDIA\' permission must be granted using Shizuku or ADB.
 
 Please press \'Continue\' below to re-do the setup wizard.</string>
+
+    <string name="peq_filter_type_low_pass">Low pass</string>
+    <string name="peq_filter_type_high_pass">High pass</string>
+
+    <string name="mbd_enable">Multiband distortion</string>
+    <string name="mbd_info">Picks a frequency range and distorts only that, leaving the rest of the music alone. The graph is the filter that chooses the range - the card opens with one low-pass corner, so by default it distorts the bass and nothing else. Peaking and shelf handles shape what goes in instead of selecting a range outright, so the full equaliser is still available here. Eight distortion characters, a chorus on the distorted band, and a mix control over the whole thing.</string>
+    <string name="mbd_open_panel">Open distortion panel</string>
+    <string name="mbd_open_panel_summary">Band graph, distortion character and chorus</string>
+    <string name="title_activity_mbd">Multiband distortion</string>
+
+    <string name="mbd_section_band">Band</string>
+    <string name="mbd_section_distortion">Distortion</string>
+    <string name="mbd_section_chorus">Chorus</string>
+    <string name="mbd_section_output">Output</string>
+
+    <string name="mbd_routing">Routing</string>
+    <string name="mbd_routing_split">Replace band</string>
+    <string name="mbd_routing_parallel">Add on top</string>
+    <string name="mbd_model">Character</string>
+    <string name="mbd_model_soft">Soft</string>
+    <string name="mbd_model_hard">Hard</string>
+    <string name="mbd_model_tube">Tube</string>
+    <string name="mbd_model_overdrive">Overdrive</string>
+    <string name="mbd_model_fold">Fold</string>
+    <string name="mbd_model_fuzz">Fuzz</string>
+    <string name="mbd_model_rectify">Rectify</string>
+    <string name="mbd_model_crush">Crush</string>
+
+    <string name="mbd_knob_drive">DRIVE</string>
+    <string name="mbd_knob_bias">BIAS</string>
+    <string name="mbd_knob_shape">SHAPE</string>
+    <string name="mbd_knob_bits">BITS</string>
+    <string name="mbd_knob_downsample">SMP RATE</string>
+    <string name="mbd_knob_tone">TONE</string>
+    <string name="mbd_knob_band_gain">BAND</string>
+    <string name="mbd_knob_rate">RATE</string>
+    <string name="mbd_knob_depth">DEPTH</string>
+    <string name="mbd_knob_feedback">FEEDBACK</string>
+    <string name="mbd_knob_spread">SPREAD</string>
+    <string name="mbd_knob_voices">VOICES</string>
+    <string name="mbd_knob_chorus_mix">CHORUS</string>
+    <string name="mbd_knob_mix">MIX</string>
+
+    <string name="mbd_band_hint">Drag a handle to move it, long-press empty space to add one, long-press a handle to remove it. Low pass and high pass handles select a range; peaking and shelf handles shape what goes into the distortion.</string>
 </resources>

@@ -1,0 +1,551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="8dp"
+        android:paddingBottom="24dp">
+
+        <!-- ============================ BAND ============================ -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mbd_section_band"
+                    android:textAllCaps="true"
+                    android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+                <TextView
+                    android:id="@+id/band_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:layout_marginBottom="6dp"
+                    android:text="@string/mbd_band_hint"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="?android:attr/textColorSecondary" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.ParametricEqSurface
+                    android:id="@+id/mbd_surface"
+                    android:layout_width="match_parent"
+                    android:layout_height="230dp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:singleLine="true">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/mbd_add"
+                            style="@style/Widget.Material3.Chip.Assist.Elevated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_add_band" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/mbd_remove"
+                            style="@style/Widget.Material3.Chip.Assist.Elevated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_remove_band" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/mbd_undo"
+                            style="@style/Widget.Material3.Chip.Assist.Elevated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_undo" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/mbd_redo"
+                            style="@style/Widget.Material3.Chip.Assist.Elevated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_redo" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/mbd_reset"
+                            style="@style/Widget.Material3.Chip.Assist.Elevated"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_reset" />
+                    </com.google.android.material.chip.ChipGroup>
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal">
+
+                    <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                        android:id="@+id/mbd_band_freq"
+                        android:layout_width="0dp"
+                        android:layout_height="104dp"
+                        android:layout_weight="1"
+                        app:knobLabel="@string/peq_frequency"
+                        app:knobLogScale="true"
+                        app:knobMax="20000"
+                        app:knobMin="20"
+                        app:knobPrecision="0"
+                        app:knobUnit="Hz"
+                        app:knobValue="250" />
+
+                    <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                        android:id="@+id/mbd_band_q"
+                        android:layout_width="0dp"
+                        android:layout_height="104dp"
+                        android:layout_weight="1"
+                        app:knobLabel="@string/peq_q_factor"
+                        app:knobMax="30"
+                        app:knobMin="0.1"
+                        app:knobPrecision="2"
+                        app:knobValue="0.71" />
+
+                    <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                        android:id="@+id/mbd_band_gain"
+                        android:layout_width="0dp"
+                        android:layout_height="104dp"
+                        android:layout_weight="1"
+                        app:knobLabel="@string/peq_gain"
+                        app:knobMax="30"
+                        app:knobMin="-30"
+                        app:knobPrecision="1"
+                        app:knobUnit="dB"
+                        app:knobValue="0" />
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <com.google.android.material.button.MaterialButtonToggleGroup
+                        android:id="@+id/mbd_filter_group"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:selectionRequired="true"
+                        app:singleSelection="true">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mbd_filter_peaking"
+                            style="?attr/materialButtonOutlinedStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_filter_type_peaking" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mbd_filter_low_shelf"
+                            style="?attr/materialButtonOutlinedStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_filter_type_low_shelf" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mbd_filter_high_shelf"
+                            style="?attr/materialButtonOutlinedStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_filter_type_high_shelf" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mbd_filter_low_pass"
+                            style="?attr/materialButtonOutlinedStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_filter_type_low_pass" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/mbd_filter_high_pass"
+                            style="?attr/materialButtonOutlinedStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/peq_filter_type_high_pass" />
+                    </com.google.android.material.button.MaterialButtonToggleGroup>
+                </HorizontalScrollView>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- ========================= DISTORTION ========================= -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/dist_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mbd_section_distortion"
+                    android:textAllCaps="true"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <HorizontalScrollView
+                    android:id="@+id/dist_toggles"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:scrollbars="none"
+                    app:layout_constraintTop_toBottomOf="@id/dist_title">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/mbd_routing_group"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="10dp"
+                            app:selectionRequired="true"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/routing_split"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_routing_split" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/routing_parallel"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_routing_parallel" />
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/mbd_model_group"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:selectionRequired="true"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_soft"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_soft" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_hard"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_hard" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_tube"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_tube" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_overdrive"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_overdrive" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_fold"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_fold" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_fuzz"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_fuzz" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_rectify"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_rectify" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/model_crush"
+                                style="?attr/materialButtonOutlinedStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mbd_model_crush" />
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+                    </LinearLayout>
+                </HorizontalScrollView>
+
+                <androidx.constraintlayout.helper.widget.Flow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    app:constraint_referenced_ids="knob_drive,knob_bias,knob_shape,knob_bits,knob_downsample"
+                    app:flow_horizontalGap="6dp"
+                    app:flow_horizontalStyle="packed"
+                    app:flow_verticalAlign="center"
+                    app:flow_verticalGap="6dp"
+                    app:flow_wrapMode="chain"
+                    app:layout_constraintTop_toBottomOf="@id/dist_toggles" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_drive"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_drive"
+                    app:knobMax="100"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="0" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_bias"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_bias"
+                    app:knobMax="100"
+                    app:knobMin="-100"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="0" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_shape"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_shape"
+                    app:knobMax="100"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="50" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_bits"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_bits"
+                    app:knobMax="16"
+                    app:knobMin="1"
+                    app:knobPrecision="0"
+                    app:knobValue="16" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_downsample"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_downsample"
+                    app:knobMax="100"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="0" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- =========================== CHORUS =========================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/chorus_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mbd_section_chorus"
+                    android:textAllCaps="true"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.helper.widget.Flow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    app:constraint_referenced_ids="knob_chorus_mix,knob_rate,knob_depth,knob_feedback,knob_spread,knob_voices"
+                    app:flow_horizontalGap="6dp"
+                    app:flow_horizontalStyle="packed"
+                    app:flow_verticalAlign="center"
+                    app:flow_verticalGap="6dp"
+                    app:flow_wrapMode="chain"
+                    app:layout_constraintTop_toBottomOf="@id/chorus_title" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_chorus_mix"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_chorus_mix"
+                    app:knobMax="100"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="0" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_rate"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_rate"
+                    app:knobMax="10"
+                    app:knobMin="0.05"
+                    app:knobPrecision="2"
+                    app:knobUnit="Hz"
+                    app:knobValue="0.6" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_depth"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_depth"
+                    app:knobMax="25"
+                    app:knobMin="0"
+                    app:knobPrecision="1"
+                    app:knobUnit="ms"
+                    app:knobValue="6" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_feedback"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_feedback"
+                    app:knobMax="90"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="0" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_spread"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_spread"
+                    app:knobMax="100"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="50" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_voices"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_voices"
+                    app:knobMax="4"
+                    app:knobMin="1"
+                    app:knobPrecision="0"
+                    app:knobValue="2" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- =========================== OUTPUT =========================== -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/output_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/mbd_section_output"
+                    android:textAllCaps="true"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <androidx.constraintlayout.helper.widget.Flow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    app:constraint_referenced_ids="knob_tone,knob_band_gain,knob_mix"
+                    app:flow_horizontalGap="6dp"
+                    app:flow_horizontalStyle="packed"
+                    app:flow_verticalAlign="center"
+                    app:flow_verticalGap="6dp"
+                    app:flow_wrapMode="chain"
+                    app:layout_constraintTop_toBottomOf="@id/output_title" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_tone"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_tone"
+                    app:knobMax="100"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="50" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_band_gain"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_band_gain"
+                    app:knobMax="200"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="100" />
+
+                <me.timschneeberger.rootlessjamesdsp.view.KnobView
+                    android:id="@+id/knob_mix"
+                    android:layout_width="92dp"
+                    android:layout_height="108dp"
+                    app:knobLabel="@string/mbd_knob_mix"
+                    app:knobMax="100"
+                    app:knobMin="0"
+                    app:knobPrecision="0"
+                    app:knobUnit="%"
+                    app:knobValue="100" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+</ScrollView>

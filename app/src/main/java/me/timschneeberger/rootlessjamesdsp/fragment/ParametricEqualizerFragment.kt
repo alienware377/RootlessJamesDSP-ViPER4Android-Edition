@@ -415,10 +415,26 @@ class ParametricEqualizerFragment : Fragment() {
         }
     }
 
+    /**
+     * A cutoff has a corner, not a gain, and the coefficients ignore the gain
+     * term entirely - so the dial is dimmed rather than left looking live.
+     * Dimming rather than hiding, because hiding reflows the row under the
+     * finger that just moved it.
+     */
+    private fun updateGainUsability() {
+        val cutoff = getSelectedFilterType().let {
+            it == ParametricEqFilterType.LOW_PASS || it == ParametricEqFilterType.HIGH_PASS
+        }
+        binding.gainInput.isEnabled = !cutoff
+        binding.gainInput.alpha = if (cutoff) 0.35f else 1f
+    }
+
     private fun getSelectedFilterType(): ParametricEqFilterType {
         return when (binding.filterTypeGroup.checkedButtonId) {
             R.id.filter_low_shelf -> ParametricEqFilterType.LOW_SHELF
             R.id.filter_high_shelf -> ParametricEqFilterType.HIGH_SHELF
+            R.id.filter_low_pass -> ParametricEqFilterType.LOW_PASS
+            R.id.filter_high_pass -> ParametricEqFilterType.HIGH_PASS
             else -> ParametricEqFilterType.PEAKING
         }
     }
@@ -428,8 +444,11 @@ class ParametricEqualizerFragment : Fragment() {
             ParametricEqFilterType.PEAKING -> R.id.filter_peaking
             ParametricEqFilterType.LOW_SHELF -> R.id.filter_low_shelf
             ParametricEqFilterType.HIGH_SHELF -> R.id.filter_high_shelf
+            ParametricEqFilterType.LOW_PASS -> R.id.filter_low_pass
+            ParametricEqFilterType.HIGH_PASS -> R.id.filter_high_pass
         }
         binding.filterTypeGroup.check(buttonId)
+        updateGainUsability()
     }
 
     /** Keeps the band list in ascending frequency order. */

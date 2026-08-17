@@ -270,4 +270,23 @@
     <string name="key_pitchshift_semitones" translatable="false">pitchshift_semitones</string>
     <string name="key_pitchshift_mix" translatable="false">pitchshift_mix</string>
     <string name="key_output_postgain" translatable="false">output_postgain</string>
+    <string name="key_mbd_enable" translatable="false">mbd_enable</string>
+    <string name="key_mbd_bands" translatable="false">mbd_bands</string>
+    <string name="key_mbd_routing" translatable="false">mbd_routing</string>
+    <string name="key_mbd_model" translatable="false">mbd_model</string>
+    <string name="key_mbd_drive" translatable="false">mbd_drive</string>
+    <string name="key_mbd_bias" translatable="false">mbd_bias</string>
+    <string name="key_mbd_shape" translatable="false">mbd_shape</string>
+    <string name="key_mbd_bits" translatable="false">mbd_bits</string>
+    <string name="key_mbd_downsample" translatable="false">mbd_downsample</string>
+    <string name="key_mbd_tone" translatable="false">mbd_tone</string>
+    <string name="key_mbd_band_gain" translatable="false">mbd_band_gain</string>
+    <string name="key_mbd_chorus_rate" translatable="false">mbd_chorus_rate</string>
+    <string name="key_mbd_chorus_depth" translatable="false">mbd_chorus_depth</string>
+    <string name="key_mbd_chorus_feedback" translatable="false">mbd_chorus_feedback</string>
+    <string name="key_mbd_chorus_spread" translatable="false">mbd_chorus_spread</string>
+    <string name="key_mbd_chorus_voices" translatable="false">mbd_chorus_voices</string>
+    <string name="key_mbd_chorus_mix" translatable="false">mbd_chorus_mix</string>
+    <string name="key_mbd_mix" translatable="false">mbd_mix</string>
+    <string name="key_mbd_open_panel" translatable="false">mbd_open_panel</string>
 </resources>

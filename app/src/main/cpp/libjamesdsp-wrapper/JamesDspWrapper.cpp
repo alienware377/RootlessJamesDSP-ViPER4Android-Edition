@@ -517,6 +517,62 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setEchoDelay(JN
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDist(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable,
+        jint routing,
+        jint model,
+        jfloat drive,
+        jfloat bias,
+        jfloat shape,
+        jfloat bits,
+        jfloat downsample,
+        jfloat tone,
+        jfloat bandGain,
+        jfloat chorusRate,
+        jfloat chorusDepth,
+        jfloat chorusFeedback,
+        jfloat chorusSpread,
+        jint chorusVoices,
+        jfloat chorusMix,
+        jfloat mix)
+{
+    DECLARE_DSP_B
+    MultibandDistSetParam(dsp, routing, model, drive, bias, shape, bits, downsample,
+                          tone, bandGain, chorusRate, chorusDepth, chorusFeedback,
+                          chorusSpread, chorusVoices, chorusMix, mix);
+    if (enable) MultibandDistEnable(dsp); else MultibandDistDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDistBands(JNIEnv *env, jobject obj, jlong self,
+        jfloatArray bandsObj)
+{
+    DECLARE_DSP_B
+
+    // No bands is a legitimate state, not an error: it means the whole signal
+    // goes into the distortion rather than a selected range.
+    if (bandsObj == nullptr)
+    {
+        MultibandDistSetBands(dsp, nullptr, 0);
+        return true;
+    }
+
+    jsize len = env->GetArrayLength(bandsObj);
+    if (len % 4 != 0)
+    {
+        LOGE("JamesDspWrapper::setMultibandDistBands: expected groups of four "
+             "(frequency, gain, q, type), got %d values", (int)len);
+        return false;
+    }
+
+    auto *elems = env->GetFloatArrayElements(bandsObj, nullptr);
+    MultibandDistSetBands(dsp, elems, (int)(len / 4));
+    env->ReleaseFloatArrayElements(bandsObj, elems, JNI_ABORT);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setPitchShift(JNIEnv *env, jobject obj, jlong self, jboolean enable, jfloat semitones, jfloat mix)
 {
     DECLARE_DSP_B

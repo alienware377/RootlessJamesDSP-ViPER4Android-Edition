@@ -26,7 +26,7 @@ object BiquadUtils {
      * @param frequency Center/corner frequency in Hz
      * @param gain Gain in dB
      * @param q Q factor
-     * @param filterType PEAKING, LOW_SHELF, or HIGH_SHELF
+     * @param filterType PEAKING, LOW_SHELF, HIGH_SHELF, LOW_PASS or HIGH_PASS
      * @param sampleRate Sample rate in Hz
      * @return Biquad coefficients (b0, b1, b2, a0, a1, a2)
      */
@@ -65,6 +65,31 @@ object BiquadUtils {
                     a0 = (A + 1.0) + (A - 1.0) * cosOmega + twoSqrtAAlpha,
                     a1 = -2.0 * ((A - 1.0) + (A + 1.0) * cosOmega),
                     a2 = (A + 1.0) + (A - 1.0) * cosOmega - twoSqrtAAlpha
+                )
+            }
+            // Cutoffs ignore gain: a low-pass has no gain to speak of, it has
+            // a corner. The editor hides the gain control for these types
+            // rather than leaving a dial that does nothing.
+            ParametricEqFilterType.LOW_PASS -> {
+                val alpha = sinOmega / (2.0 * q)
+                BiquadCoefficients(
+                    b0 = (1.0 - cosOmega) / 2.0,
+                    b1 = 1.0 - cosOmega,
+                    b2 = (1.0 - cosOmega) / 2.0,
+                    a0 = 1.0 + alpha,
+                    a1 = -2.0 * cosOmega,
+                    a2 = 1.0 - alpha
+                )
+            }
+            ParametricEqFilterType.HIGH_PASS -> {
+                val alpha = sinOmega / (2.0 * q)
+                BiquadCoefficients(
+                    b0 = (1.0 + cosOmega) / 2.0,
+                    b1 = -(1.0 + cosOmega),
+                    b2 = (1.0 + cosOmega) / 2.0,
+                    a0 = 1.0 + alpha,
+                    a1 = -2.0 * cosOmega,
+                    a2 = 1.0 - alpha
                 )
             }
             ParametricEqFilterType.HIGH_SHELF -> {
