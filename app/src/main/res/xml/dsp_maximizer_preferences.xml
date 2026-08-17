@@ -22,7 +22,7 @@
             android:key="@string/key_maxr_gain"
             android:title="@string/maxr_gain"
             android:summary="@string/maxr_gain_summary"
-            android:defaultValue="0"
+            android:defaultValue="6"
             app:minValue="0" app:maxValue="24" app:unit="dB" app:precision="1"
             app:allowDividerAbove="false" app:updatesContinuously="true"
             app:showSeekBarValue="true" app:iconSpaceReserved="false"/>

@@ -1367,7 +1367,7 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	jdsp->maximizer.dq[1] = 0;
 	jdsp->maximizer.dqVal[0] = 0;
 	jdsp->maximizer.dqVal[1] = 0;
-	MaximizerSetParam(jdsp, MAXR_MODE_TRANSPARENT, 0.0f, -0.3f, 200.0f,
+	MaximizerSetParam(jdsp, MAXR_MODE_TRANSPARENT, 6.0f, -0.3f, 200.0f,
 		0.0f, 0.0f, 1, 100.0f, 1);
 	jdsp->multibandDistEnabled = 0;
 	jdsp->multibandDist.chBufL = 0;

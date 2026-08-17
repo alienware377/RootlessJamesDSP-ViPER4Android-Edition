@@ -172,7 +172,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             cache.select(Constants.PREF_MAXIMIZER)
             val maxrEnabled = cache.get(R.string.key_maxr_enable, false)
             val maxrMode = cache.get(R.string.key_maxr_mode, "0").toInt()
-            val maxrGain = cache.get(R.string.key_maxr_gain, 0f)
+            val maxrGain = cache.get(R.string.key_maxr_gain, 6f)
             val maxrCeiling = cache.get(R.string.key_maxr_ceiling, -0.3f)
             val maxrRelease = cache.get(R.string.key_maxr_release, 200f)
             val maxrCharacter = cache.get(R.string.key_maxr_character, 0f)

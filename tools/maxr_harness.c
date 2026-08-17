@@ -70,10 +70,60 @@ static int checkCeiling(const char *name, float ceilingDb)
 	return bad || over;
 }
 
+// The values the card actually ships with. Mirrored from three places that
+// have to agree: the MaximizerSetParam call in jdspController.c, the
+// cache.get defaults in JamesDspBaseEngine.kt, and android:defaultValue in
+// dsp_maximizer_preferences.xml. If this test starts failing after a defaults
+// change, that is the point of it.
+#define DEF_MODE        MAXR_MODE_TRANSPARENT
+#define DEF_GAIN        6.0f
+#define DEF_CEILING     (-0.3f)
+#define DEF_RELEASE     200.0f
+#define DEF_CHARACTER   0.0f
+#define DEF_TRANSIENT   0.0f
+#define DEF_TRUEPEAK    1
+#define DEF_STEREOLINK  100.0f
+#define DEF_OVERSAMPLE  1
+
+// Switch the card on, touch nothing: does anything happen? An effect whose
+// default is "do nothing" reads as broken, and this app has now shipped that
+// twice and had it reported both times.
+static int checkDefaultsAreAudible(void)
+{
+	static float ref[N];
+	prepare(48000.0f);
+	MaximizerEnable(&g_lib);
+	MaximizerSetParam(&g_lib, DEF_MODE, DEF_GAIN, DEF_CEILING, DEF_RELEASE,
+		DEF_CHARACTER, DEF_TRANSIENT, DEF_TRUEPEAK, DEF_STEREOLINK, DEF_OVERSAMPLE);
+	fillMusic(0.5f);
+	memcpy(ref, bufL, sizeof(ref));
+	MaximizerProcess(&g_lib, N);
+
+	int look = g_lib.maximizer.lookahead;
+	double num = 0.0, den = 0.0;
+	for (int i = look + 32; i < N; i++)
+	{
+		double d = (double)bufL[i] - ref[i - look];
+		num += d * d;
+		den += (double)ref[i - look] * ref[i - look];
+	}
+	double diff = 10.0 * log10((num + 1e-30) / (den + 1e-30));
+	int bad = diff < -30.0;
+	printf("%-38s difference from dry %6.2f dB  %s\n",
+		"shipped defaults", diff,
+		bad ? "*** NOTHING HAPPENS ***" : "audible");
+	MaximizerDisable(&g_lib);
+	return bad;
+}
+
 int main(void)
 {
 	int fail = 0;
 	const char *modes[] = { "transparent", "punchy", "warm", "aggressive" };
+
+	printf("== switching it on and touching nothing ==\n");
+	fail |= checkDefaultsAreAudible();
+	printf("\n");
 
 	printf("== every mode, driven hard into a low ceiling ==\n");
 	for (int mode = 0; mode < MAXR_MODE_COUNT; mode++)
