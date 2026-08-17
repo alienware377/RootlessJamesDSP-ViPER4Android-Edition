@@ -252,17 +252,61 @@ void MultibandDistSetBands(JamesDSPLib *jdsp, const float *bands, int count)
 		m->numBands = 0;
 		return;
 	}
-	if (count > MBD_MAX_BANDS) count = MBD_MAX_BANDS;
-
-	for (int i = 0; i < count; i++)
+	int previous = m->numBands;
+	int written = 0;
+	for (int i = 0; i < count && written < MBD_MAX_BANDS; i++)
 	{
 		const float *b = bands + i * 4;
-		mbdBiquadCoeffs(fs, (int)b[3], b[0], b[1], b[2],
-			&m->b0[i], &m->b1[i], &m->b2[i], &m->a1[i], &m->a2[i]);
+		int type = (int)b[3];
+
+		if (type == MBD_FILTER_LOW_PASS || type == MBD_FILTER_HIGH_PASS)
+		{
+			// A cutoff is built as a cascade rather than a single biquad,
+			// because one biquad is only 12dB per octave - which on a log
+			// graph is a slope running the whole width of the spectrum rather
+			// than a corner, and in the audio it means content two octaves
+			// past the corner is barely 24dB down and still very much in the
+			// band. That is not a band being selected, it is a tilt.
+			//
+			// The gain field is unused for cutoffs, so it carries the slope in
+			// dB per octave; every 12 of it is one more biquad.
+			float slope = b[1];
+			// Legacy bands predate the field and carry 0 there.
+			if (slope < 6.0f) slope = 48.0f;
+			int stages = (int)(slope / 12.0f + 0.5f);
+			if (stages < 1) stages = 1;
+			if (stages > MBD_MAX_CUTOFF_STAGES) stages = MBD_MAX_CUTOFF_STAGES;
+
+			for (int k = 0; k < stages && written < MBD_MAX_BANDS; k++)
+			{
+				// Butterworth section Qs for an order-2N cascade, which is
+				// what makes the whole thing maximally flat in the passband
+				// instead of rippling or drooping toward the corner.
+				double q = 1.0 / (2.0 * cos((2.0 * k + 1.0) * M_PI / (4.0 * stages)));
+				// The user's Q rides on the last section only, so the dial
+				// still adds resonance at the corner and 0.707 leaves the
+				// response exactly Butterworth.
+				if (k == stages - 1)
+					q *= (double)b[2] / 0.70710678;
+				mbdBiquadCoeffs(fs, type, b[0], 0.0f, (float)q,
+					&m->b0[written], &m->b1[written], &m->b2[written],
+					&m->a1[written], &m->a2[written]);
+				written++;
+			}
+		}
+		else
+		{
+			mbdBiquadCoeffs(fs, type, b[0], b[1], b[2],
+				&m->b0[written], &m->b1[written], &m->b2[written],
+				&m->a1[written], &m->a2[written]);
+			written++;
+		}
 	}
+	for (int i = previous; i < written; i++)
+		m->z1[0][i] = m->z2[0][i] = m->z1[1][i] = m->z2[1][i] = 0.0f;
 	// Only publish the new count once every coefficient behind it is written,
 	// so the audio thread can never read a slot that is half updated.
-	m->numBands = count;
+	m->numBands = written;
 }
 
 void MultibandDistSetParam(JamesDSPLib *jdsp,

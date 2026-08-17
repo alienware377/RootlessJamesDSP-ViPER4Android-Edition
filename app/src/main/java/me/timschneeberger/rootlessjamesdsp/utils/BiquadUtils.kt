@@ -143,6 +143,41 @@ object BiquadUtils {
         }
     }
 
+    /** Steepest cutoff offered, in dB per octave. Eight biquad sections. */
+    const val MAX_CUTOFF_SLOPE = 96.0
+
+    /**
+     * The biquad sections a band expands into.
+     *
+     * A peaking or shelving band is one section. A cutoff is a cascade: one
+     * section per 12 dB/octave of slope, because a single biquad only rolls off
+     * at 12 dB/octave and that is a tilt across the whole spectrum rather than
+     * a corner. The section Qs are the Butterworth values for the resulting
+     * order, which is what keeps the passband flat instead of drooping toward
+     * the corner, and the band's own Q rides on the last section so the dial
+     * still adds resonance there.
+     *
+     * A cutoff has no gain, so the band's gain field carries the slope. This
+     * mirrors MultibandDistSetBands in multibandDist.c exactly - if one changes
+     * the other must, or the curve on screen stops being the curve applied.
+     */
+    fun cascadeFor(band: ParametricEqBand, sampleRate: Double = 48000.0): List<BiquadCoefficients> {
+        val isCutoff = band.filterType == ParametricEqFilterType.LOW_PASS ||
+                band.filterType == ParametricEqFilterType.HIGH_PASS
+        if (!isCutoff)
+            return listOf(computeCoefficients(band.frequency, band.gain, band.q, band.filterType, sampleRate))
+
+        // Bands saved before the slope existed carry 0 here, which is the
+        // absence of the field rather than a slope anyone chose.
+        val slope = if (band.gain < 6.0) 48.0 else band.gain
+        val stages = (slope / 12.0).roundToInt().coerceIn(1, 8)
+        return (0 until stages).map { k ->
+            var q = 1.0 / (2.0 * cos((2.0 * k + 1.0) * PI / (4.0 * stages)))
+            if (k == stages - 1) q *= band.q / 0.70710678
+            computeCoefficients(band.frequency, 0.0, q, band.filterType, sampleRate)
+        }
+    }
+
     /**
      * Compute the combined magnitude response of multiple parametric EQ bands
      * sampled at logarithmically-spaced frequency points.
@@ -167,10 +202,9 @@ object BiquadUtils {
         val logMax = ln(maxFreq)
         val result = ArrayList<Pair<Double, Double>>(numPoints)
 
-        // Precompute coefficients for all bands
-        val allCoeffs = bands.map { band ->
-            computeCoefficients(band.frequency, band.gain, band.q, band.filterType, sampleRate)
-        }
+        // Precompute coefficients for all bands. Cutoffs expand into a cascade,
+        // so this is a flat list of sections rather than one entry per band.
+        val allCoeffs = bands.flatMap { band -> cascadeFor(band, sampleRate) }
 
         for (i in 0 until numPoints) {
             val t = i.toDouble() / (numPoints - 1).toDouble()

@@ -53,9 +53,35 @@ class KnobView(context: Context, attrs: AttributeSet?) : View(context, attrs) {
     private val arcRect = RectF()
 
     var minValue = 0f
+        set(newValue) {
+            if (field != newValue) {
+                field = newValue
+                value = value
+                invalidate()
+            }
+        }
     var maxValue = 100f
+        set(newValue) {
+            if (field != newValue) {
+                field = newValue
+                value = value
+                invalidate()
+            }
+        }
     var precision = 1
+        set(newValue) {
+            if (field != newValue) {
+                field = newValue
+                invalidate()
+            }
+        }
     var unit: String = ""
+        set(newValue) {
+            if (field != newValue) {
+                field = newValue
+                invalidate()
+            }
+        }
     var label: String = ""
         set(newValue) {
             if (field != newValue) {

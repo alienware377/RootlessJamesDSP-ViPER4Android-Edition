@@ -164,7 +164,8 @@ class MultibandDistFragment : Fragment() {
         }
         binding.mbdSurface.onBandAddRequested = { freq, gain ->
             pushHistory(snapshot())
-            val band = ParametricEqBand(freq, gain, 0.71, currentFilterType())
+            val type = currentFilterType()
+            val band = ParametricEqBand(freq, defaultGainFor(type), 0.71, type)
             bands.add(band)
             sortBandsByFrequency()
             refreshSurface()
@@ -204,20 +205,38 @@ class MultibandDistFragment : Fragment() {
         suppressBandWrite = true
         // A cutoff has a corner rather than a centre, and calling both of them
         // "frequency" is what made the cutoff look like it had no control.
-        binding.mbdBandFreq.label = getString(
-            when (band.filterType) {
-                ParametricEqFilterType.LOW_PASS,
-                ParametricEqFilterType.HIGH_PASS -> R.string.mbd_knob_cutoff
-                else -> R.string.peq_frequency
-            }
-        )
+        val cutoff = band.filterType == ParametricEqFilterType.LOW_PASS ||
+                band.filterType == ParametricEqFilterType.HIGH_PASS
+        binding.mbdBandFreq.label =
+            getString(if (cutoff) R.string.mbd_knob_cutoff else R.string.peq_frequency)
         binding.mbdBandFreq.value = band.frequency.toFloat()
         binding.mbdBandQ.value = band.q.toFloat()
-        binding.mbdBandGain.value = band.gain.toFloat()
+        // Range before value: the knob clamps on assignment, so setting 48 while
+        // the range is still the gain's would land on 30.
+        if (cutoff) {
+            binding.mbdBandGain.label = getString(R.string.mbd_knob_slope)
+            binding.mbdBandGain.unit = "dB/oct"
+            binding.mbdBandGain.precision = 0
+            binding.mbdBandGain.minValue = 12f
+            binding.mbdBandGain.maxValue = 96f
+            binding.mbdBandGain.value = if (band.gain < 6.0) 48f else band.gain.toFloat()
+        } else {
+            binding.mbdBandGain.label = getString(R.string.peq_gain)
+            binding.mbdBandGain.unit = "dB"
+            binding.mbdBandGain.precision = 1
+            binding.mbdBandGain.minValue = -30f
+            binding.mbdBandGain.maxValue = 30f
+            binding.mbdBandGain.value = band.gain.toFloat()
+        }
         filterButtons.firstOrNull { it.first == band.filterType }
             ?.let { binding.mbdFilterGroup.check(it.second) }
         suppressBandWrite = false
     }
+
+    /** A new cutoff starts steep; a new peaking band starts flat. */
+    private fun defaultGainFor(type: ParametricEqFilterType) =
+        if (type == ParametricEqFilterType.LOW_PASS || type == ParametricEqFilterType.HIGH_PASS)
+            48.0 else 0.0
 
     private fun currentFilterType(): ParametricEqFilterType =
         filterButtons.firstOrNull { it.second == binding.mbdFilterGroup.checkedButtonId }?.first
@@ -245,7 +264,8 @@ class MultibandDistFragment : Fragment() {
             // rather than stacked under an existing handle.
             val freq = (bands.maxOfOrNull { it.frequency }?.times(2.0) ?: 250.0)
                 .coerceIn(20.0, 20000.0)
-            val band = ParametricEqBand(freq, 0.0, 0.71, currentFilterType())
+            val type = currentFilterType()
+            val band = ParametricEqBand(freq, defaultGainFor(type), 0.71, type)
             bands.add(band)
             sortBandsByFrequency()
             refreshSurface()
@@ -393,7 +413,8 @@ class MultibandDistFragment : Fragment() {
         val cutoff = currentFilterType().let {
             it == ParametricEqFilterType.LOW_PASS || it == ParametricEqFilterType.HIGH_PASS
         }
-        dim(binding.mbdBandGain, wet && hasSelection && !cutoff)
+        // Not dimmed on a cutoff any more - there it is the slope control.
+        dim(binding.mbdBandGain, wet && hasSelection)
         // The filter type applies to the selected handle, so with nothing
         // selected the buttons latch and change nothing.
         dimGroup(binding.mbdFilterGroup, wet && hasSelection)

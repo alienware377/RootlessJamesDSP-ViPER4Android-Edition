@@ -55,7 +55,7 @@ object Constants {
      * One low-pass corner, so the card opens on the most useful thing it can
      * do: distort the bass and leave everything above it alone.
      */
-    const val DEFAULT_MBD_BANDS = "PEQ: 250.00 0.000000 0.7100 3; "
+    const val DEFAULT_MBD_BANDS = "PEQ: 250.00 48.000000 0.7100 3; "
     const val DEFAULT_EQ = "25.0;40.0;63.0;100.0;160.0;250.0;400.0;630.0;1000.0;1600.0;2500.0;4000.0;6300.0;10000.0;16000.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0"
 
     // Intent actions

@@ -1056,6 +1056,7 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="mbd_model_crush">Crush</string>
 
     <string name="mbd_knob_cutoff">CUTOFF</string>
+    <string name="mbd_knob_slope">SLOPE</string>
     <string name="mbd_knob_drive">DRIVE</string>
     <string name="mbd_knob_bias">BIAS</string>
     <string name="mbd_knob_shape">SHAPE</string>

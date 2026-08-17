@@ -127,7 +127,11 @@ typedef struct
 	float tone, toneCoeff, toneZL, toneZR;
 	float wet, dry;
 } EchoDelay;
-#define MBD_MAX_BANDS 12
+// Slots for biquad sections, not for handles on the graph: a cutoff expands
+// into one section per 12dB of slope, so a single 96dB/octave low-pass is eight
+// of these on its own.
+#define MBD_MAX_BANDS 24
+#define MBD_MAX_CUTOFF_STAGES 8
 #define MBD_CHORUS_BUFLEN 8192
 #define MBD_CHORUS_VOICES 4
 #define MBD_OS_MAX 8

@@ -22,6 +22,7 @@ import me.timschneeberger.rootlessjamesdsp.databinding.FragmentParametricEqBindi
 import me.timschneeberger.rootlessjamesdsp.model.ParametricEqBand
 import me.timschneeberger.rootlessjamesdsp.model.ParametricEqBandList
 import me.timschneeberger.rootlessjamesdsp.model.ParametricEqFilterType
+import me.timschneeberger.rootlessjamesdsp.utils.BiquadUtils
 import me.timschneeberger.rootlessjamesdsp.utils.Constants
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.registerLocalReceiver
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.sendLocalBroadcast
@@ -407,26 +408,56 @@ class ParametricEqualizerFragment : Fragment() {
                 editorActive = true
 
                 binding.freqInput.value = band.frequency.toFloat()
-                binding.gainInput.value = band.gain.toFloat()
                 binding.qInput.value = band.q.toFloat()
+                // Type before gain: the gain knob's range depends on the type,
+                // and the knob clamps whatever it is given to the range it has
+                // at that moment.
                 setFilterTypeSelection(band.filterType)
+                applyGainRole(band.gain)
                 updateViewState()
             }
         }
     }
 
     /**
-     * A cutoff has a corner, not a gain, and the coefficients ignore the gain
-     * term entirely - so the dial is dimmed rather than left looking live.
-     * Dimming rather than hiding, because hiding reflows the row under the
-     * finger that just moved it.
+     * Point the gain dial at whichever quantity the current filter type has.
+     *
+     * A cutoff has no gain - the coefficients ignore the term - but it does have
+     * a slope, and without a control for it a cutoff is stuck at 12 dB/octave,
+     * which reads as a tilt across the whole spectrum rather than a corner. So
+     * the dial becomes the slope for those types instead of being dimmed. The
+     * band's gain field is what carries the slope; see BiquadUtils.cascadeFor.
+     *
+     * @param gain the band's stored value, or null to keep what the dial shows
      */
-    private fun updateGainUsability() {
+    private fun applyGainRole(gain: Double? = null) {
         val cutoff = getSelectedFilterType().let {
             it == ParametricEqFilterType.LOW_PASS || it == ParametricEqFilterType.HIGH_PASS
         }
-        binding.gainInput.isEnabled = !cutoff
-        binding.gainInput.alpha = if (cutoff) 0.35f else 1f
+        val wasSlope = binding.gainInput.unit == SLOPE_UNIT
+        with(binding.gainInput) {
+            if (cutoff) {
+                // Carrying a gain over into the slope would read as a slope
+                // nobody picked, so a fresh cutoff starts at the default.
+                val v = gain ?: if (wasSlope) value.toDouble() else 0.0
+                label = getString(R.string.mbd_knob_slope)
+                unit = SLOPE_UNIT
+                precision = 0
+                minValue = 12f
+                maxValue = BiquadUtils.MAX_CUTOFF_SLOPE.toFloat()
+                this.value = if (v < 6.0) 48f else v.toFloat()
+            } else {
+                val v = gain ?: if (wasSlope) 0.0 else value.toDouble()
+                label = getString(R.string.peq_gain)
+                unit = "dB"
+                precision = 1
+                minValue = -30f
+                maxValue = 30f
+                this.value = v.toFloat()
+            }
+            isEnabled = true
+            alpha = 1f
+        }
     }
 
     private fun getSelectedFilterType(): ParametricEqFilterType {
@@ -448,7 +479,7 @@ class ParametricEqualizerFragment : Fragment() {
             ParametricEqFilterType.HIGH_PASS -> R.id.filter_high_pass
         }
         binding.filterTypeGroup.check(buttonId)
-        updateGainUsability()
+        applyGainRole()
     }
 
     /** Keeps the band list in ascending frequency order. */
@@ -592,6 +623,9 @@ class ParametricEqualizerFragment : Fragment() {
 
     companion object {
         const val STATE_BANDS = "bands"
+
+        /** Marks the gain dial as currently showing a cutoff slope. */
+        private const val SLOPE_UNIT = "dB/oct"
 
         fun newInstance(): ParametricEqualizerFragment {
             return ParametricEqualizerFragment()
