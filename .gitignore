@@ -18,3 +18,4 @@ local.properties
 /app/src/main/cpp/libjamesdsp/Main/DSPManager/.idea
 /app/src/main/cpp/libjamesdsp/Main/DSPManager/DSPManager.iml
 magisk/aidl/generated/
+tools/mbd_harness

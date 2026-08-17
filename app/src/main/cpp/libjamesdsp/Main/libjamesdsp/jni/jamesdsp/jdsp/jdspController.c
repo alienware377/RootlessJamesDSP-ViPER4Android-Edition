@@ -317,7 +317,7 @@ static const int jdspDefaultChain[] =
 	JDSP_EFX_LIVEPROG4, JDSP_EFX_CROSSFEED, JDSP_EFX_CURE,
 	JDSP_EFX_STEREOWIDE, JDSP_EFX_FIELDSURROUND, JDSP_EFX_HPSURROUND,
 	JDSP_EFX_SPECTRUMEXT, JDSP_EFX_CLARITY, JDSP_EFX_AGC,
-	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY
+	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY, JDSP_EFX_MULTIBANDDIST
 };
 
 void JamesDSPResetChainOrder(JamesDSPLib *jdsp)
@@ -457,6 +457,9 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		break;
 	case JDSP_EFX_ECHODELAY:
 		if (jdsp->echoDelayEnabled) EchoDelayProcess(jdsp, n);
+		break;
+	case JDSP_EFX_MULTIBANDDIST:
+		if (jdsp->multibandDistEnabled) MultibandDistProcess(jdsp, n);
 		break;
 	default:
 		break;
@@ -1352,6 +1355,17 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 		0.0f, 0.0f,
 		1, 0.0f, 50.0f, 0.0f,
 		0.0f, 35.0f, 100.0f);
+	jdsp->multibandDistEnabled = 0;
+	jdsp->multibandDist.chBufL = 0;
+	jdsp->multibandDist.chBufR = 0;
+	jdsp->multibandDist.numBands = 0;
+	MultibandDistSetParam(jdsp, MBD_ROUTING_SPLIT, MBD_MODEL_SOFT,
+		0.0f, 0.0f, 50.0f,
+		16.0f, 0.0f,
+		50.0f, 100.0f,
+		0.6f, 6.0f, 0.0f,
+		50.0f, 2, 0.0f,
+		100.0f);
 	for (int i = 0; i < JDSP_LIVEPROG_EXTRA; i++)
 		jdsp->liveprogExtraEnabled[i] = 0;
 	JamesDSPResetChainOrder(jdsp);
@@ -1474,6 +1488,7 @@ void JamesDSPSetSampleRate(JamesDSPLib *jdsp, float new_sample_rate, int forceRe
 void JamesDSPReleaseEffectBuffers(JamesDSPLib *jdsp)
 {
 	EchoDelayDisable(jdsp);
+	MultibandDistDisable(jdsp);
 	VReverbDisable(jdsp);
 	PitchShiftDisable(jdsp);
 	HpSurroundDisable(jdsp);
