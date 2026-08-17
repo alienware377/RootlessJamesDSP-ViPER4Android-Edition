@@ -35,6 +35,7 @@ object V4aMode {
         Constants.PREF_PITCHSHIFT to R.string.key_pitchshift_enable,
         Constants.PREF_ECHODELAY to R.string.key_echo_enable,
         Constants.PREF_MULTIBANDDIST to R.string.key_mbd_enable,
+        Constants.PREF_MAXIMIZER to R.string.key_maxr_enable,
         Constants.PREF_GEQ to R.string.key_geq_enable,
         Constants.PREF_PEQ to R.string.key_peq_enable,
         Constants.PREF_LIVEPROG to R.string.key_liveprog_enable,
@@ -57,7 +58,7 @@ object V4aMode {
      */
     val hiddenCardIds = intArrayOf(
         R.id.card_compressor, R.id.card_bass, R.id.card_bassex,
-        R.id.card_pitchshift, R.id.card_echo, R.id.card_mbd, R.id.card_geq,
+        R.id.card_pitchshift, R.id.card_echo, R.id.card_mbd, R.id.card_maxr, R.id.card_geq,
         R.id.card_peq, R.id.card_liveprog, R.id.card_liveprog2,
         R.id.card_liveprog3, R.id.card_liveprog4, R.id.card_stereowide,
         R.id.card_crossfeed, R.id.card_reverb

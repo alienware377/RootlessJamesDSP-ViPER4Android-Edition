@@ -545,6 +545,26 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDis
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMaximizer(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable,
+        jint mode,
+        jfloat gain,
+        jfloat ceiling,
+        jfloat release,
+        jfloat character,
+        jfloat transient,
+        jboolean truePeak,
+        jfloat stereoLink,
+        jint oversample)
+{
+    DECLARE_DSP_B
+    MaximizerSetParam(dsp, mode, gain, ceiling, release, character, transient,
+                      truePeak, stereoLink, oversample);
+    if (enable) MaximizerEnable(dsp); else MaximizerDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDistBands(JNIEnv *env, jobject obj, jlong self,
         jfloatArray bandsObj)
 {

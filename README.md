@@ -110,12 +110,14 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - ~~**ViPER4Android classic theme**~~ — the classic look, available with or without the mode
 - ~~**Library management for Convolver & DDC**~~ — search, sorting, hiding, groups, and downloading more profiles from public repositories
 - ~~**Idle battery fix**~~ — processing stands down when playback is silent, not just when apps release the audio session
+- ~~**Multiband distortion**~~ — pick frequency ranges to drive, with eight distortion characters, chorus, and a global mix, built on the interactive EQ editor with cutoff-type handles
+- ~~**Full maximiser**~~ — four limiting algorithms, with character, transient emphasis, true-peak detection, stereo linking and oversampling
+- ~~**Search, sorting & hiding on the presets screen**~~ — the same pull-down search, custom order, hiding and groups the convolver and DDC libraries have
+- ~~**Linear / minimum phase toggle**~~ — on both equaliser cards, since the two are merged into one filter before the engine sees them
 
 ### 🔜 Planned
 
 - **Global "Poweramp-style" mode** — process the whole output mix with Android's built-in effect API instead of audio capture: no capture permission, no persistent notification, and apps that block capture (Spotify) would work. Trade-off: only EQ/bass/limiter-class effects can run there — the ViPER effects need the capture engine. Deprecated by Google and device-dependent (works on many Samsungs, often not Pixels), so it'll ship clearly labelled as experimental.
-- **Multiband distortion** — pick frequency ranges to drive, with several distortion models, chorus, and a global mix, built on the interactive EQ editor with cutoff-type handles
-- **Full maximiser** — several limiting algorithms rather than one, with character, transient emphasis, true-peak detection, stereo linking and oversampling
 - **Full exciter** — four bands with selectable saturation characters (warm, retro, tape, tube, triode) and per-band mix, replacing the current two-band bass-only design
 - **Dynamic EQ** — bands that move with the signal, the main Ozone-style tool the app has no equivalent for
 - **Multiband stereo imaging** — width per frequency band; the current widener works across the whole spectrum at once
@@ -129,8 +131,6 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - **Binaural upmix** — build a surround bed from stereo, then fold it back to headphones through HRTF/BRIR convolution so sources can sit behind and above you. Headphones only; two speakers can't do this without crosstalk cancellation
 - **AIDL effect HAL** — a second module for Android 15 and newer, where the effect framework moved from the legacy plugin interface to a binder service. Not a port of the existing one: the engine has to be exposed behind a new interface and driven from fast message queues rather than a process callback
 - **Rooted mode** — for devices with the JamesDSP magisk module (testers welcome!)
-- **Search, sorting & hiding on the presets screen** — the convolver and DDC libraries have this now; presets are next
-- **Minimum-phase toggle** for the graphic EQ
 - **GitHub search for new profile sources** — built but parked while its edge cases are ironed out; adding your own repository link already works
 - **Built-in media player** *(after everything above)* — a library browser in the spirit of jetAudio, with independent tempo and pitch control as well as combined speed, and a now-playing screen modelled on vintage turntables: platter wow and flutter, motor speed drift, surface noise and other period defects as deliberate, adjustable colour. Visual and behavioural reference: the iPad app *Vinyl* ([demo](https://www.youtube.com/watch?v=8leOYocOGSs))
 - **Remember effect on/off states** across a ViPER4Android-only mode round trip — your settings already survive, but effects switched off by the mode stay off when you leave it

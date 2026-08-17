@@ -169,6 +169,18 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
 
             applyChainOrder()
 
+            cache.select(Constants.PREF_MAXIMIZER)
+            val maxrEnabled = cache.get(R.string.key_maxr_enable, false)
+            val maxrMode = cache.get(R.string.key_maxr_mode, "0").toInt()
+            val maxrGain = cache.get(R.string.key_maxr_gain, 0f)
+            val maxrCeiling = cache.get(R.string.key_maxr_ceiling, -0.3f)
+            val maxrRelease = cache.get(R.string.key_maxr_release, 200f)
+            val maxrCharacter = cache.get(R.string.key_maxr_character, 0f)
+            val maxrTransient = cache.get(R.string.key_maxr_transient, 0f)
+            val maxrTruePeak = cache.get(R.string.key_maxr_true_peak, true)
+            val maxrStereoLink = cache.get(R.string.key_maxr_stereo_link, 100f)
+            val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
+
             cache.select(Constants.PREF_MULTIBANDDIST)
             val mbdEnabled = cache.get(R.string.key_mbd_enable, false)
             val mbdBands = cache.get(R.string.key_mbd_bands, Constants.DEFAULT_MBD_BANDS)
@@ -313,6 +325,11 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         vrDiffusion, vrMod, vrBass, vrEr, vrWet, vrDry)
                     Constants.PREF_SPEAKEROPT -> setSpeakerOpt(soEnabled, soStrength)
                     Constants.PREF_PITCHSHIFT -> setPitchShift(psEnabled, psSemitones, psMix)
+                    Constants.PREF_MAXIMIZER -> setMaximizer(
+                        maxrEnabled, maxrMode, maxrGain, maxrCeiling, maxrRelease,
+                        maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
+                        maxrOversample
+                    )
                     Constants.PREF_MULTIBANDDIST -> {
                         // Bands first: the cascade has to be in place before
                         // the stage that feeds off it is switched on.
@@ -676,6 +693,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
         return setMultibandDistBandsInternal(flat)
     }
 
+    abstract fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean
     protected abstract fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean
     abstract fun setMultibandDist(enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean
     abstract fun setEchoDelay(enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean

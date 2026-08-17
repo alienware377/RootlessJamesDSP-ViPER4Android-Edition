@@ -289,4 +289,14 @@
     <string name="key_mbd_chorus_mix" translatable="false">mbd_chorus_mix</string>
     <string name="key_mbd_mix" translatable="false">mbd_mix</string>
     <string name="key_mbd_open_panel" translatable="false">mbd_open_panel</string>
+    <string name="key_maxr_enable" translatable="false">maxr_enable</string>
+    <string name="key_maxr_mode" translatable="false">maxr_mode</string>
+    <string name="key_maxr_gain" translatable="false">maxr_gain</string>
+    <string name="key_maxr_ceiling" translatable="false">maxr_ceiling</string>
+    <string name="key_maxr_release" translatable="false">maxr_release</string>
+    <string name="key_maxr_character" translatable="false">maxr_character</string>
+    <string name="key_maxr_transient" translatable="false">maxr_transient</string>
+    <string name="key_maxr_true_peak" translatable="false">maxr_true_peak</string>
+    <string name="key_maxr_stereo_link" translatable="false">maxr_stereo_link</string>
+    <string name="key_maxr_oversample" translatable="false">maxr_oversample</string>
 </resources>

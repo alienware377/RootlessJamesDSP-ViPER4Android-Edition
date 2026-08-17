@@ -171,6 +171,8 @@ class JamesDspRemoteEngine(
     override fun setSpeakerOpt(enable: Boolean, strength: Float): Boolean =
         sendForkEffect(PARAM_SPEAKER_OPT, enable, floatArrayOf(strength))
 
+    override fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean = true
+
     // The legacy AudioEffect parameter path has no slot for an arbitrary
     // array, and the plugin build has no multiband distortion behind it, so
     // these succeed without doing anything rather than reporting a failure

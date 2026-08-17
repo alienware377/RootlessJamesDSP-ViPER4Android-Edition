@@ -180,6 +180,31 @@ typedef struct
 	float chPhase, chInc, chBase, chDepth, chFeedback, chSpread, chMix;
 	float fs;
 } MultibandDist;
+// 1024 samples is 5.3ms at 48kHz and still 5.3ms of headroom at 192kHz, where
+// the longest lookahead any mode asks for is 768 samples.
+#define MAXR_BUFLEN 1024
+#define MAXR_OS_MAX 8
+enum MaxrMode
+{
+	MAXR_MODE_TRANSPARENT = 0,
+	MAXR_MODE_PUNCHY,
+	MAXR_MODE_WARM,
+	MAXR_MODE_AGGRESSIVE,
+	MAXR_MODE_COUNT
+};
+typedef struct
+{
+	int mode, truePeak, osRequest, osFactor, lookahead;
+	float inGain, ceiling, character, transient, stereoLink;
+	float attCoef, relCoef, gainState[2];
+	// Delay line, plus the monotonic deque that gives the sliding-window peak.
+	float *buf[2];
+	unsigned *dq[2];
+	float *dqVal[2];
+	unsigned dqHead[2], dqTail[2], widx;
+	samplerateTool smp[2];
+	float fs;
+} Maximizer;
 typedef struct
 {
 	float *buf[2];
@@ -668,6 +693,7 @@ enum JdspEffectId
 	JDSP_EFX_VREVERB,
 	JDSP_EFX_ECHODELAY,
 	JDSP_EFX_MULTIBANDDIST,
+	JDSP_EFX_MAXIMIZER,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -835,6 +861,8 @@ typedef struct dspsys
 	EchoDelay echoDelay;
 	int multibandDistEnabled;
 	MultibandDist multibandDist;
+	int maximizerEnabled;
+	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
 	Crossfeed advXF;
@@ -1001,6 +1029,13 @@ extern void MultibandDistSetParam(JamesDSPLib *jdsp,
 extern void MultibandDistProcess(JamesDSPLib *jdsp, size_t n);
 extern void MultibandDistEnable(JamesDSPLib *jdsp);
 extern void MultibandDistDisable(JamesDSPLib *jdsp);
+extern void MaximizerSetParam(JamesDSPLib *jdsp,
+	int mode, float gainDb, float ceilingDb, float releaseMs,
+	float characterPct, float transientPct, int truePeak,
+	float stereoLinkPct, int oversample);
+extern void MaximizerProcess(JamesDSPLib *jdsp, size_t n);
+extern void MaximizerEnable(JamesDSPLib *jdsp);
+extern void MaximizerDisable(JamesDSPLib *jdsp);
 extern void EchoDelayDisable(JamesDSPLib *jdsp);
 extern void JamesDSPReleaseEffectBuffers(JamesDSPLib *jdsp);
 // Compressor

@@ -317,7 +317,7 @@ static const int jdspDefaultChain[] =
 	JDSP_EFX_LIVEPROG4, JDSP_EFX_CROSSFEED, JDSP_EFX_CURE,
 	JDSP_EFX_STEREOWIDE, JDSP_EFX_FIELDSURROUND, JDSP_EFX_HPSURROUND,
 	JDSP_EFX_SPECTRUMEXT, JDSP_EFX_CLARITY, JDSP_EFX_AGC,
-	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY, JDSP_EFX_MULTIBANDDIST
+	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY, JDSP_EFX_MULTIBANDDIST, JDSP_EFX_MAXIMIZER
 };
 
 void JamesDSPResetChainOrder(JamesDSPLib *jdsp)
@@ -460,6 +460,9 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		break;
 	case JDSP_EFX_MULTIBANDDIST:
 		if (jdsp->multibandDistEnabled) MultibandDistProcess(jdsp, n);
+		break;
+	case JDSP_EFX_MAXIMIZER:
+		if (jdsp->maximizerEnabled) MaximizerProcess(jdsp, n);
 		break;
 	default:
 		break;
@@ -1355,6 +1358,15 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 		0.0f, 0.0f,
 		1, 0.0f, 50.0f, 0.0f,
 		0.0f, 35.0f, 100.0f);
+	jdsp->maximizerEnabled = 0;
+	jdsp->maximizer.buf[0] = 0;
+	jdsp->maximizer.buf[1] = 0;
+	jdsp->maximizer.dq[0] = 0;
+	jdsp->maximizer.dq[1] = 0;
+	jdsp->maximizer.dqVal[0] = 0;
+	jdsp->maximizer.dqVal[1] = 0;
+	MaximizerSetParam(jdsp, MAXR_MODE_TRANSPARENT, 0.0f, -0.3f, 200.0f,
+		0.0f, 0.0f, 1, 100.0f, 1);
 	jdsp->multibandDistEnabled = 0;
 	jdsp->multibandDist.chBufL = 0;
 	jdsp->multibandDist.chBufR = 0;
@@ -1489,6 +1501,7 @@ void JamesDSPReleaseEffectBuffers(JamesDSPLib *jdsp)
 {
 	EchoDelayDisable(jdsp);
 	MultibandDistDisable(jdsp);
+	MaximizerDisable(jdsp);
 	VReverbDisable(jdsp);
 	PitchShiftDisable(jdsp);
 	HpSurroundDisable(jdsp);

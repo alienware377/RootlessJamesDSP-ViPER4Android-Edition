@@ -44,6 +44,7 @@ object JamesDspWrapper {
                             diffusion: Float, mod: Float, bass: Float, er: Float,
                             wet: Float, dry: Float): Boolean
     external fun setSpeakerOpt(self: JamesDspHandle, enable: Boolean, strength: Float): Boolean
+    external fun setMaximizer(self: JamesDspHandle, enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean
     external fun setMultibandDist(self: JamesDspHandle, enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean
     external fun setMultibandDistBands(self: JamesDspHandle, bands: FloatArray?): Boolean
     external fun setEchoDelay(self: JamesDspHandle, enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean

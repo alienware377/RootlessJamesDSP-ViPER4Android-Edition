@@ -148,6 +148,9 @@ class JamesDspLocalEngine(context: Context, callbacks: JamesDspWrapper.JamesDspC
         return JamesDspWrapper.setSpeakerOpt(handle, enable, strength)
     }
 
+    override fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean =
+        JamesDspWrapper.setMaximizer(handle, enable, mode, gain, ceiling, release, character, transient, truePeak, stereoLink, oversample)
+
     override fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean =
         JamesDspWrapper.setMultibandDistBands(handle, bands)
 

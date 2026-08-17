@@ -546,4 +546,27 @@
         <item>6</item>
         <item>7</item>
     </string-array>
+
+    <string-array name="maxr_modes">
+        <item>@string/maxr_mode_transparent</item>
+        <item>@string/maxr_mode_punchy</item>
+        <item>@string/maxr_mode_warm</item>
+        <item>@string/maxr_mode_aggressive</item>
+    </string-array>
+    <string-array name="maxr_modes_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="maxr_oversample_entries">
+        <item>@string/maxr_oversample_off</item>
+        <item>@string/maxr_oversample_2x</item>
+        <item>@string/maxr_oversample_4x</item>
+    </string-array>
+    <string-array name="maxr_oversample_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>

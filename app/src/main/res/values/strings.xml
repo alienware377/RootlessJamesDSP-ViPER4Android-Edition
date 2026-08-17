@@ -1071,4 +1071,30 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="mbd_knob_mix">MIX</string>
 
     <string name="mbd_band_hint">Drag a handle to move it, long-press empty space to add one, long-press a handle to remove it. Low pass and high pass handles select a range; peaking and shelf handles shape what goes into the distortion.</string>
+
+    <string name="maxr_enable">Maximizer</string>
+    <string name="maxr_info">Makes the music louder without letting it go past a ceiling you choose. The output limiter is a safety net that stops the signal leaving the rails; this is the tool for deliberately pushing into one. Gain drives the signal in, the ceiling is the hard stop, and character decides how much of the reduction is done by rounding peaks off rather than turning everything down around them. True peak measures the level between samples, which is where clipping hides from ordinary meters.</string>
+    <string name="maxr_mode">Algorithm</string>
+    <string name="maxr_mode_transparent">Transparent</string>
+    <string name="maxr_mode_punchy">Punchy</string>
+    <string name="maxr_mode_warm">Warm</string>
+    <string name="maxr_mode_aggressive">Aggressive</string>
+    <string name="maxr_gain">Gain</string>
+    <string name="maxr_gain_summary">How hard the signal is driven into the ceiling. This is the loudness control.</string>
+    <string name="maxr_ceiling">Ceiling</string>
+    <string name="maxr_ceiling_summary">Nothing leaves above this, whatever else is set. Leave a little headroom for lossy playback.</string>
+    <string name="maxr_release">Release</string>
+    <string name="maxr_release_summary">How quickly the level returns after a peak. Short is punchy and pumps; long is smooth and duller.</string>
+    <string name="maxr_character">Character</string>
+    <string name="maxr_character_summary">Trades clean gain reduction for saturation. Louder and warmer, at the cost of added harmonics.</string>
+    <string name="maxr_transient">Transient</string>
+    <string name="maxr_transient_summary">Lets the leading edge of a hit through before the reduction lands, so drums keep their attack.</string>
+    <string name="maxr_true_peak">True peak detection</string>
+    <string name="maxr_true_peak_summary">Measures the level between samples, not just at them, so peaks that only appear once a converter reconstructs the waveform are caught too.</string>
+    <string name="maxr_stereo_link">Stereo link</string>
+    <string name="maxr_stereo_link_summary">How much a peak on one side turns the other down with it. Full keeps the stereo image still; none reduces less but lets it wander.</string>
+    <string name="maxr_oversample">Oversampling</string>
+    <string name="maxr_oversample_off">Off</string>
+    <string name="maxr_oversample_2x">2x</string>
+    <string name="maxr_oversample_4x">4x</string>
 </resources>
