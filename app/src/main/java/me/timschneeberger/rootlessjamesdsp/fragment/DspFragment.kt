@@ -51,12 +51,17 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
             slotsChangedReceiver,
             android.content.IntentFilter(Constants.ACTION_LIVEPROG_SLOTS_CHANGED)
         )
+        requireContext().registerLocalReceiver(
+            presetLoadedReceiver,
+            android.content.IntentFilter(Constants.ACTION_PRESET_LOADED)
+        )
         applyLiveprogSlotVisibility()
     }
 
     override fun onPause() {
         super.onPause()
         requireContext().unregisterLocalReceiver(slotsChangedReceiver)
+        requireContext().unregisterLocalReceiver(presetLoadedReceiver)
     }
 
     override fun onDestroy() {
@@ -428,6 +433,23 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
      * their identity, so removing the middle script leaves that card hidden and
      * the ones after it where they were.
      */
+    /**
+     * A preset carries the card layout too, and this fragment owns the manager
+     * holding it. Nothing else re-applies it, so without this the restored
+     * order and hidden cards stay invisible until the app is killed - and are
+     * then overwritten by the first drag.
+     */
+    private val presetLoadedReceiver = object : android.content.BroadcastReceiver() {
+        override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
+            if (!isAdded) return
+            // Re-applying mid-drag would fight the user's finger.
+            layoutManager?.let {
+                if (it.editMode) it.exitEditMode()
+                it.reload()
+            }
+        }
+    }
+
     private val slotsChangedReceiver = object : android.content.BroadcastReceiver() {
         override fun onReceive(context: android.content.Context?, intent: android.content.Intent?) {
             applyLiveprogSlotVisibility(rebuild = true)

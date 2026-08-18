@@ -89,6 +89,27 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
     /** GitHub repository search is parked until its flow is hardened. */
     private val githubSearchEnabled = false
 
+    /**
+     * Unpack a preset over the current settings and say so.
+     *
+     * Failure has to be visible: the archive can be a backup rather than a
+     * preset, or too new for this build, and load() signals all of that by
+     * throwing. Swallowing it would look identical to a preset that simply
+     * changed nothing.
+     */
+    private fun loadPreset(entry: Entry) {
+        try {
+            Preset(File(entry.value.toString()).name).load()
+            requireContext().toast(getString(R.string.filelibrary_preset_loaded, entry.name))
+        }
+        catch (ex: Exception) {
+            Timber.e(ex, "Failed to load preset ${entry.name}")
+            requireContext().showAlert(
+                getString(R.string.filelibrary_corrupted_title),
+                ex.localizedMessage ?: getString(R.string.filelibrary_preset_load_failed, entry.name))
+        }
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         dialog = super.onCreateDialog(savedInstanceState) as AlertDialog
         // Workaround to prevent the button from closing the dialog
@@ -177,6 +198,13 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
                     notifySlotsChanged()
                 }
                 else {
+                    // Presets load from here. This listener is installed when
+                    // the dialog shows, which replaces the one AlertController
+                    // wired up from builder.setAdapter - and that lambda was
+                    // the only place the load ever happened, so tapping a
+                    // preset merely closed the dialog and applied nothing.
+                    if (fileLibPreference.isPreset())
+                        loadPreset(entry)
                     clickedEntryValue = entry.value
                     onDialogClosed(true)
                     dialog.dismiss()
@@ -560,22 +588,16 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
         }
 
         builder.setAdapter(createAdapter()) { _, position ->
+            // Normally unreachable: the listener installed in setOnShowListener
+            // replaces this one. Kept as the fallback for the case where the
+            // dialog is shown without that pass, and sharing loadPreset so the
+            // two paths cannot drift apart again.
             val item = dialog.listView.adapter.getItem(position) as Entry
-            val name = item.name
-            val value = item.value
 
-            if(fileLibPreference.isPreset()) {
-                try {
-                    Preset(File(value.toString()).name).load()
-                    requireContext().toast(getString(R.string.filelibrary_preset_loaded, name))
-                }
-                catch (ex: Exception) {
-                    requireContext().showAlert(getString(R.string.filelibrary_corrupted_title),
-                        ex.localizedMessage ?: getString(R.string.filelibrary_preset_load_failed, name))
-                }
-            }
+            if(fileLibPreference.isPreset())
+                loadPreset(item)
 
-            clickedEntryValue = value
+            clickedEntryValue = item.value
 
             // Simulate positive button press and dismiss
             this.onClick(dialog, DialogInterface.BUTTON_POSITIVE)

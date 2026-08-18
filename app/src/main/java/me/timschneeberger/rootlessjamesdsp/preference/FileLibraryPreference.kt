@@ -33,15 +33,20 @@ class FileLibraryPreference(context: Context, attrs: AttributeSet?) :
             }
 
             directory = File(context.getExternalFilesDir(null), type)
-            if(type.lowercase() != "unknown")
+            // "unknown" is the placeholder the init block sets before the real
+            // type arrives. It names a directory that deliberately is not
+            // created, so listing it can only ever produce an empty result -
+            // and an empty result posted late lands on top of a good one.
+            if(type.lowercase() != "unknown") {
                 directory?.mkdir()
-            // Off the main thread: this runs while the preference inflates, and
-            // listing a populated library over external storage is slow - the
-            // DDC card measured three seconds on its own, which is most of the
-            // stutter when scrolling in after a cold open. The dialog paths
-            // refresh synchronously before showing, so entries are always
-            // current by the time they are actually needed.
-            refreshAsync()
+                // Off the main thread: this runs while the preference inflates,
+                // and listing a populated library over external storage is slow
+                // - the DDC card measured three seconds on its own, which is
+                // most of the stutter when scrolling in after a cold open. The
+                // dialog paths refresh synchronously before showing, so entries
+                // are always current by the time they are actually needed.
+                refreshAsync()
+            }
         }
 
     init {
@@ -83,6 +88,10 @@ class FileLibraryPreference(context: Context, attrs: AttributeSet?) :
             val built = runCatching { buildFileList(dir) }.getOrNull()
             if (built != null) {
                 android.os.Handler(android.os.Looper.getMainLooper()).post {
+                    // A build that finished after the directory moved on is
+                    // describing somewhere the preference no longer points, so
+                    // applying it would overwrite a newer, correct list.
+                    if (directory != dir) return@post
                     entries = built.first
                     entryValues = built.second
                     notifyChanged()

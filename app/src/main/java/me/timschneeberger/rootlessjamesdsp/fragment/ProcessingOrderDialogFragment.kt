@@ -78,7 +78,7 @@ class ProcessingOrderDialogFragment : DialogFragment() {
         )
         if (keyId == 0) return false
         val value = requireContext()
-            .getSharedPreferences(prefName, android.content.Context.MODE_PRIVATE)
+            .getSharedPreferences(prefName, android.content.Context.MODE_MULTI_PROCESS)
             .getString(getString(keyId), "")
         return value.isNullOrBlank()
     }
@@ -86,7 +86,7 @@ class ProcessingOrderDialogFragment : DialogFragment() {
     private lateinit var order: MutableList<ChainEffect>
 
     private fun prefs() = requireContext()
-        .getSharedPreferences(Constants.PREF_CHAIN_ORDER, Context.MODE_PRIVATE)
+        .getSharedPreferences(Constants.PREF_CHAIN_ORDER, Context.MODE_MULTI_PROCESS)
 
     private fun loadOrder(): MutableList<ChainEffect> {
         val saved = prefs().getString(Constants.KEY_CHAIN_ORDER, null)

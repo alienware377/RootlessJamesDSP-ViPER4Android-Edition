@@ -758,7 +758,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             return
         }
         val saved = context
-            .getSharedPreferences(Constants.PREF_CHAIN_ORDER, Context.MODE_PRIVATE)
+            .getSharedPreferences(Constants.PREF_CHAIN_ORDER, Context.MODE_MULTI_PROCESS)
             .getString(Constants.KEY_CHAIN_ORDER, null)
         val order = saved
             ?.split(",")

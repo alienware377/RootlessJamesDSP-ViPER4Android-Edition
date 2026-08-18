@@ -357,6 +357,26 @@ class EffectLayoutManager(
         onEditModeChanged?.invoke(true)
     }
 
+    /**
+     * Re-read the layout from disk and re-apply it.
+     *
+     * Loading a preset replaces effect_layout.xml underneath a running app, but
+     * [prefs] is the copy this process loaded at startup and keeps serving -
+     * and the next drag or eye-toggle would write that stale copy straight back
+     * over what the preset restored. Re-entering getSharedPreferences with
+     * MODE_MULTI_PROCESS is what makes the platform notice the file changed;
+     * the mode on the cached instance alone does nothing.
+     *
+     * Deliberately not a computed property: isHidden() is called once per card
+     * on every keystroke of the effect search, and that would put a stat() per
+     * card per character on the UI thread.
+     */
+    fun reload() {
+        @Suppress("DEPRECATION")
+        context.getSharedPreferences(PREFS, Context.MODE_MULTI_PROCESS)
+        applyLayout()
+    }
+
     fun exitEditMode() {
         if (!editMode) return
         editMode = false
