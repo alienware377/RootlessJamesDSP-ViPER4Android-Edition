@@ -184,6 +184,23 @@ typedef struct
 	float chPhase, chInc, chBase, chDepth, chFeedback, chSpread, chMix;
 	float fs;
 } MultibandDist;
+typedef struct
+{
+	// One channel of state: everything here runs on the side signal alone.
+	float b0, b1, b2, a1, a2;
+	float z1, z2;
+} ImagingStage;
+typedef struct
+{
+	// Width is the gain of the side signal, so these equalise side and leave
+	// mid alone. At every width 1.0 each stage is the identity and the output
+	// is the input, bitwise.
+	ImagingStage mono, mono2, low, mid, high;
+	float monoBelow, freqLow, freqMid, freqHigh;
+	float widthLow, widthMid, widthHigh;
+	float fs, mix;
+	int transparent;
+} Imaging;
 #define DYNEQ_MAX_BANDS 8
 // freq, Q, threshold dB, ratio, attack ms, release ms, range dB, mode
 #define DYNEQ_VALUES_PER_BAND 8
@@ -729,6 +746,7 @@ enum JdspEffectId
 	JDSP_EFX_MULTIBANDDIST,
 	JDSP_EFX_MAXIMIZER,
 	JDSP_EFX_DYNAMICEQ,
+	JDSP_EFX_IMAGING,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -899,6 +917,8 @@ typedef struct dspsys
 	int maximizerEnabled;
 	int dynamicEqEnabled;
 	DynamicEq dynamicEq;
+	int imagingEnabled;
+	Imaging imaging;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1054,6 +1074,12 @@ extern void EchoDelaySetParam(JamesDSPLib *jdsp, float inputLevel, float timeMs,
 extern void EchoDelayUpdateFilter(EchoDelay *e, float cutoffHz);
 extern void EchoDelayProcess(JamesDSPLib *jdsp, size_t n);
 extern void EchoDelayEnable(JamesDSPLib *jdsp);
+extern void ImagingSetParam(JamesDSPLib *jdsp, float monoBelowHz,
+	float freqLow, float freqMid, float freqHigh,
+	float widthLow, float widthMid, float widthHigh, float mixPct);
+extern void ImagingProcess(JamesDSPLib *jdsp, size_t n);
+extern void ImagingEnable(JamesDSPLib *jdsp);
+extern void ImagingDisable(JamesDSPLib *jdsp);
 extern void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count);
 extern void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct);
 extern void DynamicEqProcess(JamesDSPLib *jdsp, size_t n);

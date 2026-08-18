@@ -1057,6 +1057,18 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
 
     <string name="mbd_knob_cutoff">CUTOFF</string>
     <string name="mbd_knob_slope">SLOPE</string>
+    <string name="imaging_enable">Stereo imaging (per band)</string>
+    <string name="imaging_info">Width, but chosen per frequency range instead of all at once. The plain widener pulls the bass apart along with everything else, which thins the centre and falls apart in mono; here the low end can be folded to mono while the top opens up. Mono recordings are left exactly as they are, whatever the settings.</string>
+    <string name="imaging_mono_below">Mono below</string>
+    <string name="imaging_mono_below_summary">Everything under this is folded to the centre. Set to 0 to leave the bass alone.</string>
+    <string name="imaging_low_header">Low</string>
+    <string name="imaging_mid_header">Mid</string>
+    <string name="imaging_high_header">High</string>
+    <string name="imaging_width">Width</string>
+    <string name="imaging_width_summary">1.0 leaves the range untouched, below narrows toward the centre, above widens.</string>
+    <string name="imaging_freq">Centred on</string>
+    <string name="imaging_mix">Mix</string>
+    <string name="imaging_mix_summary">How much of the reshaped image is blended back in. At 0%% nothing is changed at all.</string>
     <string name="dyneq_enable">Dynamic EQ</string>
     <string name="dyneq_info">Bands that only act when the music asks. A static cut is always there, so taming a boom that happens on four notes costs body on everything else; each band here watches its own slice of the spectrum and moves only while that slice is over its threshold. Ships tuned to tame low boom, harshness and sibilance.</string>
     <string name="dyneq_freq_summary">Where this band listens, and where it acts.</string>

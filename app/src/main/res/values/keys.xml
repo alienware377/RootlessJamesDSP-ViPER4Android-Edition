@@ -313,6 +313,15 @@
     <string name="key_dyneq3_release" translatable="false">dyneq3_release</string>
     <string name="key_dyneq3_range" translatable="false">dyneq3_range</string>
     <string name="key_dyneq3_mode" translatable="false">dyneq3_mode</string>
+    <string name="key_imaging_enable" translatable="false">imaging_enable</string>
+    <string name="key_imaging_mono_below" translatable="false">imaging_mono_below</string>
+    <string name="key_imaging_freq_low" translatable="false">imaging_freq_low</string>
+    <string name="key_imaging_freq_mid" translatable="false">imaging_freq_mid</string>
+    <string name="key_imaging_freq_high" translatable="false">imaging_freq_high</string>
+    <string name="key_imaging_width_low" translatable="false">imaging_width_low</string>
+    <string name="key_imaging_width_mid" translatable="false">imaging_width_mid</string>
+    <string name="key_imaging_width_high" translatable="false">imaging_width_high</string>
+    <string name="key_imaging_mix" translatable="false">imaging_mix</string>
     <string name="key_dyneq_enable" translatable="false">dyneq_enable</string>
     <string name="key_dyneq_mix" translatable="false">dyneq_mix</string>
     <string name="key_maxr_enable" translatable="false">maxr_enable</string>

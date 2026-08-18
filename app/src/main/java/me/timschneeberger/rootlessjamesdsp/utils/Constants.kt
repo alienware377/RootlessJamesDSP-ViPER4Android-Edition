@@ -43,6 +43,7 @@ object Constants {
     const val PREF_MULTIBANDDIST = "dsp_multibanddist"
     const val PREF_MAXIMIZER = "dsp_maximizer"
     const val PREF_DYNAMICEQ = "dsp_dynamiceq"
+    const val PREF_IMAGING = "dsp_imaging"
     const val PREF_CHAIN_ORDER = "dsp_chain_order"
     const val PREF_FILELIBRARY = "dsp_filelibrary"
     const val KEY_CHAIN_ORDER = "order"

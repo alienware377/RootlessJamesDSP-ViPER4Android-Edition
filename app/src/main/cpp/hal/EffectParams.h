@@ -112,6 +112,12 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
         break;
     case 26113: if (on) DynamicEqEnable(d); else DynamicEqDisable(d); break;
 
+    case 26014:
+        if (fn >= 8)
+            ImagingSetParam(d, fv[0], fv[1], fv[2], fv[3], fv[4], fv[5], fv[6], fv[7]);
+        break;
+    case 26114: if (on) ImagingEnable(d); else ImagingDisable(d); break;
+
     /* The order arrives as ints, so it is read from the raw payload rather
        than through the float view every other effect uses. */
     case 26012:

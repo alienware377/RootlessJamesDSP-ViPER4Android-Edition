@@ -527,6 +527,11 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->dynamicEqEnabled) DynamicEqProcess(jdsp, n);
 		jdsp_unlock(jdsp);
 		break;
+	case JDSP_EFX_IMAGING:
+		jdsp_lock(jdsp);
+		if (jdsp->imagingEnabled) ImagingProcess(jdsp, n);
+		jdsp_unlock(jdsp);
+		break;
 	default:
 		break;
 	}
@@ -1455,6 +1460,11 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 		DynamicEqSetBands(jdsp, defaults, 3);
 	}
 	DynamicEqSetParam(jdsp, 100.0f);
+	jdsp->imagingEnabled = 0;
+	// Bass folded to mono, mids left alone, top opened up: audible on any
+	// stereo material without being a trick.
+	ImagingSetParam(jdsp, 120.0f, 250.0f, 1500.0f, 6000.0f,
+		1.0f, 1.15f, 1.6f, 100.0f);
 	for (int i = 0; i < JDSP_LIVEPROG_EXTRA; i++)
 		jdsp->liveprogExtraEnabled[i] = 0;
 	JamesDSPResetChainOrder(jdsp);

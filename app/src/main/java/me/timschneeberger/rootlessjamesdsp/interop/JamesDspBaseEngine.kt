@@ -181,6 +181,17 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrStereoLink = cache.get(R.string.key_maxr_stereo_link, 100f)
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
 
+            cache.select(Constants.PREF_IMAGING)
+            val imgEnabled = cache.get(R.string.key_imaging_enable, false)
+            val imgMonoBelow = cache.get(R.string.key_imaging_mono_below, 120f)
+            val imgFreqLow = cache.get(R.string.key_imaging_freq_low, 250f)
+            val imgFreqMid = cache.get(R.string.key_imaging_freq_mid, 1500f)
+            val imgFreqHigh = cache.get(R.string.key_imaging_freq_high, 6000f)
+            val imgWidthLow = cache.get(R.string.key_imaging_width_low, 1.0f)
+            val imgWidthMid = cache.get(R.string.key_imaging_width_mid, 1.15f)
+            val imgWidthHigh = cache.get(R.string.key_imaging_width_high, 1.6f)
+            val imgMix = cache.get(R.string.key_imaging_mix, 100f)
+
             cache.select(Constants.PREF_DYNAMICEQ)
             val dyneqEnabled = cache.get(R.string.key_dyneq_enable, false)
             val dyneqMix = cache.get(R.string.key_dyneq_mix, 100f)
@@ -364,6 +375,10 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         maxrEnabled, maxrMode, maxrGain, maxrCeiling, maxrRelease,
                         maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
                         maxrOversample
+                    )
+                    Constants.PREF_IMAGING -> setImaging(
+                        imgEnabled, imgMonoBelow, imgFreqLow, imgFreqMid, imgFreqHigh,
+                        imgWidthLow, imgWidthMid, imgWidthHigh, imgMix
                     )
                     Constants.PREF_DYNAMICEQ -> {
                         // Bands before the switch, so a band never goes live
@@ -734,6 +749,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
         return setMultibandDistBandsInternal(flat)
     }
 
+    abstract fun setImaging(enable: Boolean, monoBelow: Float, freqLow: Float, freqMid: Float, freqHigh: Float, widthLow: Float, widthMid: Float, widthHigh: Float, mix: Float): Boolean
     abstract fun setDynamicEq(enable: Boolean, mix: Float): Boolean
     protected abstract fun setDynamicEqBandsInternal(bands: FloatArray?): Boolean
 

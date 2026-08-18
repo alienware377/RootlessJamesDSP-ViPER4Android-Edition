@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup
+        android:key="@string/key_imaging_enable"
+        android:disableDependentsState="false"
+        android:title="@string/imaging_enable"
+        android:icon="@drawable/ic_twotone_surround_sound_24dp"
+        app:iconSpaceReserved="false">
+        <Preference android:key="section_info" android:title="@string/section_info_title"
+            android:summary="@string/imaging_info" android:persistent="false"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_imaging_mono_below"
+            android:title="@string/imaging_mono_below"
+            android:summary="@string/imaging_mono_below_summary"
+            android:defaultValue="120"
+            app:minValue="0" app:maxValue="500" app:unit="Hz" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+
+        <PreferenceCategory android:title="@string/imaging_low_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_imaging_width_low"
+                android:title="@string/imaging_width"
+                android:summary="@string/imaging_width_summary"
+                android:defaultValue="1.0"
+                app:minValue="0" app:maxValue="4" app:unit="x" app:precision="2"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_imaging_freq_low"
+                android:title="@string/imaging_freq"
+                android:defaultValue="250"
+                app:minValue="20" app:maxValue="2000" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/imaging_mid_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_imaging_width_mid"
+                android:title="@string/imaging_width"
+                android:defaultValue="1.15"
+                app:minValue="0" app:maxValue="4" app:unit="x" app:precision="2"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_imaging_freq_mid"
+                android:title="@string/imaging_freq"
+                android:defaultValue="1500"
+                app:minValue="200" app:maxValue="8000" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/imaging_high_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_imaging_width_high"
+                android:title="@string/imaging_width"
+                android:defaultValue="1.6"
+                app:minValue="0" app:maxValue="4" app:unit="x" app:precision="2"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_imaging_freq_high"
+                android:title="@string/imaging_freq"
+                android:defaultValue="6000"
+                app:minValue="1000" app:maxValue="16000" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_imaging_mix"
+            android:title="@string/imaging_mix"
+            android:summary="@string/imaging_mix_summary"
+            android:defaultValue="100"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+    </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
+</PreferenceScreen>

@@ -593,6 +593,18 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDis
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setImaging(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat monoBelow, jfloat freqLow, jfloat freqMid, jfloat freqHigh,
+        jfloat widthLow, jfloat widthMid, jfloat widthHigh, jfloat mix)
+{
+    DECLARE_DSP_B
+    ImagingSetParam(dsp, monoBelow, freqLow, freqMid, freqHigh,
+                    widthLow, widthMid, widthHigh, mix);
+    if (enable) ImagingEnable(dsp); else ImagingDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setDynamicEq(JNIEnv *env, jobject obj, jlong self,
         jboolean enable, jfloat mix)
 {

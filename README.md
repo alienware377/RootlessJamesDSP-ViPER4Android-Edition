@@ -115,12 +115,12 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - ~~**Search, sorting & hiding on the presets screen**~~ — the same pull-down search, custom order, hiding and groups the convolver and DDC libraries have
 - ~~**Linear / minimum phase toggle**~~ — on both equaliser cards, since the two are merged into one filter before the engine sees them
 - ~~**Dynamic EQ**~~ — bands that only act while their own slice of the spectrum crosses a threshold, so taming a boom that happens on four notes no longer costs body on everything else; ships tuned for low boom, harshness and sibilance
+- ~~**Multiband stereo imaging**~~ — width chosen per frequency range rather than all at once, with a mono-below control, so the low end can be folded to the centre while the top opens up; mono recordings come through untouched
 
 ### 🔜 Planned
 
 - **Global "Poweramp-style" mode** — process the whole output mix with Android's built-in effect API instead of audio capture: no capture permission, no persistent notification, and apps that block capture (Spotify) would work. Trade-off: only EQ/bass/limiter-class effects can run there — the ViPER effects need the capture engine. Deprecated by Google and device-dependent (works on many Samsungs, often not Pixels), so it'll ship clearly labelled as experimental.
 - **Full exciter** — four bands with selectable saturation characters (warm, retro, tape, tube, triode) and per-band mix, replacing the current two-band bass-only design
-- **Multiband stereo imaging** — width per frequency band; the current widener works across the whole spectrum at once
 - **Impact / transient shaper** — multiband punch and attack-sustain control, one of the most useful things on playback
 - **Spectral shaper** — dynamic taming of harshness and resonances, especially handy on bright IEMs
 - **Low-end control** — mono-below-frequency, punch versus smoothness, and dynamic bass handling
