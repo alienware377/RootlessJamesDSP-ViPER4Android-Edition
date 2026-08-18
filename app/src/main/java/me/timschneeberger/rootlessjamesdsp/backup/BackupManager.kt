@@ -75,7 +75,7 @@ class BackupManager(private val context: Context): KoinComponent {
 
                 File(context.applicationInfo.dataDir + "/shared_prefs")
                     .listFiles()
-                    ?.filter { it.name.startsWith("dsp_") }
+                    ?.filter { it.name.startsWith("dsp_") || it.name == FILE_EFFECT_LAYOUT }
                     ?.filter { it.extension == "xml" }
                     ?.forEach { c.add(it, "shared_prefs/${it.name}") }
 
@@ -169,8 +169,13 @@ class BackupManager(private val context: Context): KoinComponent {
         private const val META_HAS_DEVICE_PROFILES = "has_device_profiles"
         const val META_IS_BACKUP = "is_backup"
 
+        // The card layout belongs in a backup even though a preset no longer
+        // applies one: restoring a backup is meant to put everything back.
+        private const val FILE_EFFECT_LAYOUT = "effect_layout.xml"
+
         private fun isKnownFile(name: String): Boolean {
             return (name.contains("dsp_") && name.endsWith(".xml")) ||
+                    name.endsWith(FILE_EFFECT_LAYOUT) ||
                     name.startsWith("profiles/") ||
                     FileLibraryPreference.types.any { name.contains(it.key) && it.value.any { ext -> name.endsWith(ext) } }
         }

@@ -8,6 +8,7 @@ import me.timschneeberger.rootlessjamesdsp.R
 import me.timschneeberger.rootlessjamesdsp.backup.BackupManager
 import me.timschneeberger.rootlessjamesdsp.liveprog.EelParser
 import me.timschneeberger.rootlessjamesdsp.utils.Constants
+import me.timschneeberger.rootlessjamesdsp.utils.EffectCards
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.broadcastPresetLoadEvent
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.sendLocalBroadcast
 import me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.toast
@@ -111,6 +112,11 @@ class Preset(val name: String, externalPath: File? = null): KoinComponent {
 
         const val FILE_LIVEPROG = "liveprog"
 
+        // Owned by EffectLayoutManager; named here so a preset can clear a card
+        // from the hidden set without depending on the view layer.
+        private const val LAYOUT_PREFS = "effect_layout"
+        private const val LAYOUT_KEY_HIDDEN = "hidden"
+
         const val META_VERSION = "version"
         const val META_APP_VERSION = "app_version"
         const val META_APP_FLAVOR = "app_flavor"
@@ -167,10 +173,23 @@ class Preset(val name: String, externalPath: File? = null): KoinComponent {
                 if(!isKnownEntry(f.name))
                     return@next
 
+                // The card layout is the user's, not the preset's. A preset
+                // carries one so it can still be a complete snapshot for backup
+                // and sharing, but restoring it wholesale silently threw away
+                // an arrangement someone had spent real time on. The only thing
+                // it is allowed to do is reveal a card it actually switches on,
+                // so a preset cannot turn on an effect the user then cannot see.
+                if(f.name == FILE_EFFECT_LAYOUT) {
+                    Timber.d("Keeping the current card layout; preset layout not applied")
+                    return@next
+                }
+
                 val target = File(currentPath(ctx), f.name)
                 f.copyTo(target, overwrite = true)
                 Timber.d("Copying to ${target.absolutePath}")
             }
+
+            revealCardsUsedBy(ctx, files)
 
             if (files.any { it.name == FILE_LIVEPROG }) {
                 findLiveprogScriptPath(ctx)?.let {
@@ -206,6 +225,65 @@ class Preset(val name: String, externalPath: File? = null): KoinComponent {
             ctx.broadcastPresetLoadEvent()
 
             return metadata.toMutableMap()
+        }
+
+        /**
+         * Unhide any card the preset switches on.
+         *
+         * A preset no longer replaces the card layout, which leaves one gap: it
+         * can enable an effect whose card the user has hidden, and the setting
+         * would then apply with nothing on screen to show for it. So the hidden
+         * set - and only the hidden set - gives way to the preset. Order,
+         * groups and group names are left exactly as they were.
+         */
+        private fun revealCardsUsedBy(ctx: Context, files: Array<File>) {
+            val reveal = files.mapNotNull { f ->
+                val key = EffectCards.cardKeyForPrefFile(f.name) ?: return@mapNotNull null
+                val enabled = runCatching { EffectCards.declaresEffectEnabled(f.readText()) }
+                    .getOrDefault(false)
+                key.takeIf { enabled }
+            }.toSet()
+            if (reveal.isEmpty()) return
+
+            @Suppress("DEPRECATION")
+            val prefs = ctx.getSharedPreferences(LAYOUT_PREFS, Context.MODE_MULTI_PROCESS)
+            val hidden = HashSet(prefs.getStringSet(LAYOUT_KEY_HIDDEN, emptySet()) ?: emptySet())
+            val revealed = hidden.intersect(reveal)
+            if (revealed.isEmpty()) return
+
+            hidden.removeAll(reveal)
+            // commit, not apply: the layout is re-read immediately afterwards,
+            // when the preset-loaded broadcast goes out.
+            prefs.edit().putStringSet(LAYOUT_KEY_HIDDEN, hidden).commit()
+            Timber.d("Preset revealed hidden cards: $revealed")
+        }
+
+        /**
+         * Apply only the card layout an archive carries, and nothing else.
+         *
+         * The counterpart to [load] ignoring it. Loading a preset must not
+         * rearrange the screen, but the arrangement is still worth carrying
+         * between devices, so it is offered as its own deliberate action.
+         *
+         * @return false if the archive has no layout in it
+         * @exception Exception if the archive cannot be read
+         */
+        fun loadLayoutOnly(ctx: Context, stream: InputStream): Boolean {
+            val targetFolder = File(ctx.cacheDir, "preset_layout")
+            val metadata = Tar.Reader(stream, ::isKnownEntry).extract(targetFolder)
+            if (metadata == null) {
+                targetFolder.deleteRecursively()
+                throw Exception(ctx.getString(R.string.filelibrary_corrupted))
+            }
+            val layout = targetFolder.listFiles()?.firstOrNull { it.name == FILE_EFFECT_LAYOUT }
+            if (layout == null) {
+                targetFolder.deleteRecursively()
+                return false
+            }
+            layout.copyTo(File(currentPath(ctx), FILE_EFFECT_LAYOUT), overwrite = true)
+            targetFolder.deleteRecursively()
+            ctx.broadcastPresetLoadEvent()
+            return true
         }
 
         private fun findLiveprogScriptPath(ctx: Context): String? {

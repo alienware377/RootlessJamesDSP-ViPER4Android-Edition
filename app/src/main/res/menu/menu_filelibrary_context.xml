@@ -24,6 +24,10 @@
         android:title="@string/filelibrary_context_resample" />
 
     <item
+        android:id="@+id/apply_layout_selection"
+        android:title="@string/filelibrary_context_apply_layout" />
+
+    <item
         android:id="@+id/share_selection"
         android:title="@string/filelibrary_context_share" />
 

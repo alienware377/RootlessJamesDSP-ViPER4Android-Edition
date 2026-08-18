@@ -89,6 +89,23 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
     /** GitHub repository search is parked until its flow is hardened. */
     private val githubSearchEnabled = false
 
+    /** Take just the card arrangement from a preset, leaving settings alone. */
+    private fun applyLayoutFrom(name: String, path: String) {
+        try {
+            val applied = Preset.loadLayoutOnly(
+                requireContext(), java.io.FileInputStream(File(path)))
+            requireContext().toast(getString(
+                if (applied) R.string.filelibrary_preset_layout_applied
+                else R.string.filelibrary_preset_no_layout, name))
+        }
+        catch (ex: Exception) {
+            Timber.e(ex, "Failed to apply layout from $name")
+            requireContext().showAlert(
+                getString(R.string.filelibrary_corrupted_title),
+                ex.localizedMessage ?: getString(R.string.filelibrary_preset_load_failed, name))
+        }
+    }
+
     /**
      * Unpack a preset over the current settings and say so.
      *
@@ -224,6 +241,10 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
             popupMenu.menuInflater.inflate(R.menu.menu_filelibrary_context, popupMenu.menu)
             popupMenu.menu.findItem(R.id.duplicate_selection).isVisible =
                 fileLibPreference.isLiveprog() || fileLibPreference.isPreset()
+            // Loading a preset deliberately leaves the card arrangement alone,
+            // so taking it is offered separately and only where it exists.
+            popupMenu.menu.findItem(R.id.apply_layout_selection).isVisible =
+                fileLibPreference.isPreset()
             popupMenu.menu.findItem(R.id.edit_selection).isVisible = fileLibPreference.isLiveprog()
             popupMenu.menu.findItem(R.id.overwrite_selection).isVisible = fileLibPreference.isPreset()
             popupMenu.menu.findItem(R.id.resample_selection).isVisible = fileLibPreference.isIrs()
@@ -316,6 +337,9 @@ class FileLibraryDialogFragment : ListPreferenceDialogFragmentCompat(), TargetFr
                             selectedFile.copyTo(it)
                             refresh()
                         }
+                    }
+                    R.id.apply_layout_selection -> {
+                        applyLayoutFrom(name.toString(), path)
                     }
                     R.id.share_selection -> {
                         val uri = FileProvider.getUriForFile(
