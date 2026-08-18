@@ -158,11 +158,20 @@ class EffectLayoutManager(
             .apply()
     }
 
-    /** Display name for a header, honouring any rename the user made. */
+    /**
+     * Display name for a header, honouring any rename the user made.
+     *
+     * Custom groups have no title resource - titleRes is 0 and the name lives
+     * in prefs - so the resource lookup is guarded. getString(0) throws
+     * Resources.NotFoundException, and a group can genuinely lose its stored
+     * name underneath us when a preset replaces the layout file.
+     */
     fun groupName(item: Item): String =
         prefs.getString(KEY_NAME_PREFIX + item.key, null)
             ?: storedGroups().firstOrNull { it.first == item.key }?.second
-            ?: context.getString(item.titleRes)
+            ?: item.titleRes.takeIf { it != 0 }?.let(context::getString)
+            ?: (viewFor(item) as? TextView)?.text?.toString()
+            ?: item.key
 
     /** Hides or shows every group heading (used by V4A-only mode). */
     fun setHeadersVisible(visible: Boolean) {
@@ -374,6 +383,12 @@ class EffectLayoutManager(
     fun reload() {
         @Suppress("DEPRECATION")
         context.getSharedPreferences(PREFS, Context.MODE_MULTI_PROCESS)
+        val live = storedGroups().map { it.first }.toSet()
+        items.filter { it.isHeader && it.titleRes == 0 && it.key !in live }
+            .forEach { stale ->
+                viewFor(stale)?.let { container.removeView(it) }
+                items.removeAll { it.key == stale.key }
+            }
         applyLayout()
     }
 
