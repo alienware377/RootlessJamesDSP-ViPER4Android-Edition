@@ -73,7 +73,86 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
     case 26008: if (fn >= 1) SpeakerOptSetParam(d, fv[0]); break;
     case 26108: if (on) SpeakerOptEnable(d); else SpeakerOptDisable(d); break;
 
+    case 26004:
+        if (fn >= 5) FetCompSetParam(d, fv[0], fv[1], fv[2], fv[3], fv[4]);
+        break;
+    case 26104: if (on) FetCompEnable(d); else FetCompDisable(d); break;
+
+    case 26005: if (fn >= 1) CureSetParam(d, (int)fv[0]); break;
+    case 26105: if (on) CureEnable(d); else CureDisable(d); break;
+
+    case 26009: if (fn >= 2) PitchShiftSetParam(d, fv[0], fv[1]); break;
+    case 26109: if (on) PitchShiftEnable(d); else PitchShiftDisable(d); break;
+
+    case 26010:
+        if (fn >= 25)
+            EchoDelaySetParam(d, fv[0], fv[1], fv[2], fv[3], fv[4] != 0.0f, (int)fv[5],
+                              fv[6], fv[7], fv[8], fv[9], (int)fv[10], fv[11], fv[12],
+                              fv[13], fv[14], fv[15], fv[16], fv[17], (int)fv[18],
+                              fv[19], fv[20], fv[21], fv[22], fv[23], fv[24]);
+        break;
+    case 26110: if (on) EchoDelayEnable(d); else EchoDelayDisable(d); break;
+
     case 26011: ArbitraryResponseEqualizerSetPhaseMode(d, on ? 1 : 0); break;
+
+    /* The order arrives as ints, so it is read from the raw payload rather
+       than through the float view every other effect uses. */
+    case 26012:
+        if (fn >= 1) JamesDSPSetChainOrder(d, (const int *)fv, (int)fn);
+        break;
+
+    /* --- upstream ids this HAL used to drop ------------------------------
+       These are not fork additions; they are the app's own EQ, dynamics and
+       output stage. Leaving them unhandled meant the root build silently lost
+       the equaliser, the compander and the limiter while reporting success. */
+    case 1500:
+        if (fn >= 3)
+        {
+            double threshold = (double)fv[0];
+            double release = (double)fv[1];
+            double postGain = (double)fv[2];
+            /* Same clamps the engine's own handler applies: a threshold at or
+               above 0 dB and a release below 0.15 ms both make the limiter
+               misbehave rather than merely sound different. */
+            if (threshold > -0.09) threshold = -0.09;
+            if (release < 0.15) release = 0.15;
+            if (postGain > 15.0) postGain = 15.0;
+            if (postGain < -15.0) postGain = -15.0;
+            JLimiterSetCoefficients(d, threshold, release);
+            JamesDSPSetPostGain(d, postGain);
+        }
+        break;
+
+    case 115:
+        /* time constant, granularity, tf resolution, then 7 frequencies and
+           7 gains. */
+        if (fn >= 17)
+        {
+            double axis[14];
+            for (int i = 0; i < 7; i++)
+            {
+                axis[i] = (double)fv[3 + i];
+                axis[i + 7] = (double)fv[3 + 7 + i];
+            }
+            CompressorSetParam(d, fv[0], (int)(fv[1] + 0.5f), (int)(fv[2] + 0.5f), 0);
+            CompressorSetGain(d, axis, axis + 7, 1);
+        }
+        break;
+
+    case 116:
+        /* filter type, interpolation mode, then 15 frequencies and 15 gains. */
+        if (fn >= 32)
+        {
+            double axis[30];
+            for (int i = 0; i < 15; i++)
+            {
+                axis[i] = (double)fv[2 + i];
+                axis[i + 15] = (double)fv[2 + 15 + i];
+            }
+            MultimodalEqualizerAxisInterpolation(
+                d, fv[1] < 0.0f ? 0 : 1, (int)(fv[0] + 0.5f), axis, axis + 15);
+        }
+        break;
 
     default:
         LOGD("param id %d ignored (no mapping)", id);
