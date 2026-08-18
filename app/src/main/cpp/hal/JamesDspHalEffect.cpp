@@ -66,6 +66,22 @@ struct rv4a_context
        push again. Storing them here is what makes that skip work. */
     int32_t hashSlot[4];
     uint32_t paramCommits;
+
+    /* Payloads too big for one call arrive as a geometry header, then a run of
+       fixed-size partitions, then a commit id. */
+    char *stringBuf;
+    size_t stringCapacity;
+    int stringIndex;
+
+    float *irBuf;
+    size_t irCapacity;      /* in floats */
+    int irPartsSeen, irParts;
+    int irChannels, irFrames;
+
+    /* Whether anything was ever loaded behind each subsystem. Enabling one of
+       these with an empty engine ranges from silent to a crash in the audio
+       server, so the enable is refused until its payload has arrived. */
+    bool haveIr, haveGraphicEq, haveDdc, haveLiveprog;
 };
 
 /* An effect_param_t whose parameter and value are both one 32-bit word. Every
@@ -156,6 +172,147 @@ static int32_t rv4a_process(effect_handle_t self, audio_buffer_t *in, audio_buff
         LOGD("process: alive, %zu frames, rate %u, %s", frames, c->sampleRate,
              accumulate ? "accumulate" : "write");
     return 0;
+}
+
+/*
+ * The parts of a large payload, and the commit that installs it.
+ *
+ * The app cannot hand a whole impulse response or DDC file to an effect in one
+ * call, so it sends a geometry header first (how many partitions, how big),
+ * then the partitions one at a time, then a commit id. Sizes and ids are the
+ * engine's own convention, mirrored from jamesdsp.c so a payload written by
+ * this app is read the same way by either engine.
+ *
+ * @return true if the id belonged to this protocol and was consumed
+ */
+static bool handleBufferedPayload(rv4a_context *c, int32_t id,
+                                  const void *val, uint32_t vsize)
+{
+    switch (id)
+    {
+    case 8888:      /* how much text is coming */
+    {
+        if (vsize < 8) return true;
+        const int32_t *v = (const int32_t *)val;
+        const long long parts = v[0], per = v[1];
+        free(c->stringBuf);
+        c->stringBuf = nullptr;
+        c->stringCapacity = 0;
+        c->stringIndex = 0;
+        /* Sanity-bound it: the geometry comes from another process, and a
+           bogus product here would be a wild allocation followed by a wild
+           write in the partition handler below. */
+        if (parts <= 0 || per <= 0 || parts * per > (16 << 20))
+        {
+            LOGE("string payload geometry rejected (%lld x %lld)", parts, per);
+            return true;
+        }
+        c->stringCapacity = (size_t)(parts * per);
+        c->stringBuf = (char *)calloc(c->stringCapacity + 1, sizeof(char));
+        if (!c->stringBuf) c->stringCapacity = 0;
+        return true;
+    }
+    case 12001:     /* one 256-byte slice of it */
+    {
+        if (!c->stringBuf || vsize < 256) return true;
+        const size_t offset = (size_t)c->stringIndex * 256;
+        if (offset + 256 > c->stringCapacity)
+        {
+            LOGE("string partition %d past the end", c->stringIndex);
+            return true;
+        }
+        memcpy(c->stringBuf + offset, val, 256);
+        c->stringIndex++;
+        return true;
+    }
+    case 9999:      /* how much impulse response is coming */
+    {
+        if (vsize < 16) return true;
+        const int32_t *v = (const int32_t *)val;
+        const int channels = v[1];
+        const int parts = v[3];
+        free(c->irBuf);
+        c->irBuf = nullptr;
+        c->irCapacity = 0;
+        c->irPartsSeen = 0;
+        if (channels <= 0 || channels > 2 || parts <= 0 ||
+            (long long)parts * channels * 4096 > (64 << 20))
+        {
+            LOGE("impulse geometry rejected (%d ch, %d parts)", channels, parts);
+            return true;
+        }
+        c->irChannels = channels;
+        c->irFrames = v[0] / channels;
+        c->irParts = parts;
+        c->irCapacity = (size_t)4096 * channels * parts;
+        c->irBuf = (float *)calloc(c->irCapacity, sizeof(float));
+        if (!c->irBuf) c->irCapacity = 0;
+        return true;
+    }
+    case 12000:     /* one 4096-float slice of it */
+    {
+        if (!c->irBuf || vsize < 4096 * sizeof(float)) return true;
+        const size_t offset = (size_t)c->irPartsSeen * 4096;
+        if (offset + 4096 > c->irCapacity)
+        {
+            LOGE("impulse partition %d past the end", c->irPartsSeen);
+            return true;
+        }
+        memcpy(c->irBuf + offset, val, 4096 * sizeof(float));
+        c->irPartsSeen++;
+        return true;
+    }
+
+    case 10004:     /* commit: impulse response */
+        if (c->irBuf)
+        {
+            if (c->irPartsSeen != c->irParts)
+                LOGW("impulse committed with %d of %d partitions",
+                     c->irPartsSeen, c->irParts);
+            const int rc = Convolver1DLoadImpulseResponse(
+                &c->dsp, c->irBuf, (int16_t)c->irChannels, c->irFrames, 1);
+            c->haveIr = rc >= 0;
+            LOGI("convolver load %s (%d ch, %d frames)",
+                 c->haveIr ? "ok" : "failed", c->irChannels, c->irFrames);
+            free(c->irBuf);
+            c->irBuf = nullptr;
+            c->irCapacity = 0;
+            c->irPartsSeen = 0;
+        }
+        return true;
+
+    case 10006:     /* commit: GraphicEQ / AutoEq curve */
+    case 10009:     /* commit: DDC */
+    case 10010:     /* commit: liveprog script */
+        if (c->stringBuf)
+        {
+            c->stringBuf[c->stringCapacity] = '\0';
+            if (id == 10006)
+            {
+                ArbitraryResponseEqualizerStringParser(&c->dsp, c->stringBuf);
+                c->haveGraphicEq = true;
+            }
+            else if (id == 10009)
+            {
+                DDCStringParser(&c->dsp, c->stringBuf);
+                c->haveDdc = true;
+            }
+            else
+            {
+                const int rc = LiveProgStringParser(&c->dsp, c->stringBuf);
+                c->haveLiveprog = rc == 0;
+                if (rc != 0) LOGE("liveprog rejected the script (%d)", rc);
+            }
+            free(c->stringBuf);
+            c->stringBuf = nullptr;
+            c->stringCapacity = 0;
+        }
+        c->stringIndex = 0;
+        return true;
+
+    default:
+        return false;
+    }
 }
 
 static int32_t rv4a_command(effect_handle_t self, uint32_t cmdCode, uint32_t cmdSize,
@@ -270,6 +427,32 @@ static int32_t rv4a_command(effect_handle_t self, uint32_t cmdCode, uint32_t cmd
         const bool on = sv != 0;
 
         c->paramCommits++;
+
+        /* Payloads that do not fit in one call: a geometry header, a run of
+           fixed-size partitions, then a commit. Handled here rather than in the
+           shared parameter table because the partial state belongs to this
+           instance, not to the engine. */
+        if (handleBufferedPayload(c, id, val, p->vsize))
+        {
+            if (pReplyData && replySize && *replySize == sizeof(int))
+                *(int *)pReplyData = 0;
+            return 0;
+        }
+
+        /* Refuse to switch on a subsystem that has nothing behind it. The app
+           enables these from saved preferences on every sync, which can easily
+           run before - or without - the payload ever arriving. */
+        if ((id == 1205 && !c->haveIr) || (id == 1210 && !c->haveGraphicEq) ||
+            (id == 1212 && !c->haveDdc) || (id == 1213 && !c->haveLiveprog))
+        {
+            if (on)
+            {
+                LOGW("refusing to enable %d: no payload loaded", id);
+                if (pReplyData && replySize && *replySize == sizeof(int))
+                    *(int *)pReplyData = 0;
+                return 0;
+            }
+        }
 
         /* Payload checksums are bookkeeping rather than DSP settings: the app
            writes one after pushing a payload and reads it back next time to
@@ -408,6 +591,10 @@ HAL_EXPORT int32_t EffectRelease(effect_handle_t handle)
     LOGI("EffectRelease: handle=%p after %llu blocks", (void *)c,
          (unsigned long long)c->blocks);
     JamesDSPFree(&c->dsp);
+    /* A payload interrupted between its header and its commit leaves these
+       holding the partitions gathered so far. */
+    free(c->stringBuf);
+    free(c->irBuf);
     free(c);
     return 0;
 }

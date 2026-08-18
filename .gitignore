@@ -22,3 +22,9 @@ tools/mbd_harness
 
 # Crash reports and preset archives pulled off a device for diagnosis
 tools/crashes/presets/
+
+# Harness build products
+tools/objs*/
+tools/*.rsp
+tools/param_harness
+tools/param_harness_*
