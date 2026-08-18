@@ -1,5 +1,6 @@
 package me.timschneeberger.rootlessjamesdsp.utils
 
+import timber.log.Timber
 import android.content.Context
 import android.text.InputType
 import android.widget.Button
@@ -338,9 +339,19 @@ class EffectLayoutManager(
         for (i in 0 until container.childCount) {
             itemForView(container.getChildAt(i))?.let { keys.add(it.key) }
         }
-        if (keys.isNotEmpty()) {
-            prefs.edit().putString(KEY_ORDER, keys.joinToString(",")).apply()
+        // Refuse to persist a partial snapshot. Cards are inflated a few at a
+        // time so the first frame is not blocked, so for the first moments the
+        // container holds only some of them - and this used to write exactly
+        // what it saw. Every card missing from that write lost its place and
+        // came back wherever it happened to be inflated next time, which is a
+        // customised order quietly decaying over successive launches. Only
+        // "there is at least one" was checked before, which does not catch it.
+        val placeable = items.count { viewFor(it) != null }
+        if (keys.isEmpty() || keys.size < placeable) {
+            Timber.w("Not saving card order: have ${keys.size} of $placeable cards")
+            return
         }
+        prefs.edit().putString(KEY_ORDER, keys.joinToString(",")).apply()
     }
 
     // -------------------------------------------------------------- edit mode

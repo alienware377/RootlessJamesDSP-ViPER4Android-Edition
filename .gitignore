@@ -19,3 +19,6 @@ local.properties
 /app/src/main/cpp/libjamesdsp/Main/DSPManager/DSPManager.iml
 magisk/aidl/generated/
 tools/mbd_harness
+
+# Crash reports and preset archives pulled off a device for diagnosis
+tools/crashes/presets/
