@@ -593,6 +593,45 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDis
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setDynamicEq(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat mix)
+{
+    DECLARE_DSP_B
+    DynamicEqSetParam(dsp, mix);
+    if (enable) DynamicEqEnable(dsp); else DynamicEqDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setDynamicEqBands(JNIEnv *env, jobject obj, jlong self,
+        jfloatArray bandsObj)
+{
+    DECLARE_DSP_B
+
+    // An empty band list is a legitimate state: it means the effect is present
+    // but has nothing to watch, and must pass audio through untouched.
+    if (bandsObj == nullptr)
+    {
+        DynamicEqSetBands(dsp, nullptr, 0);
+        return true;
+    }
+
+    jsize len = env->GetArrayLength(bandsObj);
+    if (len % DYNEQ_VALUES_PER_BAND != 0)
+    {
+        LOGE("JamesDspWrapper::setDynamicEqBands: expected groups of %d "
+             "(frequency, q, threshold, ratio, attack, release, range, mode), "
+             "got %d values", DYNEQ_VALUES_PER_BAND, (int)len);
+        return false;
+    }
+
+    auto *elems = env->GetFloatArrayElements(bandsObj, nullptr);
+    DynamicEqSetBands(dsp, elems, (int)(len / DYNEQ_VALUES_PER_BAND));
+    env->ReleaseFloatArrayElements(bandsObj, elems, JNI_ABORT);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setPitchShift(JNIEnv *env, jobject obj, jlong self, jboolean enable, jfloat semitones, jfloat mix)
 {
     DECLARE_DSP_B

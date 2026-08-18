@@ -42,6 +42,7 @@ object Constants {
     const val PREF_ECHODELAY = "dsp_echodelay"
     const val PREF_MULTIBANDDIST = "dsp_multibanddist"
     const val PREF_MAXIMIZER = "dsp_maximizer"
+    const val PREF_DYNAMICEQ = "dsp_dynamiceq"
     const val PREF_CHAIN_ORDER = "dsp_chain_order"
     const val PREF_FILELIBRARY = "dsp_filelibrary"
     const val KEY_CHAIN_ORDER = "order"
@@ -55,6 +56,16 @@ object Constants {
      * One low-pass corner, so the card opens on the most useful thing it can
      * do: distort the bass and leave everything above it alone.
      */
+    /**
+     * Three bands that do something on ordinary material rather than sitting
+     * at rest: a boom tamer, a harshness tamer and a de-esser. Each group is
+     * frequency, Q, threshold dB, ratio, attack ms, release ms, range dB and
+     * mode (0 compress above, 1 expand below), and must match the constructor
+     * defaults in jdspController.c.
+     */
+    const val DEFAULT_DYNEQ_BANDS =
+        "180,1.0,-22,3,15,150,-6,0;3200,1.4,-26,3,3,80,-5,0;6800,3.0,-30,4,1,40,-8,0"
+
     const val DEFAULT_MBD_BANDS = "PEQ: 250.00 48.000000 0.7100 3; "
     const val DEFAULT_EQ = "25.0;40.0;63.0;100.0;160.0;250.0;400.0;630.0;1000.0;1600.0;2500.0;4000.0;6300.0;10000.0;16000.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0"
 

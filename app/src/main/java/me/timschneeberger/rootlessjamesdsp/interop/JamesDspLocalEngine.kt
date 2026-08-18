@@ -151,6 +151,12 @@ class JamesDspLocalEngine(context: Context, callbacks: JamesDspWrapper.JamesDspC
     override fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean =
         JamesDspWrapper.setMaximizer(handle, enable, mode, gain, ceiling, release, character, transient, truePeak, stereoLink, oversample)
 
+    override fun setDynamicEqBandsInternal(bands: FloatArray?): Boolean =
+        JamesDspWrapper.setDynamicEqBands(handle, bands)
+
+    override fun setDynamicEq(enable: Boolean, mix: Float): Boolean =
+        JamesDspWrapper.setDynamicEq(handle, enable, mix)
+
     override fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean =
         JamesDspWrapper.setMultibandDistBands(handle, bands)
 

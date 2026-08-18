@@ -1057,6 +1057,10 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
 
     <string name="mbd_knob_cutoff">CUTOFF</string>
     <string name="mbd_knob_slope">SLOPE</string>
+    <string name="dyneq_enable">Dynamic EQ</string>
+    <string name="dyneq_info">Bands that only act when the music asks. A static cut is always there, so taming a boom that happens on four notes costs body on everything else; each band here watches its own slice of the spectrum and moves only while that slice is over its threshold. Ships tuned to tame low boom, harshness and sibilance.</string>
+    <string name="dyneq_mix">Mix</string>
+    <string name="dyneq_mix_summary">How much of the corrected signal is blended back in. At 0%% nothing is changed at all.</string>
     <string name="filelibrary_context_apply_layout">Apply card layout</string>
     <string name="filelibrary_preset_layout_applied">Card layout from \'%1$s\' applied</string>
     <string name="filelibrary_preset_no_layout">\'%1$s\' has no saved card layout</string>

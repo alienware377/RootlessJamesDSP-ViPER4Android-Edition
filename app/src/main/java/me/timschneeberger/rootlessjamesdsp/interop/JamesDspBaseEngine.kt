@@ -181,6 +181,11 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrStereoLink = cache.get(R.string.key_maxr_stereo_link, 100f)
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
 
+            cache.select(Constants.PREF_DYNAMICEQ)
+            val dyneqEnabled = cache.get(R.string.key_dyneq_enable, false)
+            val dyneqMix = cache.get(R.string.key_dyneq_mix, 100f)
+            val dyneqBands = cache.get(R.string.key_dyneq_bands, Constants.DEFAULT_DYNEQ_BANDS)
+
             cache.select(Constants.PREF_MULTIBANDDIST)
             val mbdEnabled = cache.get(R.string.key_mbd_enable, false)
             val mbdBands = cache.get(R.string.key_mbd_bands, Constants.DEFAULT_MBD_BANDS)
@@ -330,6 +335,12 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
                         maxrOversample
                     )
+                    Constants.PREF_DYNAMICEQ -> {
+                        // Bands before the switch, so a band never goes live
+                        // with the previous card's settings behind it.
+                        setDynamicEqBands(dyneqBands)
+                        setDynamicEq(dyneqEnabled, dyneqMix)
+                    }
                     Constants.PREF_MULTIBANDDIST -> {
                         // Bands first: the cascade has to be in place before
                         // the stage that feeds off it is switched on.
@@ -693,6 +704,39 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
         return setMultibandDistBandsInternal(flat)
     }
 
+    /**
+     * Push the dynamic EQ bands, given as the editor stores them: groups of
+     * eight separated by semicolons, each group frequency, Q, threshold dB,
+     * ratio, attack ms, release ms, range dB, mode.
+     *
+     * Parsed rather than passed through so a malformed preference - hand-edited,
+     * or written by a newer build - drops the bad band instead of feeding the
+     * engine a short array it would read past the end of.
+     */
+    fun setDynamicEqBands(serialized: String): Boolean {
+        val groups = serialized.split(';').filter { it.isNotBlank() }
+        val flat = ArrayList<Float>(groups.size * DYNEQ_VALUES_PER_BAND)
+        for (group in groups) {
+            val parts = group.split(',')
+            if (parts.size < DYNEQ_VALUES_PER_BAND) {
+                Timber.w("Dropping malformed dynamic EQ band: '$group'")
+                continue
+            }
+            val values = parts.take(DYNEQ_VALUES_PER_BAND).mapNotNull { it.trim().toFloatOrNull() }
+            if (values.size < DYNEQ_VALUES_PER_BAND) {
+                Timber.w("Dropping unparseable dynamic EQ band: '$group'")
+                continue
+            }
+            flat.addAll(values)
+        }
+        if (flat.isEmpty())
+            return setDynamicEqBandsInternal(null)
+        return setDynamicEqBandsInternal(flat.toFloatArray())
+    }
+
+    abstract fun setDynamicEq(enable: Boolean, mix: Float): Boolean
+    protected abstract fun setDynamicEqBandsInternal(bands: FloatArray?): Boolean
+
     abstract fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean
     protected abstract fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean
     abstract fun setMultibandDist(enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean
@@ -744,6 +788,13 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
     }
 
     companion object {
+        /**
+         * Values per dynamic EQ band: frequency, Q, threshold dB, ratio,
+         * attack ms, release ms, range dB, mode. Mirrors
+         * DYNEQ_VALUES_PER_BAND in jdsp_header.h - the two must not drift.
+         */
+        const val DYNEQ_VALUES_PER_BAND = 8
+
         private val dfMergeFreq = java.text.DecimalFormat("0.00", java.text.DecimalFormatSymbols.getInstance(java.util.Locale.ENGLISH))
         private val dfMergeGain = java.text.DecimalFormat("0.000000", java.text.DecimalFormatSymbols.getInstance(java.util.Locale.ENGLISH))
     }

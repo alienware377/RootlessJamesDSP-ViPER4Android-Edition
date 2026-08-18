@@ -289,6 +289,9 @@
     <string name="key_mbd_chorus_mix" translatable="false">mbd_chorus_mix</string>
     <string name="key_mbd_mix" translatable="false">mbd_mix</string>
     <string name="key_mbd_open_panel" translatable="false">mbd_open_panel</string>
+    <string name="key_dyneq_enable" translatable="false">dyneq_enable</string>
+    <string name="key_dyneq_mix" translatable="false">dyneq_mix</string>
+    <string name="key_dyneq_bands" translatable="false">dyneq_bands</string>
     <string name="key_maxr_enable" translatable="false">maxr_enable</string>
     <string name="key_maxr_mode" translatable="false">maxr_mode</string>
     <string name="key_maxr_gain" translatable="false">maxr_gain</string>

@@ -184,6 +184,33 @@ typedef struct
 	float chPhase, chInc, chBase, chDepth, chFeedback, chSpread, chMix;
 	float fs;
 } MultibandDist;
+#define DYNEQ_MAX_BANDS 8
+// freq, Q, threshold dB, ratio, attack ms, release ms, range dB, mode
+#define DYNEQ_VALUES_PER_BAND 8
+enum DynEqMode
+{
+	DYNEQ_MODE_COMPRESS = 0,	// act on what rises above the threshold
+	DYNEQ_MODE_EXPAND			// act on what falls below it
+};
+typedef struct
+{
+	float freq, q, thresholdDb, ratio, attackMs, releaseMs, rangeDb;
+	int mode;
+	// Sidechain bandpass: what this band listens to.
+	float sb0, sb1, sb2, sa1, sa2;
+	float sz1[2], sz2[2];
+	// Peaking filter: what the listener hears. Redesigned as the gain moves.
+	float b0, b1, b2, a1, a2;
+	float z1[2], z2[2];
+	float env, gainDb, appliedDb, attC, relC;
+} DynEqBand;
+typedef struct
+{
+	int numBands;
+	DynEqBand band[DYNEQ_MAX_BANDS];
+	float fs, mix;
+	int redesign;
+} DynamicEq;
 // 1024 samples is 5.3ms at 48kHz and still 5.3ms of headroom at 192kHz, where
 // the longest lookahead any mode asks for is 768 samples.
 #define MAXR_BUFLEN 1024
@@ -701,6 +728,7 @@ enum JdspEffectId
 	JDSP_EFX_ECHODELAY,
 	JDSP_EFX_MULTIBANDDIST,
 	JDSP_EFX_MAXIMIZER,
+	JDSP_EFX_DYNAMICEQ,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -869,6 +897,8 @@ typedef struct dspsys
 	int multibandDistEnabled;
 	MultibandDist multibandDist;
 	int maximizerEnabled;
+	int dynamicEqEnabled;
+	DynamicEq dynamicEq;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1024,6 +1054,11 @@ extern void EchoDelaySetParam(JamesDSPLib *jdsp, float inputLevel, float timeMs,
 extern void EchoDelayUpdateFilter(EchoDelay *e, float cutoffHz);
 extern void EchoDelayProcess(JamesDSPLib *jdsp, size_t n);
 extern void EchoDelayEnable(JamesDSPLib *jdsp);
+extern void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count);
+extern void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct);
+extern void DynamicEqProcess(JamesDSPLib *jdsp, size_t n);
+extern void DynamicEqEnable(JamesDSPLib *jdsp);
+extern void DynamicEqDisable(JamesDSPLib *jdsp);
 extern void MultibandDistSetBands(JamesDSPLib *jdsp, const float *bands, int count);
 extern void MultibandDistSetParam(JamesDSPLib *jdsp,
 	int routing, int model,

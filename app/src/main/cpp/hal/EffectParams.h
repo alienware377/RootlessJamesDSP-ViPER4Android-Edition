@@ -95,6 +95,23 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
 
     case 26011: ArbitraryResponseEqualizerSetPhaseMode(d, on ? 1 : 0); break;
 
+    /* Mix, band count, then that many bands of DYNEQ_VALUES_PER_BAND. One
+       array rather than two calls, so the bands and the mix cannot arrive out
+       of step with each other. */
+    case 26013:
+        if (fn >= 2)
+        {
+            const int count = (int)(fv[1] + 0.5f);
+            const uint32_t need = 2u + (uint32_t)count * DYNEQ_VALUES_PER_BAND;
+            if (count >= 0 && fn >= need)
+            {
+                DynamicEqSetBands(d, fv + 2, count);
+                DynamicEqSetParam(d, fv[0]);
+            }
+        }
+        break;
+    case 26113: if (on) DynamicEqEnable(d); else DynamicEqDisable(d); break;
+
     /* The order arrives as ints, so it is read from the raw payload rather
        than through the float view every other effect uses. */
     case 26012:

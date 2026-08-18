@@ -33,6 +33,7 @@ object EffectCards {
         Constants.PREF_ECHODELAY to "card_echo",
         Constants.PREF_MULTIBANDDIST to "card_mbd",
         Constants.PREF_MAXIMIZER to "card_maxr",
+        Constants.PREF_DYNAMICEQ to "card_dyneq",
         Constants.PREF_AGC to "card_agc",
         Constants.PREF_EQ to "card_eq",
         Constants.PREF_GEQ to "card_geq",

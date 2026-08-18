@@ -522,6 +522,11 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->maximizerEnabled) MaximizerProcess(jdsp, n);
 		jdsp_unlock(jdsp);
 		break;
+	case JDSP_EFX_DYNAMICEQ:
+		jdsp_lock(jdsp);
+		if (jdsp->dynamicEqEnabled) DynamicEqProcess(jdsp, n);
+		jdsp_unlock(jdsp);
+		break;
 	default:
 		break;
 	}
@@ -1438,6 +1443,18 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 		0.6f, 6.0f, 0.0f,
 		50.0f, 2, 0.0f,
 		100.0f);
+	jdsp->dynamicEqEnabled = 0;
+	jdsp->dynamicEq.numBands = 0;
+	{
+		// freq, Q, threshold dB, ratio, attack ms, release ms, range dB, mode
+		const float defaults[3 * DYNEQ_VALUES_PER_BAND] = {
+			180.0f, 1.0f, -22.0f, 3.0f, 15.0f, 150.0f, -6.0f, (float)DYNEQ_MODE_COMPRESS,
+			3200.0f, 1.4f, -26.0f, 3.0f,  3.0f,  80.0f, -5.0f, (float)DYNEQ_MODE_COMPRESS,
+			6800.0f, 3.0f, -30.0f, 4.0f,  1.0f,  40.0f, -8.0f, (float)DYNEQ_MODE_COMPRESS
+		};
+		DynamicEqSetBands(jdsp, defaults, 3);
+	}
+	DynamicEqSetParam(jdsp, 100.0f);
 	for (int i = 0; i < JDSP_LIVEPROG_EXTRA; i++)
 		jdsp->liveprogExtraEnabled[i] = 0;
 	JamesDSPResetChainOrder(jdsp);

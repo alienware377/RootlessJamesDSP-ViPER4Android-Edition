@@ -177,6 +177,27 @@ class JamesDspRemoteEngine(
     // array, and the plugin build has no multiband distortion behind it, so
     // these succeed without doing anything rather than reporting a failure
     // the user cannot act on.
+    /**
+     * Held until the switch arrives. The system effect takes one array per
+     * effect, so the bands and the mix travel together rather than as two
+     * calls that could be interleaved with anything else.
+     */
+    private var pendingDyneqBands: FloatArray? = null
+
+    override fun setDynamicEqBandsInternal(bands: FloatArray?): Boolean {
+        pendingDyneqBands = bands
+        return true
+    }
+
+    override fun setDynamicEq(enable: Boolean, mix: Float): Boolean {
+        val bands = pendingDyneqBands ?: FloatArray(0)
+        val payload = FloatArray(2 + bands.size)
+        payload[0] = mix
+        payload[1] = (bands.size / JamesDspBaseEngine.DYNEQ_VALUES_PER_BAND).toFloat()
+        bands.copyInto(payload, 2)
+        return sendForkEffect(PARAM_DYNAMIC_EQ, enable, payload)
+    }
+
     override fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean = true
 
     override fun setMultibandDist(enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean = true
@@ -429,6 +450,7 @@ class JamesDspRemoteEngine(
         private const val PARAM_ECHO_DELAY = PARAM_FORK_BASE + 10
         private const val PARAM_EQ_PHASE = PARAM_FORK_BASE + 11
         private const val PARAM_CHAIN_ORDER = PARAM_FORK_BASE + 12
+        private const val PARAM_DYNAMIC_EQ = PARAM_FORK_BASE + 13
         /** Enable flags live one hundred above their value id. */
         private const val PARAM_FORK_ENABLE_OFFSET = 100
 
