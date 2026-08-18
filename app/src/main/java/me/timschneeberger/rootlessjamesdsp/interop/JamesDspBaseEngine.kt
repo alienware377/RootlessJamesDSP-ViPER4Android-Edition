@@ -184,7 +184,37 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             cache.select(Constants.PREF_DYNAMICEQ)
             val dyneqEnabled = cache.get(R.string.key_dyneq_enable, false)
             val dyneqMix = cache.get(R.string.key_dyneq_mix, 100f)
-            val dyneqBands = cache.get(R.string.key_dyneq_bands, Constants.DEFAULT_DYNEQ_BANDS)
+            // Three bands, each read as its own preferences. Kept in the order
+            // the engine expects: frequency, Q, threshold, ratio, attack,
+            // release, range, mode.
+            val dyneqBands = floatArrayOf(
+                cache.get(R.string.key_dyneq1_freq, 180f),
+                cache.get(R.string.key_dyneq1_q, 1.0f),
+                cache.get(R.string.key_dyneq1_threshold, -22f),
+                cache.get(R.string.key_dyneq1_ratio, 3f),
+                cache.get(R.string.key_dyneq1_attack, 15f),
+                cache.get(R.string.key_dyneq1_release, 150f),
+                cache.get(R.string.key_dyneq1_range, -6f),
+                cache.get(R.string.key_dyneq1_mode, "0").toFloat(),
+
+                cache.get(R.string.key_dyneq2_freq, 3200f),
+                cache.get(R.string.key_dyneq2_q, 1.4f),
+                cache.get(R.string.key_dyneq2_threshold, -26f),
+                cache.get(R.string.key_dyneq2_ratio, 3f),
+                cache.get(R.string.key_dyneq2_attack, 3f),
+                cache.get(R.string.key_dyneq2_release, 80f),
+                cache.get(R.string.key_dyneq2_range, -5f),
+                cache.get(R.string.key_dyneq2_mode, "0").toFloat(),
+
+                cache.get(R.string.key_dyneq3_freq, 6800f),
+                cache.get(R.string.key_dyneq3_q, 3.0f),
+                cache.get(R.string.key_dyneq3_threshold, -30f),
+                cache.get(R.string.key_dyneq3_ratio, 4f),
+                cache.get(R.string.key_dyneq3_attack, 1f),
+                cache.get(R.string.key_dyneq3_release, 40f),
+                cache.get(R.string.key_dyneq3_range, -8f),
+                cache.get(R.string.key_dyneq3_mode, "0").toFloat(),
+            )
 
             cache.select(Constants.PREF_MULTIBANDDIST)
             val mbdEnabled = cache.get(R.string.key_mbd_enable, false)
@@ -338,7 +368,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                     Constants.PREF_DYNAMICEQ -> {
                         // Bands before the switch, so a band never goes live
                         // with the previous card's settings behind it.
-                        setDynamicEqBands(dyneqBands)
+                        setDynamicEqBandsInternal(dyneqBands)
                         setDynamicEq(dyneqEnabled, dyneqMix)
                     }
                     Constants.PREF_MULTIBANDDIST -> {
@@ -702,36 +732,6 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             flat[i * 4 + 3] = band.filterType.code.toFloat()
         }
         return setMultibandDistBandsInternal(flat)
-    }
-
-    /**
-     * Push the dynamic EQ bands, given as the editor stores them: groups of
-     * eight separated by semicolons, each group frequency, Q, threshold dB,
-     * ratio, attack ms, release ms, range dB, mode.
-     *
-     * Parsed rather than passed through so a malformed preference - hand-edited,
-     * or written by a newer build - drops the bad band instead of feeding the
-     * engine a short array it would read past the end of.
-     */
-    fun setDynamicEqBands(serialized: String): Boolean {
-        val groups = serialized.split(';').filter { it.isNotBlank() }
-        val flat = ArrayList<Float>(groups.size * DYNEQ_VALUES_PER_BAND)
-        for (group in groups) {
-            val parts = group.split(',')
-            if (parts.size < DYNEQ_VALUES_PER_BAND) {
-                Timber.w("Dropping malformed dynamic EQ band: '$group'")
-                continue
-            }
-            val values = parts.take(DYNEQ_VALUES_PER_BAND).mapNotNull { it.trim().toFloatOrNull() }
-            if (values.size < DYNEQ_VALUES_PER_BAND) {
-                Timber.w("Dropping unparseable dynamic EQ band: '$group'")
-                continue
-            }
-            flat.addAll(values)
-        }
-        if (flat.isEmpty())
-            return setDynamicEqBandsInternal(null)
-        return setDynamicEqBandsInternal(flat.toFloatArray())
     }
 
     abstract fun setDynamicEq(enable: Boolean, mix: Float): Boolean

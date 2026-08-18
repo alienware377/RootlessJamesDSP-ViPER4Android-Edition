@@ -289,9 +289,32 @@
     <string name="key_mbd_chorus_mix" translatable="false">mbd_chorus_mix</string>
     <string name="key_mbd_mix" translatable="false">mbd_mix</string>
     <string name="key_mbd_open_panel" translatable="false">mbd_open_panel</string>
+    <string name="key_dyneq1_freq" translatable="false">dyneq1_freq</string>
+    <string name="key_dyneq1_q" translatable="false">dyneq1_q</string>
+    <string name="key_dyneq1_threshold" translatable="false">dyneq1_threshold</string>
+    <string name="key_dyneq1_ratio" translatable="false">dyneq1_ratio</string>
+    <string name="key_dyneq1_attack" translatable="false">dyneq1_attack</string>
+    <string name="key_dyneq1_release" translatable="false">dyneq1_release</string>
+    <string name="key_dyneq1_range" translatable="false">dyneq1_range</string>
+    <string name="key_dyneq1_mode" translatable="false">dyneq1_mode</string>
+    <string name="key_dyneq2_freq" translatable="false">dyneq2_freq</string>
+    <string name="key_dyneq2_q" translatable="false">dyneq2_q</string>
+    <string name="key_dyneq2_threshold" translatable="false">dyneq2_threshold</string>
+    <string name="key_dyneq2_ratio" translatable="false">dyneq2_ratio</string>
+    <string name="key_dyneq2_attack" translatable="false">dyneq2_attack</string>
+    <string name="key_dyneq2_release" translatable="false">dyneq2_release</string>
+    <string name="key_dyneq2_range" translatable="false">dyneq2_range</string>
+    <string name="key_dyneq2_mode" translatable="false">dyneq2_mode</string>
+    <string name="key_dyneq3_freq" translatable="false">dyneq3_freq</string>
+    <string name="key_dyneq3_q" translatable="false">dyneq3_q</string>
+    <string name="key_dyneq3_threshold" translatable="false">dyneq3_threshold</string>
+    <string name="key_dyneq3_ratio" translatable="false">dyneq3_ratio</string>
+    <string name="key_dyneq3_attack" translatable="false">dyneq3_attack</string>
+    <string name="key_dyneq3_release" translatable="false">dyneq3_release</string>
+    <string name="key_dyneq3_range" translatable="false">dyneq3_range</string>
+    <string name="key_dyneq3_mode" translatable="false">dyneq3_mode</string>
     <string name="key_dyneq_enable" translatable="false">dyneq_enable</string>
     <string name="key_dyneq_mix" translatable="false">dyneq_mix</string>
-    <string name="key_dyneq_bands" translatable="false">dyneq_bands</string>
     <string name="key_maxr_enable" translatable="false">maxr_enable</string>
     <string name="key_maxr_mode" translatable="false">maxr_mode</string>
     <string name="key_maxr_gain" translatable="false">maxr_gain</string>

@@ -569,4 +569,12 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string-array name="dyneq_modes">
+        <item>What rises above the threshold</item>
+        <item>What falls below it</item>
+    </string-array>
+    <string-array name="dyneq_modes_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
 </resources>

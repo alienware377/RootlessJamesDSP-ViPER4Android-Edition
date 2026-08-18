@@ -18,5 +18,197 @@
             app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
             app:allowDividerAbove="false" app:updatesContinuously="true"
             app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <PreferenceCategory android:title="@string/dyneq1_header"
+            app:iconSpaceReserved="false">
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq1_freq"
+            android:title="@string/dyneq1_freq"
+            android:summary="@string/dyneq_freq_summary"
+            android:defaultValue="180"
+            app:minValue="20" app:maxValue="20000" app:unit="Hz" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq1_threshold"
+            android:title="@string/dyneq1_threshold"
+            android:summary="@string/dyneq_threshold_summary"
+            android:defaultValue="-22"
+            app:minValue="-60" app:maxValue="0" app:unit="dB" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq1_range"
+            android:title="@string/dyneq1_range"
+            android:summary="@string/dyneq_range_summary"
+            android:defaultValue="-6"
+            app:minValue="-24" app:maxValue="24" app:unit="dB" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq1_ratio"
+            android:title="@string/dyneq1_ratio"
+            android:defaultValue="3"
+            app:minValue="1" app:maxValue="20" app:unit=":1" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq1_q"
+            android:title="@string/dyneq1_q"
+            android:summary="@string/dyneq_q_summary"
+            android:defaultValue="1.0"
+            app:minValue="0.3" app:maxValue="8" app:unit="" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq1_attack"
+            android:title="@string/dyneq1_attack"
+            android:defaultValue="15"
+            app:minValue="0.5" app:maxValue="200" app:unit="ms" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq1_release"
+            android:title="@string/dyneq1_release"
+            android:defaultValue="150"
+            app:minValue="5" app:maxValue="2000" app:unit="ms" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <ListPreference
+            android:key="@string/key_dyneq1_mode"
+            android:title="@string/dyneq1_mode"
+            android:defaultValue="0"
+            android:entries="@array/dyneq_modes"
+            android:entryValues="@array/dyneq_modes_values"
+            app:useSimpleSummaryProvider="true"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+        <PreferenceCategory android:title="@string/dyneq2_header"
+            app:iconSpaceReserved="false">
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq2_freq"
+            android:title="@string/dyneq2_freq"
+            android:summary="@string/dyneq_freq_summary"
+            android:defaultValue="3200"
+            app:minValue="20" app:maxValue="20000" app:unit="Hz" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq2_threshold"
+            android:title="@string/dyneq2_threshold"
+            android:summary="@string/dyneq_threshold_summary"
+            android:defaultValue="-26"
+            app:minValue="-60" app:maxValue="0" app:unit="dB" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq2_range"
+            android:title="@string/dyneq2_range"
+            android:summary="@string/dyneq_range_summary"
+            android:defaultValue="-5"
+            app:minValue="-24" app:maxValue="24" app:unit="dB" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq2_ratio"
+            android:title="@string/dyneq2_ratio"
+            android:defaultValue="3"
+            app:minValue="1" app:maxValue="20" app:unit=":1" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq2_q"
+            android:title="@string/dyneq2_q"
+            android:summary="@string/dyneq_q_summary"
+            android:defaultValue="1.4"
+            app:minValue="0.3" app:maxValue="8" app:unit="" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq2_attack"
+            android:title="@string/dyneq2_attack"
+            android:defaultValue="3"
+            app:minValue="0.5" app:maxValue="200" app:unit="ms" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq2_release"
+            android:title="@string/dyneq2_release"
+            android:defaultValue="80"
+            app:minValue="5" app:maxValue="2000" app:unit="ms" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <ListPreference
+            android:key="@string/key_dyneq2_mode"
+            android:title="@string/dyneq2_mode"
+            android:defaultValue="0"
+            android:entries="@array/dyneq_modes"
+            android:entryValues="@array/dyneq_modes_values"
+            app:useSimpleSummaryProvider="true"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+        <PreferenceCategory android:title="@string/dyneq3_header"
+            app:iconSpaceReserved="false">
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq3_freq"
+            android:title="@string/dyneq3_freq"
+            android:summary="@string/dyneq_freq_summary"
+            android:defaultValue="6800"
+            app:minValue="20" app:maxValue="20000" app:unit="Hz" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq3_threshold"
+            android:title="@string/dyneq3_threshold"
+            android:summary="@string/dyneq_threshold_summary"
+            android:defaultValue="-30"
+            app:minValue="-60" app:maxValue="0" app:unit="dB" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq3_range"
+            android:title="@string/dyneq3_range"
+            android:summary="@string/dyneq_range_summary"
+            android:defaultValue="-8"
+            app:minValue="-24" app:maxValue="24" app:unit="dB" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq3_ratio"
+            android:title="@string/dyneq3_ratio"
+            android:defaultValue="4"
+            app:minValue="1" app:maxValue="20" app:unit=":1" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq3_q"
+            android:title="@string/dyneq3_q"
+            android:summary="@string/dyneq_q_summary"
+            android:defaultValue="3.0"
+            app:minValue="0.3" app:maxValue="8" app:unit="" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq3_attack"
+            android:title="@string/dyneq3_attack"
+            android:defaultValue="1"
+            app:minValue="0.5" app:maxValue="200" app:unit="ms" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_dyneq3_release"
+            android:title="@string/dyneq3_release"
+            android:defaultValue="40"
+            app:minValue="5" app:maxValue="2000" app:unit="ms" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <ListPreference
+            android:key="@string/key_dyneq3_mode"
+            android:title="@string/dyneq3_mode"
+            android:defaultValue="0"
+            android:entries="@array/dyneq_modes"
+            android:entryValues="@array/dyneq_modes_values"
+            app:useSimpleSummaryProvider="true"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
     </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
 </PreferenceScreen>
