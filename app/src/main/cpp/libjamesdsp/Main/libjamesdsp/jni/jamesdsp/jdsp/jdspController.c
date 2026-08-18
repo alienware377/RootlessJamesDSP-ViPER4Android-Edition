@@ -222,18 +222,42 @@ int selectConvPartitions(JamesDSPLib *jdsp, unsigned int impulseLengthActual, un
 	*seg2Len = mflen_best;
 	return type_best;
 }
+// This memory - the EEL tables and the resampler coefficient tables - is
+// process-wide rather than per instance, but setup and teardown were both
+// unguarded. The app defers the native free onto a timer while the service is
+// already building the replacement engine, so every restart briefly has two
+// instances alive: the outgoing one's teardown frees the coefficients the
+// incoming one is in the middle of generating, and the generator then writes
+// into freed memory and faults on the reload afterwards. Counted, and
+// serialised as well, because two generators must not overlap each other
+// either - generating starts by freeing whatever was there.
+static pthread_mutex_t globalMemMutex = PTHREAD_MUTEX_INITIALIZER;
+static int globalMemRefCount = 0;
+
 void JamesDSPGlobalMemoryAllocation()
 {
+	// Stays outside the guard: the benchmark result is per instance, and a
+	// second engine must not inherit the first one's completed flag.
 	benchmarkCompletionFlag = 0;
-	NSEEL_start();
+	pthread_mutex_lock(&globalMemMutex);
+	if (globalMemRefCount++ == 0)
+	{
+		NSEEL_start();
 #ifdef JAMESDSP_REFERENCE_IMPL
-	pthread_t benchmarkThread;
-	pthread_create(&benchmarkThread, NULL, convBench, 0);
+		pthread_t benchmarkThread;
+		pthread_create(&benchmarkThread, NULL, convBench, 0);
 #endif
+	}
+	pthread_mutex_unlock(&globalMemMutex);
 }
 void JamesDSPGlobalMemoryDeallocation()
 {
-	NSEEL_quit();
+	pthread_mutex_lock(&globalMemMutex);
+	// An unmatched deallocation is deliberately a no-op rather than a second
+	// free: the system-effect path allocates and never deallocates.
+	if (globalMemRefCount > 0 && --globalMemRefCount == 0)
+		NSEEL_quit();
+	pthread_mutex_unlock(&globalMemMutex);
 }
 unsigned int next_pow_2(unsigned int x)
 {

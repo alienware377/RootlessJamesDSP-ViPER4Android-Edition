@@ -1,0 +1,112 @@
+Captured from the tablet (me.timschneeberger.rootlessjamesdsp.v4a) 2026-08-17.
+Six distinct crashes. Native entries are duplicated in the source; kept as-is.
+
+===== 2026-08-08 22:21:23 (JVM) =====
+thread=main
+java.lang.IllegalStateException: Fragment FileLibraryDialogFragment{9332145} (4f5a0c43-d2a7-4997-958e-d8604eb041b4) not attached to a context.
+	at androidx.fragment.app.Fragment.requireContext(Fragment.java:972)
+	at androidx.fragment.app.Fragment.getResources(Fragment.java:1036)
+	at androidx.fragment.app.Fragment.getString(Fragment.java:1058)
+	at me.timschneeberger.rootlessjamesdsp.fragment.FileLibraryDialogFragment.promptRepoSearch$lambda$58(FileLibraryDialogFragment.kt:812)
+	at me.timschneeberger.rootlessjamesdsp.fragment.FileLibraryDialogFragment.$r8$lambda$wsN15mJCDC_Jm0ReEEe56xoyGrY(FileLibraryDialogFragment.kt:0)
+	at me.timschneeberger.rootlessjamesdsp.fragment.FileLibraryDialogFragment$$ExternalSyntheticLambda4.invoke(D8$$SyntheticClass:0)
+	at me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.showInputAlert$lambda$8(ContextExtensions.kt:284)
+	at me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions.$r8$lambda$sTcBddIe9ae9NGa734r1svoKz38(ContextExtensions.kt:0)
+	at me.timschneeberger.rootlessjamesdsp.utils.extensions.ContextExtensions$$ExternalSyntheticLambda7.onClick(D8$$SyntheticClass:0)
+	at androidx.appcompat.app.AlertController$ButtonHandler.handleMessage(AlertController.java:167)
+	at android.os.Handler.dispatchMessage(Handler.java:107)
+	at android.os.Looper.loopOnce(Looper.java:257)
+	at android.os.Looper.loop(Looper.java:342)
+	at android.app.ActivityThread.main(ActivityThread.java:9634)
+	at java.lang.reflect.Method.invoke(Native Method)
+	at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:619)
+	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:929)
+
+===== 2026-08-11 05:56:14 / 05:56:21 / 07:10:18 / 07:10:22 (JVM, x4 identical) =====
+thread=main
+java.lang.RuntimeException: Unable to start activity ComponentInfo{me.timschneeberger.rootlessjamesdsp.v4a/me.timschneeberger.rootlessjamesdsp.activity.MainActivity}: kotlin.UninitializedPropertyAccessException: lateinit property binding has not been initialized
+	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4454)
+	at android.app.ActivityThread.handleLaunchActivity(ActivityThread.java:4685)
+	at android.app.servertransaction.LaunchActivityItem.execute(LaunchActivityItem.java:112)
+	...
+Caused by: kotlin.UninitializedPropertyAccessException: lateinit property binding has not been initialized
+	at me.timschneeberger.rootlessjamesdsp.activity.MainActivity.getBinding(MainActivity.kt:90)
+	at me.timschneeberger.rootlessjamesdsp.activity.MainActivity.onCreate(MainActivity.kt:150)
+	at android.app.Activity.performCreate(Activity.java:9363)
+	at android.app.Instrumentation.callActivityOnCreate(Instrumentation.java:1526)
+	at android.app.ActivityThread.performLaunchActivity(ActivityThread.java:4436)
+
+===== 2026-08-11 14:35:35 (JVM) — same lateinit, different entry point =====
+thread=main
+java.lang.RuntimeException: Unable to start activity ...: kotlin.UninitializedPropertyAccessException: lateinit property binding has not been initialized
+	at android.app.ActivityThread.handleRelaunchActivityInner(ActivityThread.java:7028)
+	at android.app.servertransaction.ActivityRelaunchItem.execute(ActivityRelaunchItem.java:79)
+	...
+Caused by: kotlin.UninitializedPropertyAccessException: lateinit property binding has not been initialized
+	at me.timschneeberger.rootlessjamesdsp.activity.MainActivity.getBinding(MainActivity.kt:90)
+	at me.timschneeberger.rootlessjamesdsp.activity.MainActivity.isPowerOn(MainActivity.kt:227)
+	at me.timschneeberger.rootlessjamesdsp.fragment.PreferenceGroupFragment.onCreatePreferences(PreferenceGroupFragment.kt:213)
+	at androidx.preference.PreferenceFragmentCompat.onCreate(PreferenceFragmentCompat.java:161)
+	at androidx.fragment.app.Fragment.performCreate(Fragment.java:3094)
+	at androidx.fragment.app.FragmentManager.dispatchCreate(FragmentManager.java:2941)
+	at androidx.fragment.app.Fragment.restoreChildFragmentState(Fragment.java:1989)
+	at androidx.fragment.app.Fragment.onCreate(Fragment.java:1967)
+	at me.timschneeberger.rootlessjamesdsp.fragment.DspFragment.onCreate(DspFragment.kt:43)
+	at androidx.fragment.app.Fragment.performCreate(Fragment.java:3094)
+	at androidx.fragment.app.FragmentManager.dispatchCreate(FragmentManager.java:2941)
+	at androidx.fragment.app.FragmentController.dispatchCreate(FragmentController.java:252)
+	at androidx.fragment.app.FragmentActivity.onCreate(FragmentActivity.java:219)
+	at me.timschneeberger.rootlessjamesdsp.activity.BaseActivity.onCreate(BaseActivity.kt:36)
+	at me.timschneeberger.rootlessjamesdsp.activity.MainActivity.onCreate(MainActivity.kt:230)
+
+===== 2026-08-13 08:26:49 (JVM) =====
+thread=main
+java.lang.IllegalStateException: Value(255.84268) must be equal to valueFrom(0.0) plus a multiple of stepSize(1.0) when using stepSize(1.0)
+	at com.google.android.material.slider.BaseSlider.validateValues(BaseSlider.java:579)
+	at com.google.android.material.slider.BaseSlider.validateConfigurationIfDirty(BaseSlider.java:628)
+	at com.google.android.material.slider.BaseSlider.maybeCalculateTicksCoordinates(BaseSlider.java:1724)
+	at com.google.android.material.slider.BaseSlider.updateTrackWidth(BaseSlider.java:1745)
+	at com.google.android.material.slider.BaseSlider.onSizeChanged(BaseSlider.java:1715)
+	at android.view.View.sizeChange(View.java:26993)
+	at android.view.View.layout(View.java:26732)
+	... (pure layout pass, no app frame below onSizeChanged)
+
+===== 2026-08-15 03:31:10 (JVM) =====
+thread=main
+java.lang.IllegalStateException: The specified child already has a parent. You must call removeView() on the child's parent first.
+	at android.view.ViewGroup.addViewInner(ViewGroup.java:5513)
+	at android.view.ViewGroup.addView(ViewGroup.java:5332)
+	at android.view.ViewGroup.addView(ViewGroup.java:5272)
+	at me.timschneeberger.rootlessjamesdsp.utils.EffectLayoutManager.applyLayout(EffectLayoutManager.kt:303)
+	at me.timschneeberger.rootlessjamesdsp.fragment.DspFragment.installVisibleCards(DspFragment.kt:381)
+	at me.timschneeberger.rootlessjamesdsp.fragment.DspFragment.installVisibleCards$lambda$12(DspFragment.kt:378)
+	at me.timschneeberger.rootlessjamesdsp.fragment.DspFragment$$ExternalSyntheticLambda0.run(D8$$SyntheticClass:0)
+	at android.os.Handler.handleCallback(Handler.java:959)
+	at android.os.Looper.loop(Looper.java:342)
+
+===== native A =====
+signal=11 code=1 fault_addr=0x8d0
+pc=0x73c97434cc lr=0x73c97433d4 sp=0x7324b9d9e0 x0=0x253180
+relevant r-xp mappings of base.apk (native libs are loaded uncompressed from the apk):
+73c5b15000-73c5b64000 r-xp 01200000   (size 0x4f000)
+73c9600000-73c9767000 r-xp 01268000   (size 0x167000)   <-- contains pc
+742d01d000-742d02e000 r-xp 01254000   (size 0x11000)
+742d04a000-742d07d000 r-xp 014b4000   (size 0x33000)
+=> pc - 0x73c9600000 = 0x1434cc ; lr - base = 0x1433d4
+=> apk file offset of pc = 0x01268000 + 0x1434cc = 0x13ab4cc
+
+===== native B =====
+signal=11 code=1 fault_addr=0x14c438
+pc=0x73cc9360c4 lr=0x73cc9360b8 sp=0x7fcd9fdd10 x0=0x5310e
+relevant r-xp mappings of base.apk:
+73cc7aa000-73cc7f9000 r-xp 01200000   (size 0x4f000)
+73cc800000-73cc967000 r-xp 01268000   (size 0x167000)   <-- contains pc
+73db845000-73db856000 r-xp 01254000   (size 0x11000)
+73ce241000-73ce274000 r-xp 014b4000   (size 0x33000)
+=> pc - 0x73cc800000 = 0x1360c4 ; lr - base = 0x1360b8
+=> apk file offset of pc = 0x01268000 + 0x1360c4 = 0x139e0c4
+
+Both native crashes are in the SAME mapping (apk offset 0x01268000, 0x167000
+bytes of executable) but at different offsets, so they are two distinct sites.
+The crash recorder only keeps signal/registers and the jamesdsp lines of
+/proc/self/maps - there is no backtrace beyond pc and lr.

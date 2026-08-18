@@ -98,6 +98,17 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
 
         val transition = LayoutTransition()
         transition.enableTransitionType(LayoutTransition.CHANGING)
+        // Not DISAPPEARING. Setting a card GONE - which V4A mode, the empty
+        // liveprog slots, the effect search and the layout customiser all do -
+        // parks it in the container's transitioning views for 300ms, and while
+        // it sits there removeView deliberately leaves its parent set. The next
+        // addView then throws "The specified child already has a parent". That
+        // was a rare race while scrolling; loading a preset now exits edit mode
+        // and re-applies the layout in the same looper message, which lands
+        // inside that window every time.
+        // Cards still slide to their new positions - only the fade-out of a
+        // card being hidden is given up.
+        transition.disableTransitionType(LayoutTransition.DISAPPEARING)
         binding.cardContainer.layoutTransition = transition
         // Inflating every effect card at once blocks the first frame for
         // seconds. Commit the first few immediately, then let the rest fill

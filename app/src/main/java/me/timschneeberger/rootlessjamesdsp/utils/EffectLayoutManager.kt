@@ -307,13 +307,14 @@ class EffectLayoutManager(
             .minOrNull() ?: return
 
         // Detach from whatever currently holds each view, not just from the
-        // root container. A card that has been moved into a group container is
-        // not a child here, so removeView would quietly do nothing and the
-        // addView below would then throw for still having a parent. This also
-        // makes a second applyLayout call harmless.
+        // root container, and do it again immediately before each add rather
+        // than only in one pass up front - an add earlier in the loop can
+        // re-parent a view that `ordered` names twice. Together this makes a
+        // repeated applyLayout harmless.
         ordered.forEach { (it.parent as? ViewGroup)?.removeView(it) }
         var index = startIndex
         ordered.forEach { view ->
+            (view.parent as? ViewGroup)?.removeView(view)
             container.addView(view, index.coerceAtMost(container.childCount))
             index++
         }
