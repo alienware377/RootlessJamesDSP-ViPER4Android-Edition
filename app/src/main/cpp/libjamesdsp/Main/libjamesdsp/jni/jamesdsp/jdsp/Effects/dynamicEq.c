@@ -97,6 +97,13 @@ static void dynEqRefreshBand(DynEqBand *b, float fs)
 
 void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count)
 {
+	/* Same reasoning as the lock in DynamicEqSetParam below: Process runs on the
+	   audio thread under this lock, and this function rewrites both filters of
+	   every band. It was missed when the others were locked because the name
+	   does not end in SetParam - and it is the worst one to leave open, since
+	   changing numBands mid-block would have Process walk bands whose
+	   coefficients are half written. */
+	jdsp_lock(jdsp);
 	DynamicEq *d = &jdsp->dynamicEq;
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 	if (count < 0) count = 0;
@@ -130,6 +137,7 @@ void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count)
 	}
 	d->numBands = count;
 	d->fs = fs;
+	jdsp_unlock(jdsp);
 }
 
 void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct, int msMode)
