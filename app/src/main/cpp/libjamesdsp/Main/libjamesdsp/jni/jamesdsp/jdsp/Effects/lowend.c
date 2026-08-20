@@ -98,6 +98,13 @@ void LowEndSetParam(JamesDSPLib *jdsp, float subsonicHz,
                     float weightHz, float weightDb,
                     float mudHz, float mudDb, float mixPct)
 {
+	/* Held for the whole update. Process runs on the audio thread under this
+	   same lock, so without it a block could be filtered with half the old
+	   coefficients and half the new ones - which for a steep or resonant
+	   setting is not a glitch but a burst. The single-threaded harness cannot
+	   see this, and the one crash this project has shipped came from exactly
+	   this class of problem. */
+	jdsp_lock(jdsp);
 	LowEnd *l = &jdsp->lowEnd;
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 
@@ -128,6 +135,7 @@ void LowEndSetParam(JamesDSPLib *jdsp, float subsonicHz,
 
 	l->transparent = subsonicHz < 10.0f &&
 		fabsf(weightDb) < 1e-6f && fabsf(mudDb) < 1e-6f;
+	jdsp_unlock(jdsp);
 }
 
 void LowEndProcess(JamesDSPLib *jdsp, size_t n)

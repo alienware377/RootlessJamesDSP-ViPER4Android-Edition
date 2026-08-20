@@ -100,6 +100,13 @@ void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
                   float saturationPct, float biasPct, float headBumpDb,
                   float mixPct)
 {
+	/* Held for the whole update. Process runs on the audio thread under this
+	   same lock, so without it a block could be filtered with half the old
+	   coefficients and half the new ones - which for a steep or resonant
+	   setting is not a glitch but a burst. The single-threaded harness cannot
+	   see this, and the one crash this project has shipped came from exactly
+	   this class of problem. */
+	jdsp_lock(jdsp);
 	Tape *t = &jdsp->tape;
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 	t->fs = fs;
@@ -151,6 +158,7 @@ void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
 	   milliseconds even with no modulation on it. */
 	t->transparent = wowPct <= 0.0f && flutterPct <= 0.0f &&
 		saturationPct <= 0.0f && fabsf(biasPct) < 1e-6f && headBumpDb <= 0.0f;
+	jdsp_unlock(jdsp);
 }
 
 void TapeProcess(JamesDSPLib *jdsp, size_t n)

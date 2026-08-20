@@ -125,6 +125,13 @@ void ImagingSetParam(JamesDSPLib *jdsp, float monoBelowHz,
                      float widthLow, float widthMid, float widthHigh,
                      float mixPct)
 {
+	/* Held for the whole update. Process runs on the audio thread under this
+	   same lock, so without it a block could be filtered with half the old
+	   coefficients and half the new ones - which for a steep or resonant
+	   setting is not a glitch but a burst. The single-threaded harness cannot
+	   see this, and the one crash this project has shipped came from exactly
+	   this class of problem. */
+	jdsp_lock(jdsp);
 	Imaging *im = &jdsp->imaging;
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 
@@ -169,6 +176,7 @@ void ImagingSetParam(JamesDSPLib *jdsp, float monoBelowHz,
 		fabsf(widthLow - 1.0f) < 1e-6f &&
 		fabsf(widthMid - 1.0f) < 1e-6f &&
 		fabsf(widthHigh - 1.0f) < 1e-6f;
+	jdsp_unlock(jdsp);
 }
 
 void ImagingProcess(JamesDSPLib *jdsp, size_t n)

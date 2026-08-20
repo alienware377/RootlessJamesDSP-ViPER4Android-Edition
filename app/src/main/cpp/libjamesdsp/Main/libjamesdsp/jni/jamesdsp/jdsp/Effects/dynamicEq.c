@@ -134,12 +134,20 @@ void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count)
 
 void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct, int msMode)
 {
+	/* Held for the whole update. Process runs on the audio thread under this
+	   same lock, so without it a block could be filtered with half the old
+	   coefficients and half the new ones - which for a steep or resonant
+	   setting is not a glitch but a burst. The single-threaded harness cannot
+	   see this, and the one crash this project has shipped came from exactly
+	   this class of problem. */
+	jdsp_lock(jdsp);
 	DynamicEq *d = &jdsp->dynamicEq;
 	d->mix = mixPct * 0.01f;
 	if (d->mix < 0.0f) d->mix = 0.0f;
 	if (d->mix > 1.0f) d->mix = 1.0f;
 	if (msMode < 0 || msMode >= MS_MODE_COUNT) msMode = MS_MODE_STEREO;
 	d->msMode = msMode;
+	jdsp_unlock(jdsp);
 }
 
 void DynamicEqProcess(JamesDSPLib *jdsp, size_t n)

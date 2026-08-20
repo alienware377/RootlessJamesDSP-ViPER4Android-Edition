@@ -108,6 +108,13 @@ void ExciterSetParam(JamesDSPLib *jdsp, float freq1, float freq2, float freq3,
                      float amount1, float amount2, float amount3, float amount4,
                      int character, float drive, float mixPct)
 {
+	/* Held for the whole update. Process runs on the audio thread under this
+	   same lock, so without it a block could be filtered with half the old
+	   coefficients and half the new ones - which for a steep or resonant
+	   setting is not a glitch but a burst. The single-threaded harness cannot
+	   see this, and the one crash this project has shipped came from exactly
+	   this class of problem. */
+	jdsp_lock(jdsp);
 	Exciter *e = &jdsp->exciter;
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 
@@ -148,6 +155,7 @@ void ExciterSetParam(JamesDSPLib *jdsp, float freq1, float freq2, float freq3,
 	e->transparent = 1;
 	for (int k = 0; k < EXCITER_BANDS; k++)
 		if (e->amount[k] > 1e-6f) e->transparent = 0;
+	jdsp_unlock(jdsp);
 }
 
 void ExciterProcess(JamesDSPLib *jdsp, size_t n)
