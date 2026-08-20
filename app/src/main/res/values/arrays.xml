@@ -587,4 +587,14 @@
         <item>1</item>
         <item>2</item>
     </string-array>
+    <string-array name="ms_modes">
+        <item>Whole stereo image</item>
+        <item>Centre only (mid)</item>
+        <item>Edges only (side)</item>
+    </string-array>
+    <string-array name="ms_modes_values" translatable="false">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
 </resources>

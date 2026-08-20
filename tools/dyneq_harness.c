@@ -93,7 +93,7 @@ int main(void)
 		prepare((float)fs);
 		setOneBand(3000.0f, 2.0f, -20.0f, 4.0f, 5.0f, 100.0f, -12.0f,
 		           DYNEQ_MODE_COMPRESS);
-		DynamicEqSetParam(&g_lib, 100.0f);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 
 		const double f = binFreq(3000.0, fs);
@@ -121,7 +121,7 @@ int main(void)
 		prepare((float)fs);
 		setOneBand(3000.0f, 2.0f, -20.0f, 4.0f, 5.0f, 100.0f, -24.0f,
 		           DYNEQ_MODE_COMPRESS);
-		DynamicEqSetParam(&g_lib, 100.0f);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 
 		const double f = binFreq(3000.0, fs);
@@ -138,7 +138,7 @@ int main(void)
 		prepare((float)fs);
 		setOneBand(3000.0f, 2.0f, -40.0f, 20.0f, 5.0f, 100.0f, -6.0f,
 		           DYNEQ_MODE_COMPRESS);
-		DynamicEqSetParam(&g_lib, 100.0f);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 
 		const double f = binFreq(3000.0, fs);
@@ -156,7 +156,7 @@ int main(void)
 		prepare((float)fs);
 		setOneBand(6800.0f, 3.0f, -40.0f, 8.0f, 1.0f, 40.0f, -12.0f,
 		           DYNEQ_MODE_COMPRESS);
-		DynamicEqSetParam(&g_lib, 100.0f);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 
 		const double far = binFreq(200.0, fs);
@@ -173,7 +173,7 @@ int main(void)
 		prepare((float)fs);
 		setOneBand(1000.0f, 1.5f, -20.0f, 3.0f, 5.0f, 100.0f, 6.0f,
 		           DYNEQ_MODE_EXPAND);
-		DynamicEqSetParam(&g_lib, 100.0f);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 
 		const double f = binFreq(1000.0, fs);
@@ -194,7 +194,7 @@ int main(void)
 			6800.0f, 3.0f, -30.0f, 4.0f,  1.0f,  40.0f, -8.0f, (float)DYNEQ_MODE_COMPRESS
 		};
 		DynamicEqSetBands(&g_lib, defaults, 3);
-		DynamicEqSetParam(&g_lib, 100.0f);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 
 		/* One tone per default band, each loud enough to cross its threshold,
@@ -208,7 +208,7 @@ int main(void)
 
 		prepare((float)fs);
 		DynamicEqSetBands(&g_lib, defaults, 3);
-		DynamicEqSetParam(&g_lib, 100.0f);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 		const double f3 = binFreq(6800.0, fs);
 		fillTone(f3, fs, powf(10.0f, -14.0f / 20.0f));
@@ -223,7 +223,7 @@ int main(void)
 		prepare((float)fs);
 		setOneBand(3000.0f, 2.0f, -40.0f, 8.0f, 1.0f, 40.0f, -12.0f,
 		           DYNEQ_MODE_COMPRESS);
-		DynamicEqSetParam(&g_lib, 0.0f);
+		DynamicEqSetParam(&g_lib, 0.0f, MS_MODE_STEREO);
 		DynamicEqEnable(&g_lib);
 		const double f = binFreq(3000.0, fs);
 		fillTone(f, fs, 0.5f);
@@ -249,7 +249,7 @@ int main(void)
 				9000.0f, 4.0f, -35.0f, 8.0f, 1.0f, 20.0f, 8.0f, (float)DYNEQ_MODE_EXPAND
 			};
 			DynamicEqSetBands(&g_lib, defaults, 2);
-			DynamicEqSetParam(&g_lib, 100.0f);
+			DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_STEREO);
 			DynamicEqEnable(&g_lib);
 			for (int pass = 0; pass < 12; pass++)
 			{
@@ -273,6 +273,79 @@ int main(void)
 		}
 		check("non-finite samples across four rates", (double)bad, 0.0, 0.0);
 		check("peak stays bounded", peak, 0.05, 8.0);
+	}
+
+	/* ---- mid and side modes ---------------------------------------------
+	   A band can be pointed at the centre of the image or at its edges. What
+	   makes this worth having is that the untouched half really is untouched:
+	   a de-esser on the centre must not dull the reverb spread around it. */
+	printf("\nmid / side\n");
+	{
+		/* A tone living only in the side, with the band pointed at the mid,
+		   must come back as it went in - there is nothing there to work on. */
+		prepare((float)fs);
+		setOneBand(3000.0f, 2.0f, -40.0f, 8.0f, 1.0f, 40.0f, -18.0f,
+		           DYNEQ_MODE_COMPRESS);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_MID);
+		DynamicEqEnable(&g_lib);
+		const double f = binFreq(3000.0, fs);
+		for (int i = 0; i < N; i++)
+		{
+			const double v = 0.5 * sin(2.0 * M_PI * f * (double)i / fs);
+			bufL[i] = (float)v;
+			bufR[i] = (float)(-v);
+		}
+		const double before = toneDb(bufL, f, fs);
+		DynamicEqProcess(&g_lib, N);
+		check("side-only tone ignored by a mid band",
+		      fabs(toneDb(bufL, f, fs) - before), 0.0, 0.3);
+	}
+	{
+		/* The mirror image: same tone, band pointed at the side, is caught. */
+		prepare((float)fs);
+		setOneBand(3000.0f, 2.0f, -40.0f, 8.0f, 1.0f, 40.0f, -18.0f,
+		           DYNEQ_MODE_COMPRESS);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_SIDE);
+		DynamicEqEnable(&g_lib);
+		const double f = binFreq(3000.0, fs);
+		for (int i = 0; i < N; i++)
+		{
+			const double v = 0.5 * sin(2.0 * M_PI * f * (double)i / fs);
+			bufL[i] = (float)v;
+			bufR[i] = (float)(-v);
+		}
+		const double before = toneDb(bufL, f, fs);
+		DynamicEqProcess(&g_lib, N);
+		check("side-only tone caught by a side band",
+		      toneDb(bufL, f, fs) - before, -20.0, -3.0);
+	}
+	{
+		/* A centred tone is the other way round. */
+		prepare((float)fs);
+		setOneBand(3000.0f, 2.0f, -40.0f, 8.0f, 1.0f, 40.0f, -18.0f,
+		           DYNEQ_MODE_COMPRESS);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_SIDE);
+		DynamicEqEnable(&g_lib);
+		const double f = binFreq(3000.0, fs);
+		fillTone(f, fs, 0.5f);
+		const double before = toneDb(bufL, f, fs);
+		DynamicEqProcess(&g_lib, N);
+		check("centred tone ignored by a side band",
+		      fabs(toneDb(bufL, f, fs) - before), 0.0, 0.3);
+	}
+	{
+		/* Mono in stays mono out: mid mode has no side to put back, so the two
+		   channels cannot drift apart. */
+		prepare((float)fs);
+		setOneBand(3000.0f, 2.0f, -40.0f, 8.0f, 1.0f, 40.0f, -18.0f,
+		           DYNEQ_MODE_COMPRESS);
+		DynamicEqSetParam(&g_lib, 100.0f, MS_MODE_MID);
+		DynamicEqEnable(&g_lib);
+		fillTone(binFreq(3000.0, fs), fs, 0.5f);
+		DynamicEqProcess(&g_lib, N);
+		int mono = 1;
+		for (int i = 0; i < N; i++) if (bufL[i] != bufR[i]) { mono = 0; break; }
+		check("mono stays exactly mono in mid mode", mono ? 1.0 : 0.0, 1.0, 1.0);
 	}
 
 	printf("\n%s (%d failure%s)\n", failures ? "FAILED" : "PASSED",

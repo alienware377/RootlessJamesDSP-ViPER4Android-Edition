@@ -51,7 +51,7 @@ object JamesDspWrapper {
     external fun setLowEnd(self: JamesDspHandle, enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean
     external fun setTransient(self: JamesDspHandle, enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean
     external fun setImaging(self: JamesDspHandle, enable: Boolean, monoBelow: Float, freqLow: Float, freqMid: Float, freqHigh: Float, widthLow: Float, widthMid: Float, widthHigh: Float, mix: Float): Boolean
-    external fun setDynamicEq(self: JamesDspHandle, enable: Boolean, mix: Float): Boolean
+    external fun setDynamicEq(self: JamesDspHandle, enable: Boolean, mix: Float, msMode: Int): Boolean
     external fun setDynamicEqBands(self: JamesDspHandle, bands: FloatArray?): Boolean
     external fun setPitchShift(self: JamesDspHandle, enable: Boolean, semitones: Float, mix: Float): Boolean
     external fun setChainOrder(self: JamesDspHandle, order: IntArray?): Boolean

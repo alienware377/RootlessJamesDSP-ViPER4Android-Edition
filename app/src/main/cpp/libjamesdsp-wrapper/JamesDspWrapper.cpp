@@ -631,10 +631,10 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setImaging(JNIE
 
 extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setDynamicEq(JNIEnv *env, jobject obj, jlong self,
-        jboolean enable, jfloat mix)
+        jboolean enable, jfloat mix, jint msMode)
 {
     DECLARE_DSP_B
-    DynamicEqSetParam(dsp, mix);
+    DynamicEqSetParam(dsp, mix, msMode);
     if (enable) DynamicEqEnable(dsp); else DynamicEqDisable(dsp);
     return true;
 }

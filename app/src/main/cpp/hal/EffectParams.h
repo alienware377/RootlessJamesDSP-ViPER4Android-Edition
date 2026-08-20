@@ -99,14 +99,14 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
        array rather than two calls, so the bands and the mix cannot arrive out
        of step with each other. */
     case 26013:
-        if (fn >= 2)
+        if (fn >= 3)
         {
             const int count = (int)(fv[1] + 0.5f);
-            const uint32_t need = 2u + (uint32_t)count * DYNEQ_VALUES_PER_BAND;
+            const uint32_t need = 3u + (uint32_t)count * DYNEQ_VALUES_PER_BAND;
             if (count >= 0 && fn >= need)
             {
-                DynamicEqSetBands(d, fv + 2, count);
-                DynamicEqSetParam(d, fv[0]);
+                DynamicEqSetBands(d, fv + 3, count);
+                DynamicEqSetParam(d, fv[0], (int)(fv[2] + 0.5f));
             }
         }
         break;

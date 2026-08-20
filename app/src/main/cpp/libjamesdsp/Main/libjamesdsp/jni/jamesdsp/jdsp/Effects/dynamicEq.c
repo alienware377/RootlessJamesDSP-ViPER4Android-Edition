@@ -132,12 +132,14 @@ void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count)
 	d->fs = fs;
 }
 
-void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct)
+void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct, int msMode)
 {
 	DynamicEq *d = &jdsp->dynamicEq;
 	d->mix = mixPct * 0.01f;
 	if (d->mix < 0.0f) d->mix = 0.0f;
 	if (d->mix > 1.0f) d->mix = 1.0f;
+	if (msMode < 0 || msMode >= MS_MODE_COUNT) msMode = MS_MODE_STEREO;
+	d->msMode = msMode;
 }
 
 void DynamicEqProcess(JamesDSPLib *jdsp, size_t n)
@@ -153,9 +155,27 @@ void DynamicEqProcess(JamesDSPLib *jdsp, size_t n)
 	for (size_t i = 0; i < n; i++)
 	{
 		const float dryL = left[i], dryR = right[i];
-		float l = dryL, r = dryR;
-		/* Sidechain from the sum, so both channels always move together. */
-		const float mono = (dryL + dryR) * 0.5f;
+		float l, r, mono;
+
+		if (d->msMode == MS_MODE_STEREO)
+		{
+			l = dryL; r = dryR;
+			/* Sidechain from the sum, so both channels always move together. */
+			mono = (dryL + dryR) * 0.5f;
+		}
+		else
+		{
+			/* Working on one half of the stereo picture: the chosen part goes
+			   through the filters and is its own sidechain, the other is held
+			   aside untouched and put back afterwards. Treating the centre and
+			   the edges separately is what lets a de-esser catch a vocal
+			   without also dulling the reverb around it. */
+			const float mid = (dryL + dryR) * 0.5f;
+			const float side = (dryL - dryR) * 0.5f;
+			if (d->msMode == MS_MODE_MID) { l = mid; r = side; }
+			else                          { l = side; r = mid; }
+			mono = l;
+		}
 
 		for (int k = 0; k < d->numBands; k++)
 		{
@@ -204,8 +224,11 @@ void DynamicEqProcess(JamesDSPLib *jdsp, size_t n)
 
 			l = dynEqRunBiquad(l, b->b0, b->b1, b->b2, b->a1, b->a2,
 			                   &b->z1[0], &b->z2[0]);
-			r = dynEqRunBiquad(r, b->b0, b->b1, b->b2, b->a1, b->a2,
-			                   &b->z1[1], &b->z2[1]);
+			/* In mid or side mode r is the untouched half, so it is carried
+			   through rather than filtered. */
+			if (d->msMode == MS_MODE_STEREO)
+				r = dynEqRunBiquad(r, b->b0, b->b1, b->b2, b->a1, b->a2,
+				                   &b->z1[1], &b->z2[1]);
 		}
 
 		if (++d->redesign >= DYNEQ_REDESIGN)
@@ -222,15 +245,28 @@ void DynamicEqProcess(JamesDSPLib *jdsp, size_t n)
 			}
 		}
 
-		if (d->mix >= 1.0f)
+		float wetL, wetR;
+		if (d->msMode == MS_MODE_STEREO)
 		{
-			left[i] = l;
-			right[i] = r;
+			wetL = l; wetR = r;
 		}
 		else
 		{
-			left[i] = dryL + (l - dryL) * d->mix;
-			right[i] = dryR + (r - dryR) * d->mix;
+			const float mid = (d->msMode == MS_MODE_MID) ? l : r;
+			const float side = (d->msMode == MS_MODE_MID) ? r : l;
+			wetL = mid + side;
+			wetR = mid - side;
+		}
+
+		if (d->mix >= 1.0f)
+		{
+			left[i] = wetL;
+			right[i] = wetR;
+		}
+		else
+		{
+			left[i] = dryL + (wetL - dryL) * d->mix;
+			right[i] = dryR + (wetR - dryR) * d->mix;
 		}
 	}
 }

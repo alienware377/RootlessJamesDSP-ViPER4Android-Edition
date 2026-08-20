@@ -241,6 +241,17 @@ typedef struct
 #define DYNEQ_MAX_BANDS 8
 // freq, Q, threshold dB, ratio, attack ms, release ms, range dB, mode
 #define DYNEQ_VALUES_PER_BAND 8
+// Which part of the stereo picture an effect works on. Stereo is the shape
+// this shipped with and must stay index 0 and stay bit-identical - the mid/side
+// round trip does not reproduce its input in float arithmetic, so the stereo
+// path has to skip the conversion entirely rather than do a neutral one.
+enum MsMode
+{
+	MS_MODE_STEREO = 0,		// both channels, as they arrive
+	MS_MODE_MID,			// what the two channels share - the centre
+	MS_MODE_SIDE,			// what differs between them - the edges
+	MS_MODE_COUNT
+};
 enum DynEqMode
 {
 	DYNEQ_MODE_COMPRESS = 0,	// act on what rises above the threshold
@@ -263,7 +274,7 @@ typedef struct
 	int numBands;
 	DynEqBand band[DYNEQ_MAX_BANDS];
 	float fs, mix;
-	int redesign;
+	int redesign, msMode;
 } DynamicEq;
 // 1024 samples is 5.3ms at 48kHz and still 5.3ms of headroom at 192kHz, where
 // the longest lookahead any mode asks for is 768 samples.
@@ -1149,7 +1160,7 @@ extern void ImagingProcess(JamesDSPLib *jdsp, size_t n);
 extern void ImagingEnable(JamesDSPLib *jdsp);
 extern void ImagingDisable(JamesDSPLib *jdsp);
 extern void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count);
-extern void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct);
+extern void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct, int msMode);
 extern void DynamicEqProcess(JamesDSPLib *jdsp, size_t n);
 extern void DynamicEqEnable(JamesDSPLib *jdsp);
 extern void DynamicEqDisable(JamesDSPLib *jdsp);

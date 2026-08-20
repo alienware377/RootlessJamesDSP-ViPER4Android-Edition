@@ -10,6 +10,14 @@
         <Preference android:key="section_info" android:title="@string/section_info_title"
             android:summary="@string/dyneq_info" android:persistent="false"
             app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        <ListPreference
+            android:key="@string/key_dyneq_ms_mode"
+            android:title="@string/dyneq_ms_mode"
+            android:summary="@string/dyneq_ms_mode_summary"
+            android:defaultValue="0"
+            android:entries="@array/ms_modes"
+            android:entryValues="@array/ms_modes_values"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
         <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
             android:key="@string/key_dyneq_mix"
             android:title="@string/dyneq_mix"

@@ -202,12 +202,13 @@ class JamesDspRemoteEngine(
         return true
     }
 
-    override fun setDynamicEq(enable: Boolean, mix: Float): Boolean {
+    override fun setDynamicEq(enable: Boolean, mix: Float, msMode: Int): Boolean {
         val bands = pendingDyneqBands ?: FloatArray(0)
-        val payload = FloatArray(2 + bands.size)
+        val payload = FloatArray(3 + bands.size)
         payload[0] = mix
         payload[1] = (bands.size / JamesDspBaseEngine.DYNEQ_VALUES_PER_BAND).toFloat()
-        bands.copyInto(payload, 2)
+        payload[2] = msMode.toFloat()
+        bands.copyInto(payload, 3)
         return sendForkEffect(PARAM_DYNAMIC_EQ, enable, payload)
     }
 

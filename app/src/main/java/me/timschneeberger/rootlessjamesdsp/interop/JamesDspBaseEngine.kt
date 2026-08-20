@@ -218,6 +218,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             cache.select(Constants.PREF_DYNAMICEQ)
             val dyneqEnabled = cache.get(R.string.key_dyneq_enable, false)
             val dyneqMix = cache.get(R.string.key_dyneq_mix, 100f)
+            val dyneqMs = cache.get(R.string.key_dyneq_ms_mode, "0").toInt()
             // Three bands, each read as its own preferences. Kept in the order
             // the engine expects: frequency, Q, threshold, ratio, attack,
             // release, range, mode.
@@ -416,7 +417,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         // Bands before the switch, so a band never goes live
                         // with the previous card's settings behind it.
                         setDynamicEqBandsInternal(dyneqBands)
-                        setDynamicEq(dyneqEnabled, dyneqMix)
+                        setDynamicEq(dyneqEnabled, dyneqMix, dyneqMs)
                     }
                     Constants.PREF_MULTIBANDDIST -> {
                         // Bands first: the cascade has to be in place before
@@ -784,7 +785,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
     abstract fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean
     abstract fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean
     abstract fun setImaging(enable: Boolean, monoBelow: Float, freqLow: Float, freqMid: Float, freqHigh: Float, widthLow: Float, widthMid: Float, widthHigh: Float, mix: Float): Boolean
-    abstract fun setDynamicEq(enable: Boolean, mix: Float): Boolean
+    abstract fun setDynamicEq(enable: Boolean, mix: Float, msMode: Int): Boolean
     protected abstract fun setDynamicEqBandsInternal(bands: FloatArray?): Boolean
 
     abstract fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int, clipShape: Int): Boolean

@@ -1469,7 +1469,7 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 		};
 		DynamicEqSetBands(jdsp, defaults, 3);
 	}
-	DynamicEqSetParam(jdsp, 100.0f);
+	DynamicEqSetParam(jdsp, 100.0f, MS_MODE_STEREO);
 	jdsp->imagingEnabled = 0;
 	// Bass folded to mono, mids left alone, top opened up: audible on any
 	// stereo material without being a trick.
