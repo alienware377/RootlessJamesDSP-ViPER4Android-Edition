@@ -138,6 +138,12 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
         break;
     case 26117: if (on) ExciterEnable(d); else ExciterDisable(d); break;
 
+    case 26018:
+        if (fn >= 6)
+            TapeSetParam(d, fv[0], fv[1], fv[2], fv[3], fv[4], fv[5]);
+        break;
+    case 26118: if (on) TapeEnable(d); else TapeDisable(d); break;
+
     /* The order arrives as ints, so it is read from the raw payload rather
        than through the float view every other effect uses. */
     case 26012:

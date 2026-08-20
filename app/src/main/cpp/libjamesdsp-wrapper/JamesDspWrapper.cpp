@@ -594,6 +594,17 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDis
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setTape(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat wow, jfloat flutter, jfloat saturation,
+        jfloat bias, jfloat headBump, jfloat mix)
+{
+    DECLARE_DSP_B
+    TapeSetParam(dsp, wow, flutter, saturation, bias, headBump, mix);
+    if (enable) TapeEnable(dsp); else TapeDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setExciter(JNIEnv *env, jobject obj, jlong self,
         jboolean enable, jfloat f1, jfloat f2, jfloat f3,
         jfloat a1, jfloat a2, jfloat a3, jfloat a4,

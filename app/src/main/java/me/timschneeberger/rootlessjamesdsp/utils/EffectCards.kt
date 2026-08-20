@@ -38,6 +38,7 @@ object EffectCards {
         Constants.PREF_TRANSIENT to "card_transient",
         Constants.PREF_LOWEND to "card_lowend",
         Constants.PREF_EXCITER to "card_exciter",
+        Constants.PREF_TAPE to "card_tape",
         Constants.PREF_AGC to "card_agc",
         Constants.PREF_EQ to "card_eq",
         Constants.PREF_GEQ to "card_geq",

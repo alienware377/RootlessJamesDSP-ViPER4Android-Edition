@@ -184,6 +184,26 @@ typedef struct
 	float chPhase, chInc, chBase, chDepth, chFeedback, chSpread, chMix;
 	float fs;
 } MultibandDist;
+// A power of two so the read index can wrap with a mask. 8192 is 170ms at
+// 48kHz and still 42ms at 192kHz, which is far more than the modulation and
+// the twelve-millisecond base offset ever need.
+#define TAPE_LINE 8192
+typedef struct
+{
+	float b0, b1, b2, a1, a2;
+	float z1[2], z2[2];
+} TapeStage;
+typedef struct
+{
+	float line[2][TAPE_LINE];
+	int widx;
+	float base, wowPhase, wowInc, wowDepth;
+	float flutterPhase, flutterInc, flutterDepth;
+	float saturation, drive, bias, headBumpDb;
+	TapeStage biasShelf, headBump;
+	float fs, mix;
+	int transparent;
+} Tape;
 #define EXCITER_BANDS 4
 // Ordered softest to most lopsided. The first three are odd-harmonic, the last
 // two asymmetric and so even-harmonic, which is most of what separates a valve
@@ -841,6 +861,7 @@ enum JdspEffectId
 	JDSP_EFX_TRANSIENT,
 	JDSP_EFX_LOWEND,
 	JDSP_EFX_EXCITER,
+	JDSP_EFX_TAPE,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -1019,6 +1040,8 @@ typedef struct dspsys
 	LowEnd lowEnd;
 	int exciterEnabled;
 	Exciter exciter;
+	int tapeEnabled;
+	Tape tape;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1174,6 +1197,11 @@ extern void EchoDelaySetParam(JamesDSPLib *jdsp, float inputLevel, float timeMs,
 extern void EchoDelayUpdateFilter(EchoDelay *e, float cutoffHz);
 extern void EchoDelayProcess(JamesDSPLib *jdsp, size_t n);
 extern void EchoDelayEnable(JamesDSPLib *jdsp);
+extern void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
+	float saturationPct, float biasPct, float headBumpDb, float mixPct);
+extern void TapeProcess(JamesDSPLib *jdsp, size_t n);
+extern void TapeEnable(JamesDSPLib *jdsp);
+extern void TapeDisable(JamesDSPLib *jdsp);
 extern void ExciterSetParam(JamesDSPLib *jdsp, float freq1, float freq2, float freq3,
 	float amount1, float amount2, float amount3, float amount4,
 	int character, float drive, float mixPct);

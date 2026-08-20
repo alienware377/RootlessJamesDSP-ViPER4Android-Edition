@@ -547,6 +547,11 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->exciterEnabled) ExciterProcess(jdsp, n);
 		jdsp_unlock(jdsp);
 		break;
+	case JDSP_EFX_TAPE:
+		jdsp_lock(jdsp);
+		if (jdsp->tapeEnabled) TapeProcess(jdsp, n);
+		jdsp_unlock(jdsp);
+		break;
 	default:
 		break;
 	}
@@ -1483,6 +1488,10 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	jdsp->transientEnabled = 0;
 	// Punch added low and low-mid, a little of the room taken off the tail,
 	// top left alone so cymbals are not sharpened.
+	jdsp->tapeEnabled = 0;
+	// A worn but working machine: audible wobble, gentle saturation, the head
+	// bump that makes tape masters sound weightier than the mix did.
+	TapeSetParam(jdsp, 25.0f, 30.0f, 35.0f, -20.0f, 3.0f, 100.0f);
 	jdsp->exciterEnabled = 0;
 	// Weight underneath, a touch through the mids, air on top - and a valve
 	// character so the added harmonics are even rather than edgy.

@@ -184,6 +184,9 @@ class JamesDspRemoteEngine(
      */
     private var pendingDyneqBands: FloatArray? = null
 
+    override fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean =
+        sendForkEffect(PARAM_TAPE, enable, floatArrayOf(wow, flutter, saturation, bias, headBump, mix))
+
     override fun setExciter(enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean =
         sendForkEffect(PARAM_EXCITER, enable, floatArrayOf(
             f1, f2, f3, a1, a2, a3, a4, character.toFloat(), drive, mix))
@@ -473,6 +476,7 @@ class JamesDspRemoteEngine(
         private const val PARAM_TRANSIENT = PARAM_FORK_BASE + 15
         private const val PARAM_LOWEND = PARAM_FORK_BASE + 16
         private const val PARAM_EXCITER = PARAM_FORK_BASE + 17
+        private const val PARAM_TAPE = PARAM_FORK_BASE + 18
         /** Enable flags live one hundred above their value id. */
         private const val PARAM_FORK_ENABLE_OFFSET = 100
 

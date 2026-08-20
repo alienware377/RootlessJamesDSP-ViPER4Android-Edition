@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup
+        android:key="@string/key_tape_enable"
+        android:disableDependentsState="false"
+        android:title="@string/tape_enable"
+        android:icon="@drawable/ic_twotone_speaker_24dp"
+        app:iconSpaceReserved="false">
+        <Preference android:key="section_info" android:title="@string/section_info_title"
+            android:summary="@string/tape_info" android:persistent="false"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_tape_wow"
+            android:title="@string/tape_wow"
+            android:summary="@string/tape_wow_summary"
+            android:defaultValue="25"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_tape_flutter"
+            android:title="@string/tape_flutter"
+            android:summary="@string/tape_flutter_summary"
+            android:defaultValue="30"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_tape_saturation"
+            android:title="@string/tape_saturation"
+            android:summary="@string/tape_saturation_summary"
+            android:defaultValue="35"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_tape_bias"
+            android:title="@string/tape_bias"
+            android:summary="@string/tape_bias_summary"
+            android:defaultValue="-20"
+            app:minValue="-100" app:maxValue="100" app:unit="" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_tape_head_bump"
+            android:title="@string/tape_head_bump"
+            android:summary="@string/tape_head_bump_summary"
+            android:defaultValue="3"
+            app:minValue="0" app:maxValue="9" app:unit="dB" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_tape_mix"
+            android:title="@string/tape_mix"
+            android:summary="@string/tape_mix_summary"
+            android:defaultValue="100"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+    </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
+</PreferenceScreen>

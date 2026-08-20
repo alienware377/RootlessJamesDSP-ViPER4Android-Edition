@@ -182,6 +182,15 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
             val maxrClipShape = cache.get(R.string.key_maxr_clip_shape, "0").toInt()
 
+            cache.select(Constants.PREF_TAPE)
+            val tpEnabled = cache.get(R.string.key_tape_enable, false)
+            val tpWow = cache.get(R.string.key_tape_wow, 25f)
+            val tpFlutter = cache.get(R.string.key_tape_flutter, 30f)
+            val tpSat = cache.get(R.string.key_tape_saturation, 35f)
+            val tpBias = cache.get(R.string.key_tape_bias, -20f)
+            val tpBump = cache.get(R.string.key_tape_head_bump, 3f)
+            val tpMix = cache.get(R.string.key_tape_mix, 100f)
+
             cache.select(Constants.PREF_EXCITER)
             val exEnabled = cache.get(R.string.key_exciter_enable, false)
             val exF1 = cache.get(R.string.key_exciter_freq1, 150f)
@@ -412,6 +421,9 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         maxrEnabled, maxrMode, maxrGain, maxrCeiling, maxrRelease,
                         maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
                         maxrOversample, maxrClipShape
+                    )
+                    Constants.PREF_TAPE -> setTape(
+                        tpEnabled, tpWow, tpFlutter, tpSat, tpBias, tpBump, tpMix
                     )
                     Constants.PREF_EXCITER -> setExciter(
                         exEnabled, exF1, exF2, exF3, exA1, exA2, exA3, exA4,
@@ -799,6 +811,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
         return setMultibandDistBandsInternal(flat)
     }
 
+    abstract fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean
     abstract fun setExciter(enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean
     abstract fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean
     abstract fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean
