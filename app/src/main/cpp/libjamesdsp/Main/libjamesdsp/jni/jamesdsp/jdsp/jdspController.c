@@ -1628,6 +1628,26 @@ void JamesDSPSetSampleRate(JamesDSPLib *jdsp, float new_sample_rate, int forceRe
 		CompressorEnable(jdsp, jdsp->compEnabled);
 		StereoEnhancementRefresh(jdsp);
 	}
+	/* Outside the forceRefresh guard on purpose. Nothing in this app ever
+	   passes forceRefresh, so anything inside that branch is never redesigned -
+	   and these six cache every coefficient they use, so left alone they would
+	   go on filtering at the rate they were last set up for. Moving between
+	   44.1k and 48k puts every corner frequency out by about nine percent, and
+	   for the tape it also mistimes the wow and flutter oscillators.
+
+	   It matters more at startup than mid-session: preferences are pushed in
+	   before the first stream arrives, so without this the settings are
+	   designed against the 48k fallback and then simply stay there for the
+	   whole of a 44.1k stream.
+
+	   These take no lock of their own - it is held here, and it is not
+	   recursive. */
+	TapeRefresh(jdsp);
+	ExciterRefresh(jdsp);
+	LowEndRefresh(jdsp);
+	TransientRefresh(jdsp);
+	ImagingRefresh(jdsp);
+	DynamicEqRefresh(jdsp);
 	jdsp_unlock(jdsp);
 }
 void JamesDSPReleaseEffectBuffers(JamesDSPLib *jdsp)

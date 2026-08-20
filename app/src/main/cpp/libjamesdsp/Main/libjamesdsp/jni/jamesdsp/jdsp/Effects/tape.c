@@ -96,6 +96,43 @@ static float tapeRun(TapeStage *s, int ch, float x)
 	return y;
 }
 
+/* Almost everything here is rate-dependent - the modulation depths are in
+   samples, the oscillator increments in radians per sample, the read offset in
+   samples and both filters in normalised frequency. Kept apart from storing the
+   settings so a rate change can redo it. See LowEndRefresh for the reasoning. */
+static void tapeDesign(Tape *t, float fs)
+{
+	/* Depths in samples. Real machines wobble by a fraction of a percent; these
+	   go further so the control is usable as an effect rather than only as a
+	   restoration of an old fault. */
+	t->wowDepth = (t->wowPct * 0.01f) * 0.0035f * fs;
+	t->flutterDepth = (t->flutterPct * 0.01f) * 0.00035f * fs;
+	t->wowInc = 2.0f * (float)M_PI * 0.7f / fs;
+	t->flutterInc = 2.0f * (float)M_PI * 9.0f / fs;
+
+	/* Which way round this goes is worth writing down, because the intuitive
+	   guess is backwards: under-biasing a machine gives MORE top end, with more
+	   distortion alongside it, and over-biasing is what dulls the sound. So a
+	   negative setting lifts the shelf. Measured at 12 kHz, -100 reads +5.95 dB
+	   and +100 reads -5.95 dB. */
+	tapeDesignShelf(&t->biasShelf, 4500.0, fs, -(t->bias * 0.01f) * 6.0f, 1);
+	tapeDesignPeak(&t->headBump, 60.0, fs, t->headBumpDb, 1.1);
+
+	t->base = TAPE_BASE_MS * 0.001f * fs;
+	if (t->base < 4.0f) t->base = 4.0f;
+	if (t->base > (float)(TAPE_LINE - 4)) t->base = (float)(TAPE_LINE - 4);
+	t->fs = fs;
+}
+
+/* Unlocked on purpose - the caller already holds it. Note this leaves the delay
+   line and the oscillator phases alone: the read offset moves to the new rate's
+   equivalent of twelve milliseconds, which is a small step rather than the click
+   that clearing the line would give. */
+void TapeRefresh(JamesDSPLib *jdsp)
+{
+	tapeDesign(&jdsp->tape, jdsp->fs > 0.0f ? jdsp->fs : 48000.0f);
+}
+
 void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
                   float saturationPct, float biasPct, float headBumpDb,
                   float mixPct)
@@ -109,19 +146,13 @@ void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
 	jdsp_lock(jdsp);
 	Tape *t = &jdsp->tape;
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
-	t->fs = fs;
 
 	if (wowPct < 0.0f) wowPct = 0.0f;
 	if (wowPct > 100.0f) wowPct = 100.0f;
 	if (flutterPct < 0.0f) flutterPct = 0.0f;
 	if (flutterPct > 100.0f) flutterPct = 100.0f;
-	/* Depths in samples. Real machines wobble by a fraction of a percent; these
-	   go further so the control is usable as an effect rather than only as a
-	   restoration of an old fault. */
-	t->wowDepth = (wowPct * 0.01f) * 0.0035f * fs;
-	t->flutterDepth = (flutterPct * 0.01f) * 0.00035f * fs;
-	t->wowInc = 2.0f * (float)M_PI * 0.7f / fs;
-	t->flutterInc = 2.0f * (float)M_PI * 9.0f / fs;
+	t->wowPct = wowPct;
+	t->flutterPct = flutterPct;
 
 	if (saturationPct < 0.0f) saturationPct = 0.0f;
 	if (saturationPct > 100.0f) saturationPct = 100.0f;
@@ -133,25 +164,16 @@ void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
 	if (biasPct < -100.0f) biasPct = -100.0f;
 	if (biasPct > 100.0f) biasPct = 100.0f;
 	t->bias = biasPct;
-	/* Which way round this goes is worth writing down, because the intuitive
-	   guess is backwards: under-biasing a machine gives MORE top end, with more
-	   distortion alongside it, and over-biasing is what dulls the sound. So a
-	   negative setting lifts the shelf. Measured at 12 kHz, -100 reads +5.95 dB
-	   and +100 reads -5.95 dB. */
-	tapeDesignShelf(&t->biasShelf, 4500.0, fs, -(biasPct * 0.01f) * 6.0f, 1);
 
 	if (headBumpDb < 0.0f) headBumpDb = 0.0f;
 	if (headBumpDb > 9.0f) headBumpDb = 9.0f;
 	t->headBumpDb = headBumpDb;
-	tapeDesignPeak(&t->headBump, 60.0, fs, headBumpDb, 1.1);
+
+	tapeDesign(t, fs);
 
 	t->mix = mixPct * 0.01f;
 	if (t->mix < 0.0f) t->mix = 0.0f;
 	if (t->mix > 1.0f) t->mix = 1.0f;
-
-	t->base = TAPE_BASE_MS * 0.001f * fs;
-	if (t->base < 4.0f) t->base = 4.0f;
-	if (t->base > (float)(TAPE_LINE - 4)) t->base = (float)(TAPE_LINE - 4);
 
 	/* Nothing asked for means nothing done - and it has to be a real early
 	   return, because the delay line alone would shift the whole signal twelve

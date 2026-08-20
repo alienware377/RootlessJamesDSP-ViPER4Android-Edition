@@ -104,6 +104,27 @@ static float exciterShape(int character, float x)
 	}
 }
 
+/* The band split and the DC blocker are the only rate-dependent parts; the
+   shapers are memoryless. Kept apart so a rate change can redo them from the
+   stored corner frequencies. See LowEndRefresh for the reasoning. */
+static void exciterDesign(Exciter *e, float fs)
+{
+	for (int i = 0; i < EXCITER_BANDS - 1; i++)
+		exciterDesignLowpass(&e->split[i], e->freq[i], fs);
+
+	/* A DC blocker per band, because the asymmetric characters really do put
+	   a step in the signal and four of them would add up. */
+	e->dcCoef = 1.0f - (2.0f * (float)M_PI * 8.0f / fs);
+	if (e->dcCoef > 0.9999f) e->dcCoef = 0.9999f;
+	e->fs = fs;
+}
+
+/* Unlocked on purpose - the caller already holds it. */
+void ExciterRefresh(JamesDSPLib *jdsp)
+{
+	exciterDesign(&jdsp->exciter, jdsp->fs > 0.0f ? jdsp->fs : 48000.0f);
+}
+
 void ExciterSetParam(JamesDSPLib *jdsp, float freq1, float freq2, float freq3,
                      float amount1, float amount2, float amount3, float amount4,
                      int character, float drive, float mixPct)
@@ -121,8 +142,7 @@ void ExciterSetParam(JamesDSPLib *jdsp, float freq1, float freq2, float freq3,
 	if (freq2 < freq1) freq2 = freq1;
 	if (freq3 < freq2) freq3 = freq2;
 	e->freq[0] = freq1; e->freq[1] = freq2; e->freq[2] = freq3;
-	for (int i = 0; i < EXCITER_BANDS - 1; i++)
-		exciterDesignLowpass(&e->split[i], e->freq[i], fs);
+	exciterDesign(e, fs);
 
 	const float amounts[EXCITER_BANDS] = { amount1, amount2, amount3, amount4 };
 	for (int k = 0; k < EXCITER_BANDS; k++)
@@ -146,12 +166,6 @@ void ExciterSetParam(JamesDSPLib *jdsp, float freq1, float freq2, float freq3,
 	if (e->mix < 0.0f) e->mix = 0.0f;
 	if (e->mix > 1.0f) e->mix = 1.0f;
 
-	/* A DC blocker per band, because the asymmetric characters really do put
-	   a step in the signal and four of them would add up. */
-	e->dcCoef = 1.0f - (2.0f * (float)M_PI * 8.0f / fs);
-	if (e->dcCoef > 0.9999f) e->dcCoef = 0.9999f;
-
-	e->fs = fs;
 	e->transparent = 1;
 	for (int k = 0; k < EXCITER_BANDS; k++)
 		if (e->amount[k] > 1e-6f) e->transparent = 0;

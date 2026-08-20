@@ -95,6 +95,23 @@ static void dynEqRefreshBand(DynEqBand *b, float fs)
 	b->relC = dynEqCoef(b->releaseMs, fs);
 }
 
+/* Redesign every band at whatever rate the engine is now running. Unlocked on
+   purpose - the only caller is JamesDSPSetSampleRate, which already holds the
+   lock, and jdsp_lock is not recursive. See LowEndRefresh for the reasoning.
+
+   dynEqRefreshBand already redesigns the peaking filter at the gain currently
+   applied rather than at zero, so a band that happens to be ducking when the
+   rate changes keeps ducking by the same amount instead of jumping back to
+   flat. The follower state is left alone for the same reason. */
+void DynamicEqRefresh(JamesDSPLib *jdsp)
+{
+	DynamicEq *d = &jdsp->dynamicEq;
+	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
+	for (int i = 0; i < d->numBands; i++)
+		dynEqRefreshBand(&d->band[i], fs);
+	d->fs = fs;
+}
+
 void DynamicEqSetBands(JamesDSPLib *jdsp, const float *bands, int count)
 {
 	/* Same reasoning as the lock in DynamicEqSetParam below: Process runs on the

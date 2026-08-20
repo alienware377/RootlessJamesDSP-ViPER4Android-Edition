@@ -85,6 +85,35 @@ static float transFollow(float env, float mag, float attC, float relC)
 	return mag + c * (env - mag);
 }
 
+/* The band split and all six follower time constants move with the rate; the
+   attack and sustain amounts do not. Kept apart from storing those amounts so a
+   rate change can redo the design. See LowEndRefresh for the reasoning. */
+static void transientDesign(Transient *t, float fs)
+{
+	transDesignLowpass(&t->split[0], t->freqLow, fs);
+	transDesignLowpass(&t->split[1], t->freqHigh, fs);
+
+	const float atkFast = transCoef(TRANS_ATK_FAST_MS, fs);
+	const float atkSlow = transCoef(TRANS_ATK_SLOW_MS, fs);
+	const float atkRel = transCoef(TRANS_ATK_REL_MS, fs);
+	const float susAtt = transCoef(TRANS_SUS_ATT_MS, fs);
+	const float susFast = transCoef(TRANS_SUS_FAST_MS, fs);
+	const float susSlow = transCoef(TRANS_SUS_SLOW_MS, fs);
+	for (int k = 0; k < TRANSIENT_BANDS; k++)
+	{
+		TransientBand *b = &t->band[k];
+		b->atkFastC = atkFast; b->atkSlowC = atkSlow; b->atkRelC = atkRel;
+		b->susAttC = susAtt; b->susFastC = susFast; b->susSlowC = susSlow;
+	}
+	t->fs = fs;
+}
+
+/* Unlocked on purpose - the caller already holds it. */
+void TransientRefresh(JamesDSPLib *jdsp)
+{
+	transientDesign(&jdsp->transient, jdsp->fs > 0.0f ? jdsp->fs : 48000.0f);
+}
+
 void TransientSetParam(JamesDSPLib *jdsp, float freqLow, float freqHigh,
                        float attackLow, float sustainLow,
                        float attackMid, float sustainMid,
@@ -104,8 +133,6 @@ void TransientSetParam(JamesDSPLib *jdsp, float freqLow, float freqHigh,
 	if (freqHigh < freqLow) freqHigh = freqLow;
 	t->freqLow = freqLow;
 	t->freqHigh = freqHigh;
-	transDesignLowpass(&t->split[0], freqLow, fs);
-	transDesignLowpass(&t->split[1], freqHigh, fs);
 
 	/* The controls arrive as percentages either side of zero. */
 	t->band[0].attack = attackLow * 0.01f;
@@ -117,18 +144,7 @@ void TransientSetParam(JamesDSPLib *jdsp, float freqLow, float freqHigh,
 
 	t->rangeDb = rangeDb < 0.0f ? 0.0f : (rangeDb > 24.0f ? 24.0f : rangeDb);
 
-	const float atkFast = transCoef(TRANS_ATK_FAST_MS, fs);
-	const float atkSlow = transCoef(TRANS_ATK_SLOW_MS, fs);
-	const float atkRel = transCoef(TRANS_ATK_REL_MS, fs);
-	const float susAtt = transCoef(TRANS_SUS_ATT_MS, fs);
-	const float susFast = transCoef(TRANS_SUS_FAST_MS, fs);
-	const float susSlow = transCoef(TRANS_SUS_SLOW_MS, fs);
-	for (int k = 0; k < TRANSIENT_BANDS; k++)
-	{
-		TransientBand *b = &t->band[k];
-		b->atkFastC = atkFast; b->atkSlowC = atkSlow; b->atkRelC = atkRel;
-		b->susAttC = susAtt; b->susFastC = susFast; b->susSlowC = susSlow;
-	}
+	transientDesign(t, fs);
 
 	t->mix = mixPct * 0.01f;
 	if (t->mix < 0.0f) t->mix = 0.0f;

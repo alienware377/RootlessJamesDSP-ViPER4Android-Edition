@@ -199,6 +199,10 @@ typedef struct
 	int widx;
 	float base, wowPhase, wowInc, wowDepth;
 	float flutterPhase, flutterInc, flutterDepth;
+	// The depths and increments above are in samples and radians per sample, so
+	// they only mean anything at one rate. These two are the settings as the
+	// user gave them, kept so the design can be redone if the rate changes.
+	float wowPct, flutterPct;
 	float saturation, drive, bias, headBumpDb;
 	TapeStage biasShelf, headBump;
 	float fs, mix;
@@ -1230,6 +1234,15 @@ extern void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct, int msMode);
 extern void DynamicEqProcess(JamesDSPLib *jdsp, size_t n);
 extern void DynamicEqEnable(JamesDSPLib *jdsp);
 extern void DynamicEqDisable(JamesDSPLib *jdsp);
+// Redesign at the current jdsp->fs from settings already held. All six MUST be
+// called with the lock already held and take none themselves - jdsp_lock is not
+// recursive. JamesDSPSetSampleRate is the only caller.
+extern void TapeRefresh(JamesDSPLib *jdsp);
+extern void ExciterRefresh(JamesDSPLib *jdsp);
+extern void LowEndRefresh(JamesDSPLib *jdsp);
+extern void TransientRefresh(JamesDSPLib *jdsp);
+extern void ImagingRefresh(JamesDSPLib *jdsp);
+extern void DynamicEqRefresh(JamesDSPLib *jdsp);
 extern void MultibandDistSetBands(JamesDSPLib *jdsp, const float *bands, int count);
 extern void MultibandDistSetParam(JamesDSPLib *jdsp,
 	int routing, int model,

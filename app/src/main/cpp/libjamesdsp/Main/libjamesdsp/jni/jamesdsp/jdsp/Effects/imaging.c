@@ -120,6 +120,38 @@ static void imagingDesignHighpass(ImagingStage *s, double f, float fs)
 	s->a2 = (float)((1.0 - alpha) / a0);
 }
 
+/* Kept apart from storing the settings so a sample-rate change can redo it from
+   what is already held. See LowEndRefresh for the reasoning. */
+static void imagingDesign(Imaging *im, float fs)
+{
+	if (im->monoBelow >= 20.0f)
+	{
+		// Two of them. A single second-order highpass only reaches -12 dB an
+		// octave down, so "mono below 120 Hz" would still leave a quarter of
+		// the side signal at 60 Hz - audible, and not what the control says.
+		imagingDesignHighpass(&im->mono, im->monoBelow, fs);
+		imagingDesignHighpass(&im->mono2, im->monoBelow, fs);
+	}
+	else
+	{
+		imagingIdentity(&im->mono);
+		imagingIdentity(&im->mono2);
+	}
+
+	/* Two cascaded stages for the corners so a wide setting is a slope rather
+	   than a bump, and one peak in the middle. */
+	imagingDesignShelf(&im->low, im->freqLow, fs, imagingWidthDb(im->widthLow), 0);
+	imagingDesignPeak(&im->mid, im->freqMid, fs, imagingWidthDb(im->widthMid), 1.0);
+	imagingDesignShelf(&im->high, im->freqHigh, fs, imagingWidthDb(im->widthHigh), 1);
+	im->fs = fs;
+}
+
+/* Unlocked on purpose - the caller already holds it. */
+void ImagingRefresh(JamesDSPLib *jdsp)
+{
+	imagingDesign(&jdsp->imaging, jdsp->fs > 0.0f ? jdsp->fs : 48000.0f);
+}
+
 void ImagingSetParam(JamesDSPLib *jdsp, float monoBelowHz,
                      float freqLow, float freqMid, float freqHigh,
                      float widthLow, float widthMid, float widthHigh,
@@ -136,32 +168,13 @@ void ImagingSetParam(JamesDSPLib *jdsp, float monoBelowHz,
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 
 	im->monoBelow = monoBelowHz;
-	if (monoBelowHz >= 20.0f)
-	{
-		// Two of them. A single second-order highpass only reaches -12 dB an
-		// octave down, so "mono below 120 Hz" would still leave a quarter of
-		// the side signal at 60 Hz - audible, and not what the control says.
-		imagingDesignHighpass(&im->mono, monoBelowHz, fs);
-		imagingDesignHighpass(&im->mono2, monoBelowHz, fs);
-	}
-	else
-	{
-		imagingIdentity(&im->mono);
-		imagingIdentity(&im->mono2);
-	}
-
-	/* Two cascaded stages for the corners so a wide setting is a slope rather
-	   than a bump, and one peak in the middle. */
-	imagingDesignShelf(&im->low, freqLow, fs, imagingWidthDb(widthLow), 0);
-	imagingDesignPeak(&im->mid, freqMid, fs, imagingWidthDb(widthMid), 1.0);
-	imagingDesignShelf(&im->high, freqHigh, fs, imagingWidthDb(widthHigh), 1);
-
 	im->freqLow = freqLow;
 	im->freqMid = freqMid;
 	im->freqHigh = freqHigh;
 	im->widthLow = widthLow;
 	im->widthMid = widthMid;
 	im->widthHigh = widthHigh;
+	imagingDesign(im, fs);
 
 	im->mix = mixPct * 0.01f;
 	if (im->mix < 0.0f) im->mix = 0.0f;

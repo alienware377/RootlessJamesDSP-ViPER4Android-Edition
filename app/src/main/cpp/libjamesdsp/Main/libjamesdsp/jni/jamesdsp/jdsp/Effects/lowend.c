@@ -94,6 +94,38 @@ static void lowEndDesignPeak(LowEndStage *s, double f, float fs, float gainDb, d
 	s->a2 = (float)((1.0 - alpha / A) / a0);
 }
 
+/* Every coefficient above depends on the sample rate, so deriving them is kept
+   separate from storing the settings that produced them. That way a rate change
+   can redo the whole design from what is already held, without the caller
+   having to remember and replay the last SetParam. */
+static void lowEndDesign(LowEnd *l, float fs)
+{
+	if (l->subsonicHz >= 10.0f)
+	{
+		/* The two Butterworth section Qs for fourth order. */
+		lowEndDesignHighpass(&l->sub1, l->subsonicHz, fs, 0.54119610);
+		lowEndDesignHighpass(&l->sub2, l->subsonicHz, fs, 1.30656296);
+	}
+	else
+	{
+		lowEndIdentity(&l->sub1);
+		lowEndIdentity(&l->sub2);
+	}
+
+	lowEndDesignLowShelf(&l->weight, l->weightHz, fs, l->weightDb);
+	/* Wide on purpose - a narrow notch here belongs in the equaliser. */
+	lowEndDesignPeak(&l->mud, l->mudHz, fs, l->mudDb, 0.9);
+	l->fs = fs;
+}
+
+/* Redesign at whatever rate the engine is now running. No lock: the only caller
+   is JamesDSPSetSampleRate, which already holds it, and jdsp_lock is not
+   recursive - taking it here would deadlock the audio path on a rate change. */
+void LowEndRefresh(JamesDSPLib *jdsp)
+{
+	lowEndDesign(&jdsp->lowEnd, jdsp->fs > 0.0f ? jdsp->fs : 48000.0f);
+}
+
 void LowEndSetParam(JamesDSPLib *jdsp, float subsonicHz,
                     float weightHz, float weightDb,
                     float mudHz, float mudDb, float mixPct)
@@ -109,24 +141,9 @@ void LowEndSetParam(JamesDSPLib *jdsp, float subsonicHz,
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 
 	l->subsonicHz = subsonicHz;
-	if (subsonicHz >= 10.0f)
-	{
-		/* The two Butterworth section Qs for fourth order. */
-		lowEndDesignHighpass(&l->sub1, subsonicHz, fs, 0.54119610);
-		lowEndDesignHighpass(&l->sub2, subsonicHz, fs, 1.30656296);
-	}
-	else
-	{
-		lowEndIdentity(&l->sub1);
-		lowEndIdentity(&l->sub2);
-	}
-
-	lowEndDesignLowShelf(&l->weight, weightHz, fs, weightDb);
-	/* Wide on purpose - a narrow notch here belongs in the equaliser. */
-	lowEndDesignPeak(&l->mud, mudHz, fs, mudDb, 0.9);
-
 	l->weightHz = weightHz; l->weightDb = weightDb;
 	l->mudHz = mudHz; l->mudDb = mudDb;
+	lowEndDesign(l, fs);
 
 	l->mix = mixPct * 0.01f;
 	if (l->mix < 0.0f) l->mix = 0.0f;
