@@ -181,6 +181,15 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrStereoLink = cache.get(R.string.key_maxr_stereo_link, 100f)
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
 
+            cache.select(Constants.PREF_LOWEND)
+            val leEnabled = cache.get(R.string.key_lowend_enable, false)
+            val leSubsonic = cache.get(R.string.key_lowend_subsonic, 30f)
+            val leWeightFreq = cache.get(R.string.key_lowend_weight_freq, 90f)
+            val leWeightGain = cache.get(R.string.key_lowend_weight_gain, 3f)
+            val leMudFreq = cache.get(R.string.key_lowend_mud_freq, 300f)
+            val leMudGain = cache.get(R.string.key_lowend_mud_gain, -2.5f)
+            val leMix = cache.get(R.string.key_lowend_mix, 100f)
+
             cache.select(Constants.PREF_TRANSIENT)
             val trEnabled = cache.get(R.string.key_transient_enable, false)
             val trFreqLow = cache.get(R.string.key_transient_freq_low, 200f)
@@ -388,6 +397,10 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         maxrEnabled, maxrMode, maxrGain, maxrCeiling, maxrRelease,
                         maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
                         maxrOversample
+                    )
+                    Constants.PREF_LOWEND -> setLowEnd(
+                        leEnabled, leSubsonic, leWeightFreq, leWeightGain,
+                        leMudFreq, leMudGain, leMix
                     )
                     Constants.PREF_TRANSIENT -> setTransient(
                         trEnabled, trFreqLow, trFreqHigh,
@@ -767,6 +780,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
         return setMultibandDistBandsInternal(flat)
     }
 
+    abstract fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean
     abstract fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean
     abstract fun setImaging(enable: Boolean, monoBelow: Float, freqLow: Float, freqMid: Float, freqHigh: Float, widthLow: Float, widthMid: Float, widthHigh: Float, mix: Float): Boolean
     abstract fun setDynamicEq(enable: Boolean, mix: Float): Boolean

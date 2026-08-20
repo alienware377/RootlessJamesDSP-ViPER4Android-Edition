@@ -537,6 +537,11 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->transientEnabled) TransientProcess(jdsp, n);
 		jdsp_unlock(jdsp);
 		break;
+	case JDSP_EFX_LOWEND:
+		jdsp_lock(jdsp);
+		if (jdsp->lowEndEnabled) LowEndProcess(jdsp, n);
+		jdsp_unlock(jdsp);
+		break;
 	default:
 		break;
 	}
@@ -1473,6 +1478,9 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	jdsp->transientEnabled = 0;
 	// Punch added low and low-mid, a little of the room taken off the tail,
 	// top left alone so cymbals are not sharpened.
+	jdsp->lowEndEnabled = 0;
+	// Rumble gone, a little body added, the thick region eased back.
+	LowEndSetParam(jdsp, 30.0f, 90.0f, 3.0f, 300.0f, -2.5f, 100.0f);
 	TransientSetParam(jdsp, 200.0f, 3000.0f,
 		45.0f, -20.0f,
 		30.0f, -15.0f,

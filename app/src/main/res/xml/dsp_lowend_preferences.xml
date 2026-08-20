@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup
+        android:key="@string/key_lowend_enable"
+        android:disableDependentsState="false"
+        android:title="@string/lowend_enable"
+        android:icon="@drawable/ic_twotone_speaker_24dp"
+        app:iconSpaceReserved="false">
+        <Preference android:key="section_info" android:title="@string/section_info_title"
+            android:summary="@string/lowend_info" android:persistent="false"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_lowend_subsonic"
+            android:title="@string/lowend_subsonic"
+            android:summary="@string/lowend_subsonic_summary"
+            android:defaultValue="30"
+            app:minValue="0" app:maxValue="80" app:unit="Hz" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+
+        <PreferenceCategory android:title="@string/lowend_weight_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_lowend_weight_gain"
+                android:title="@string/lowend_weight_gain"
+                android:summary="@string/lowend_weight_gain_summary"
+                android:defaultValue="3"
+                app:minValue="-12" app:maxValue="12" app:unit="dB" app:precision="1"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_lowend_weight_freq"
+                android:title="@string/lowend_weight_freq"
+                android:defaultValue="90"
+                app:minValue="40" app:maxValue="300" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/lowend_mud_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_lowend_mud_gain"
+                android:title="@string/lowend_mud_gain"
+                android:summary="@string/lowend_mud_gain_summary"
+                android:defaultValue="-2.5"
+                app:minValue="-12" app:maxValue="6" app:unit="dB" app:precision="1"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_lowend_mud_freq"
+                android:title="@string/lowend_mud_freq"
+                android:defaultValue="300"
+                app:minValue="150" app:maxValue="800" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_lowend_mix"
+            android:title="@string/lowend_mix"
+            android:summary="@string/lowend_mix_summary"
+            android:defaultValue="100"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+    </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
+</PreferenceScreen>

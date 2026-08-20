@@ -313,6 +313,13 @@
     <string name="key_dyneq3_release" translatable="false">dyneq3_release</string>
     <string name="key_dyneq3_range" translatable="false">dyneq3_range</string>
     <string name="key_dyneq3_mode" translatable="false">dyneq3_mode</string>
+    <string name="key_lowend_enable" translatable="false">lowend_enable</string>
+    <string name="key_lowend_subsonic" translatable="false">lowend_subsonic</string>
+    <string name="key_lowend_weight_freq" translatable="false">lowend_weight_freq</string>
+    <string name="key_lowend_weight_gain" translatable="false">lowend_weight_gain</string>
+    <string name="key_lowend_mud_freq" translatable="false">lowend_mud_freq</string>
+    <string name="key_lowend_mud_gain" translatable="false">lowend_mud_gain</string>
+    <string name="key_lowend_mix" translatable="false">lowend_mix</string>
     <string name="key_transient_enable" translatable="false">transient_enable</string>
     <string name="key_transient_freq_low" translatable="false">transient_freq_low</string>
     <string name="key_transient_freq_high" translatable="false">transient_freq_high</string>

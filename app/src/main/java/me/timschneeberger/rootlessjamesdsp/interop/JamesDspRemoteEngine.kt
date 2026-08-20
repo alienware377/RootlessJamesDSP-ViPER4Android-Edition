@@ -184,6 +184,10 @@ class JamesDspRemoteEngine(
      */
     private var pendingDyneqBands: FloatArray? = null
 
+    override fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean =
+        sendForkEffect(PARAM_LOWEND, enable, floatArrayOf(
+            subsonic, weightHz, weightDb, mudHz, mudDb, mix))
+
     override fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean =
         sendForkEffect(PARAM_TRANSIENT, enable, floatArrayOf(
             freqLow, freqHigh, attackLow, sustainLow, attackMid, sustainMid,
@@ -462,6 +466,7 @@ class JamesDspRemoteEngine(
         private const val PARAM_DYNAMIC_EQ = PARAM_FORK_BASE + 13
         private const val PARAM_IMAGING = PARAM_FORK_BASE + 14
         private const val PARAM_TRANSIENT = PARAM_FORK_BASE + 15
+        private const val PARAM_LOWEND = PARAM_FORK_BASE + 16
         /** Enable flags live one hundred above their value id. */
         private const val PARAM_FORK_ENABLE_OFFSET = 100
 

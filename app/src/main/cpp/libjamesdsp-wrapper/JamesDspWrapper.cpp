@@ -593,6 +593,17 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDis
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setLowEnd(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat subsonic, jfloat weightHz, jfloat weightDb,
+        jfloat mudHz, jfloat mudDb, jfloat mix)
+{
+    DECLARE_DSP_B
+    LowEndSetParam(dsp, subsonic, weightHz, weightDb, mudHz, mudDb, mix);
+    if (enable) LowEndEnable(dsp); else LowEndDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setTransient(JNIEnv *env, jobject obj, jlong self,
         jboolean enable, jfloat freqLow, jfloat freqHigh,
         jfloat attackLow, jfloat sustainLow, jfloat attackMid, jfloat sustainMid,

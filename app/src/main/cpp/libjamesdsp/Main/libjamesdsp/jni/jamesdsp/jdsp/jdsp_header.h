@@ -184,6 +184,20 @@ typedef struct
 	float chPhase, chInc, chBase, chDepth, chFeedback, chSpread, chMix;
 	float fs;
 } MultibandDist;
+typedef struct
+{
+	float b0, b1, b2, a1, a2;
+	float z1[2], z2[2];
+} LowEndStage;
+typedef struct
+{
+	// Two sections make the subsonic slope fourth order; the other two are the
+	// body shelf and the wide dip where recordings turn thick.
+	LowEndStage sub1, sub2, weight, mud;
+	float subsonicHz, weightHz, weightDb, mudHz, mudDb;
+	float fs, mix;
+	int transparent;
+} LowEnd;
 #define TRANSIENT_BANDS 3
 typedef struct
 {
@@ -771,6 +785,7 @@ enum JdspEffectId
 	JDSP_EFX_DYNAMICEQ,
 	JDSP_EFX_IMAGING,
 	JDSP_EFX_TRANSIENT,
+	JDSP_EFX_LOWEND,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -945,6 +960,8 @@ typedef struct dspsys
 	Imaging imaging;
 	int transientEnabled;
 	Transient transient;
+	int lowEndEnabled;
+	LowEnd lowEnd;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1100,6 +1117,11 @@ extern void EchoDelaySetParam(JamesDSPLib *jdsp, float inputLevel, float timeMs,
 extern void EchoDelayUpdateFilter(EchoDelay *e, float cutoffHz);
 extern void EchoDelayProcess(JamesDSPLib *jdsp, size_t n);
 extern void EchoDelayEnable(JamesDSPLib *jdsp);
+extern void LowEndSetParam(JamesDSPLib *jdsp, float subsonicHz,
+	float weightHz, float weightDb, float mudHz, float mudDb, float mixPct);
+extern void LowEndProcess(JamesDSPLib *jdsp, size_t n);
+extern void LowEndEnable(JamesDSPLib *jdsp);
+extern void LowEndDisable(JamesDSPLib *jdsp);
 extern void TransientSetParam(JamesDSPLib *jdsp, float freqLow, float freqHigh,
 	float attackLow, float sustainLow, float attackMid, float sustainMid,
 	float attackHigh, float sustainHigh, float rangeDb, float mixPct);
