@@ -206,6 +206,12 @@ typedef struct
 	float saturation, drive, bias, headBumpDb;
 	TapeStage biasShelf, headBump;
 	float fs, mix;
+	// Switching the card on starts the delay line empty, so there is nothing
+	// behind the write head to read. `filled` counts samples written until
+	// there is, and `faded` then brings the wet signal in over `fadeLen`.
+	// Both are counts up to a limit rather than countdowns, so that a sample
+	// rate change - which moves both limits - cannot leave them inconsistent.
+	int filled, faded, fadeLen;
 	int transparent;
 } Tape;
 #define EXCITER_BANDS 4

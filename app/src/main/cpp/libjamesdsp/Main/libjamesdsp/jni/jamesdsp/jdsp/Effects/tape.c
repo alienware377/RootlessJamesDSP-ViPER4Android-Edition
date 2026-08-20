@@ -35,6 +35,11 @@
    sit far enough back that the modulation never runs off either end. */
 #define TAPE_BASE_MS 12.0f
 
+/* How long the wet signal takes to arrive once the line has something in it.
+   Long enough not to be a step, short enough that switching the card on still
+   feels immediate. */
+#define TAPE_FADE_MS 10.0f
+
 static void tapeDesignShelf(TapeStage *s, double f, float fs, float gainDb, int high)
 {
 	if (fabsf(gainDb) < 1e-6f)
@@ -121,6 +126,9 @@ static void tapeDesign(Tape *t, float fs)
 	t->base = TAPE_BASE_MS * 0.001f * fs;
 	if (t->base < 4.0f) t->base = 4.0f;
 	if (t->base > (float)(TAPE_LINE - 4)) t->base = (float)(TAPE_LINE - 4);
+
+	t->fadeLen = (int)(TAPE_FADE_MS * 0.001f * fs);
+	if (t->fadeLen < 1) t->fadeLen = 1;
 	t->fs = fs;
 }
 
@@ -146,6 +154,10 @@ void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
 	jdsp_lock(jdsp);
 	Tape *t = &jdsp->tape;
 	const float fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
+	/* Was it doing nothing before this call? If so, Process has been returning
+	   early and the line has been going stale, so coming back out of that needs
+	   the same treatment as switching the card on. */
+	const int wasIdle = t->transparent || t->mix <= 0.0f;
 
 	if (wowPct < 0.0f) wowPct = 0.0f;
 	if (wowPct > 100.0f) wowPct = 100.0f;
@@ -180,6 +192,15 @@ void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
 	   milliseconds even with no modulation on it. */
 	t->transparent = wowPct <= 0.0f && flutterPct <= 0.0f &&
 		saturationPct <= 0.0f && fabsf(biasPct) < 1e-6f && headBumpDb <= 0.0f;
+
+	/* Coming back from idle, the line holds whatever was in it when the user
+	   turned everything down - which could be minutes ago. Reading that out
+	   would be a fragment of old audio, so treat it as empty again. */
+	if (wasIdle && !t->transparent && t->mix > 0.0f)
+	{
+		t->filled = 0;
+		t->faded = 0;
+	}
 	jdsp_unlock(jdsp);
 }
 
@@ -196,6 +217,28 @@ void TapeProcess(JamesDSPLib *jdsp, size_t n)
 	for (size_t i = 0; i < n; i++)
 	{
 		const float dry[2] = { left[i], right[i] };
+
+		/* How much of this sample may be wet.
+
+		   Nothing, until the line holds at least the read offset - switching
+		   the card on mid-track otherwise reads twelve milliseconds of the
+		   zeroes Enable left behind, which measured as a clean -231 dB: not a
+		   quiet patch, digital silence. The line still gets written during
+		   that time, which is what fills it.
+
+		   Then in over a few milliseconds, because arriving all at once at the
+		   moment the line happens to be full is just a later click. */
+		float wetAmount = t->mix;
+		if (t->filled < (int)t->base)
+		{
+			t->filled++;
+			wetAmount = 0.0f;
+		}
+		else if (t->faded < t->fadeLen)
+		{
+			t->faded++;
+			wetAmount = t->mix * ((float)t->faded / (float)t->fadeLen);
+		}
 
 		/* One pair of oscillators drives both channels, so the two sides drift
 		   together. Independent ones would swing the image about, which is a
@@ -234,8 +277,10 @@ void TapeProcess(JamesDSPLib *jdsp, size_t n)
 			y = tapeRun(&t->biasShelf, ch, y);
 			y = tapeRun(&t->headBump, ch, y);
 
-			if (t->mix >= 1.0f) (ch ? right : left)[i] = y;
-			else (ch ? right : left)[i] = dry[ch] + (y - dry[ch]) * t->mix;
+			/* At wetAmount 0 this is exactly dry, bit for bit, which is what
+			   makes the fill period inaudible rather than merely quiet. */
+			if (wetAmount >= 1.0f) (ch ? right : left)[i] = y;
+			else (ch ? right : left)[i] = dry[ch] + (y - dry[ch]) * wetAmount;
 		}
 
 		t->widx = (t->widx + 1) & (TAPE_LINE - 1);
@@ -251,6 +296,10 @@ void TapeEnable(JamesDSPLib *jdsp)
 	t->fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 	memset(t->line, 0, sizeof(t->line));
 	t->widx = 0;
+	/* The line is empty, so the wet signal has to wait for it and then arrive
+	   gradually. See the note in Process. */
+	t->filled = 0;
+	t->faded = 0;
 	t->wowPhase = 0.0f;
 	t->flutterPhase = 0.0f;
 	t->biasShelf.z1[0] = t->biasShelf.z2[0] = 0.0f;
