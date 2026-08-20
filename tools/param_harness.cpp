@@ -139,6 +139,31 @@ int main()
 		check("26010 echo/delay accepted", true, "(state is internal)");
 	}
 
+	// 26013 is the only payload here whose length is not fixed: mix, band
+	// count, works-on mode, then that many bands. Worth testing both that it
+	// arrives and that it cannot be lied to - any app on the device can address
+	// this effect, so the count inside the payload is not ours to trust.
+	{
+		const uint32_t n = 3 + 2 * DYNEQ_VALUES_PER_BAND;
+		float v[3 + 2 * DYNEQ_VALUES_PER_BAND] = {
+			100.0f, 2.0f, 0.0f,
+			// freq, Q, threshold dB, ratio, attack ms, release ms, range dB, mode
+			180.0f,  1.0f, -22.0f, 3.0f, 15.0f, 150.0f, -6.0f, 0.0f,
+			3200.0f, 1.4f, -26.0f, 3.0f,  3.0f,  80.0f, -5.0f, 0.0f
+		};
+		sendFloats(26013, v, n);
+		check("26013 two dynamic EQ bands land", g_lib.dynamicEq.numBands == 2);
+
+		// 2^29 bands times eight floats each wraps a 32-bit length back to
+		// zero, so this three-float payload would look long enough to hold
+		// them all. Refusing it must leave the two good bands untouched rather
+		// than reading sixty-four floats off the end of a buffer holding three.
+		float lie[3] = { 100.0f, 536870912.0f, 0.0f };
+		sendFloats(26013, lie, 3);
+		check("26013 a lying band count is refused",
+			  g_lib.dynamicEq.numBands == 2);
+	}
+
 	// 26012 carries ints, not floats, and is read from the raw payload.
 	{
 		int order[6] = { 5, 3, 9, 1, 7, 2 };

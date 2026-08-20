@@ -101,9 +101,19 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
     case 26013:
         if (fn >= 3)
         {
-            const int count = (int)(fv[1] + 0.5f);
+            int count = (int)(fv[1] + 0.5f);
+            /* Clamped BEFORE the length it implies is worked out, which is the
+               whole point. Computed the other way round, a count of 2^29
+               multiplied by eight wraps a 32-bit length back to zero, so the
+               payload appears to need only its three header floats, passes the
+               check, and is then handed to SetBands - which clamps to eight
+               bands and reads sixty-four floats out of a buffer that holds
+               three. Any app on the device can address this effect, so the
+               count is not ours to trust. */
+            if (count < 0) count = 0;
+            if (count > DYNEQ_MAX_BANDS) count = DYNEQ_MAX_BANDS;
             const uint32_t need = 3u + (uint32_t)count * DYNEQ_VALUES_PER_BAND;
-            if (count >= 0 && fn >= need)
+            if (fn >= need)
             {
                 DynamicEqSetBands(d, fv + 3, count);
                 DynamicEqSetParam(d, fv[0], (int)(fv[2] + 0.5f));
