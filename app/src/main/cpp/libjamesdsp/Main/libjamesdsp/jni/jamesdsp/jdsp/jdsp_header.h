@@ -269,6 +269,20 @@ typedef struct
 // the longest lookahead any mode asks for is 768 samples.
 #define MAXR_BUFLEN 1024
 #define MAXR_OS_MAX 8
+// Which curve the character control uses to round peaks. Smooth is the shape
+// this shipped with, so it must stay index 0 and stay bit-identical.
+enum MaxrClip
+{
+	// Ordered by how early the curve starts bending, which is what actually
+	// separates them. The algebraic one bends from the origin and so lifts
+	// everything under the peaks - measured about 1.2dB denser than hard on
+	// music. The hard one stays linear until two thirds and only rounds the
+	// very top. A saturator at one end, a clipper at the other.
+	MAXR_CLIP_SMOOTH = 0,	// bends immediately, adds the most density
+	MAXR_CLIP_TANH,			// classic, in between
+	MAXR_CLIP_HARD,			// linear until late, touches peaks only
+	MAXR_CLIP_COUNT
+};
 enum MaxrMode
 {
 	MAXR_MODE_TRANSPARENT = 0,
@@ -279,7 +293,7 @@ enum MaxrMode
 };
 typedef struct
 {
-	int mode, truePeak, osRequest, osFactor, lookahead;
+	int mode, truePeak, osRequest, osFactor, lookahead, clipShape;
 	float inGain, ceiling, character, transient, stereoLink;
 	float attCoef, relCoef, gainState[2];
 	// Delay line, plus the monotonic deque that gives the sliding-window peak.
@@ -1154,7 +1168,7 @@ extern void MultibandDistDisable(JamesDSPLib *jdsp);
 extern void MaximizerSetParam(JamesDSPLib *jdsp,
 	int mode, float gainDb, float ceilingDb, float releaseMs,
 	float characterPct, float transientPct, int truePeak,
-	float stereoLinkPct, int oversample);
+	float stereoLinkPct, int oversample, int clipShape);
 extern void MaximizerProcess(JamesDSPLib *jdsp, size_t n);
 extern void MaximizerEnable(JamesDSPLib *jdsp);
 extern void MaximizerDisable(JamesDSPLib *jdsp);

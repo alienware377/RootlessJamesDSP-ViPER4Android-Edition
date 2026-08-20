@@ -94,7 +94,7 @@ static int checkDefaultsAreAudible(void)
 	prepare(48000.0f);
 	MaximizerEnable(&g_lib);
 	MaximizerSetParam(&g_lib, DEF_MODE, DEF_GAIN, DEF_CEILING, DEF_RELEASE,
-		DEF_CHARACTER, DEF_TRANSIENT, DEF_TRUEPEAK, DEF_STEREOLINK, DEF_OVERSAMPLE);
+		DEF_CHARACTER, DEF_TRANSIENT, DEF_TRUEPEAK, DEF_STEREOLINK, DEF_OVERSAMPLE, MAXR_CLIP_SMOOTH);
 	fillMusic(0.5f);
 	memcpy(ref, bufL, sizeof(ref));
 	MaximizerProcess(&g_lib, N);
@@ -132,7 +132,7 @@ int main(void)
 		prepare(48000.0f);
 		MaximizerEnable(&g_lib);
 		MaximizerSetParam(&g_lib, mode, 24.0f, -1.0f, 50.0f,
-			100.0f, 100.0f, 1, 100.0f, 2);
+			100.0f, 100.0f, 1, 100.0f, 2, MAXR_CLIP_SMOOTH);
 		fillMusic(0.9f);
 		MaximizerProcess(&g_lib, N);
 		snprintf(label, sizeof(label), "%s, +24dB in", modes[mode]);
@@ -149,7 +149,7 @@ int main(void)
 			prepare(48000.0f);
 			MaximizerEnable(&g_lib);
 			MaximizerSetParam(&g_lib, MAXR_MODE_AGGRESSIVE, 18.0f, ceilings[c],
-				5.0f, 60.0f, 80.0f, 1, 50.0f, 2);
+				5.0f, 60.0f, 80.0f, 1, 50.0f, 2, MAXR_CLIP_SMOOTH);
 			fillMusic(1.0f);
 			MaximizerProcess(&g_lib, N);
 			snprintf(label, sizeof(label), "ceiling %.1f dB", ceilings[c]);
@@ -163,7 +163,7 @@ int main(void)
 		prepare(48000.0f);
 		MaximizerEnable(&g_lib);
 		MaximizerSetParam(&g_lib, MAXR_MODE_TRANSPARENT, 0.0f, 0.0f, 200.0f,
-			0.0f, 0.0f, 0, 100.0f, 0);
+			0.0f, 0.0f, 0, 100.0f, 0, MAXR_CLIP_SMOOTH);
 		fillMusic(0.3f);
 		static float ref[N];
 		memcpy(ref, bufL, sizeof(ref));
@@ -190,7 +190,7 @@ int main(void)
 		prepare(48000.0f);
 		MaximizerEnable(&g_lib);
 		MaximizerSetParam(&g_lib, MAXR_MODE_TRANSPARENT, 6.0f, -1.0f, 100.0f,
-			0.0f, 0.0f, 0, 0.0f, 0);
+			0.0f, 0.0f, 0, 0.0f, 0, MAXR_CLIP_SMOOTH);
 		fillTransients(0.95f);
 		static float refR[N];
 		memcpy(refR, bufR, sizeof(refR));
@@ -214,7 +214,7 @@ int main(void)
 		prepare(48000.0f);
 		MaximizerEnable(&g_lib);
 		MaximizerSetParam(&g_lib, MAXR_MODE_TRANSPARENT, 6.0f, -1.0f, 100.0f,
-			0.0f, 0.0f, 0, 100.0f, 0);
+			0.0f, 0.0f, 0, 100.0f, 0, MAXR_CLIP_SMOOTH);
 		fillTransients(0.95f);
 		MaximizerProcess(&g_lib, N);
 		double sum = 0.0;
@@ -233,7 +233,7 @@ int main(void)
 			prepare(rates[r]);
 			MaximizerEnable(&g_lib);
 			MaximizerSetParam(&g_lib, MAXR_MODE_WARM, 20.0f, -0.3f, 300.0f,
-				80.0f, 50.0f, 1, 100.0f, 2);
+				80.0f, 50.0f, 1, 100.0f, 2, MAXR_CLIP_SMOOTH);
 			fillMusic(0.95f);
 			MaximizerProcess(&g_lib, N);
 			snprintf(label, sizeof(label), "%.0f Hz", rates[r]);
@@ -247,7 +247,7 @@ int main(void)
 		prepare(48000.0f);
 		MaximizerEnable(&g_lib);
 		MaximizerSetParam(&g_lib, MAXR_MODE_PUNCHY, 12.0f, -0.5f, 30.0f,
-			40.0f, 30.0f, 1, 100.0f, 1);
+			40.0f, 30.0f, 1, 100.0f, 1, MAXR_CLIP_SMOOTH);
 		// The window index is unsigned and compared by difference, so this is
 		// really a check that the deque survives being run continuously.
 		for (int k = 0; k < 200; k++)
@@ -266,12 +266,81 @@ int main(void)
 		{
 			MaximizerEnable(&g_lib);
 			MaximizerSetParam(&g_lib, MAXR_MODE_AGGRESSIVE, 15.0f, -2.0f, 20.0f,
-				70.0f, 60.0f, 1, 80.0f, 2);
+				70.0f, 60.0f, 1, 80.0f, 2, MAXR_CLIP_SMOOTH);
 			fillMusic(0.8f);
 			MaximizerProcess(&g_lib, N);
 			MaximizerDisable(&g_lib);
 		}
 		fail |= checkCeiling("three cycles", -2.0f);
+	}
+
+	/* ---- clip shapes ----------------------------------------------------
+	   Character trades clean gain reduction for saturation; the shape only
+	   decides how sharply the curve turns over. Smooth is the curve this
+	   effect shipped with, and every test above now passes it explicitly, so
+	   those double as the proof that it is unchanged. What is left to show is
+	   that the ceiling still holds for the other two, that switching shape
+	   changes texture rather than level, and that the harder shapes really do
+	   raise the average - the only reason to offer them. */
+	printf("\n-- clip shapes --\n");
+	{
+		double avg[MAXR_CLIP_COUNT];
+		const char *names[MAXR_CLIP_COUNT] = { "smooth", "classic", "hard" };
+		for (int shape = 0; shape < MAXR_CLIP_COUNT; shape++)
+		{
+			prepare(48000.0f);
+			MaximizerSetParam(&g_lib, MAXR_MODE_TRANSPARENT, 12.0f, -1.0f, 100.0f,
+				100.0f, 0.0f, 1, 100.0f, 0, shape);
+			MaximizerEnable(&g_lib);
+			fillMusic(0.5f);
+			MaximizerProcess(&g_lib, N);
+
+			char label[64];
+			snprintf(label, sizeof(label), "%s at full character", names[shape]);
+			fail |= checkCeiling(label, -1.0f);
+
+			double sum = 0.0;
+			for (int i = 0; i < N; i++) sum += (double)bufL[i] * bufL[i];
+			avg[shape] = 10.0 * log10(sum / (double)N + 1e-30);
+		}
+		/* Measured, and the opposite of the obvious guess: the smooth
+		   algebraic curve bends from the origin, so it lifts everything
+		   underneath the peaks and reads loudest. The hard shape stays linear
+		   until two thirds and only then turns, so it leaves low-level
+		   material alone and reads quietest. That is the real difference
+		   between a saturator and a clipper, and it is what the control names
+		   have to describe. Each step must be a real change but not a level
+		   control. */
+		const double d1 = avg[MAXR_CLIP_SMOOTH] - avg[MAXR_CLIP_TANH];
+		const double d2 = avg[MAXR_CLIP_TANH] - avg[MAXR_CLIP_HARD];
+		const int ord = (d1 >= 0.05 && d1 <= 3.0 && d2 >= 0.05 && d2 <= 3.0);
+		printf("%-38s smooth +%0.2f over classic, classic +%0.2f over hard  %s\n",
+			"softer shapes add more density", d1, d2,
+			ord ? "ok" : "*** WRONG ORDER ***");
+		if (!ord) fail = 1;
+	}
+	{
+		/* A signal already sitting on the ceiling must come out on the ceiling
+		   for every shape, or the control is a level control in disguise. */
+		for (int shape = 0; shape < MAXR_CLIP_COUNT; shape++)
+		{
+			prepare(48000.0f);
+			MaximizerSetParam(&g_lib, MAXR_MODE_TRANSPARENT, 0.0f, 0.0f, 200.0f,
+				100.0f, 0.0f, 0, 100.0f, 0, shape);
+			MaximizerEnable(&g_lib);
+			for (int i = 0; i < N; i++) bufL[i] = bufR[i] = (i & 1) ? 1.0f : -1.0f;
+			MaximizerProcess(&g_lib, N);
+			float peak = 0.0f;
+			for (int i = N / 2; i < N; i++)
+			{
+				const float a = fabsf(bufL[i]);
+				if (a > peak) peak = a;
+			}
+			const int ok = peak >= 0.93f && peak <= 1.0005f;
+			printf("shape %d: full-scale in, unity out       peak %7.4f  %s\n",
+				shape, peak, ok ? "ok" : "*** LEVEL SHIFTED ***");
+			if (!ok) fail = 1;
+		}
 	}
 
 	printf("\n%s\n", fail ? "FAILURES PRESENT" : "all checks passed");

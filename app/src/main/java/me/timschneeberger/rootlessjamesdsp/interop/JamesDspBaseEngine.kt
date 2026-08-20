@@ -180,6 +180,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrTruePeak = cache.get(R.string.key_maxr_true_peak, true)
             val maxrStereoLink = cache.get(R.string.key_maxr_stereo_link, 100f)
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
+            val maxrClipShape = cache.get(R.string.key_maxr_clip_shape, "0").toInt()
 
             cache.select(Constants.PREF_LOWEND)
             val leEnabled = cache.get(R.string.key_lowend_enable, false)
@@ -396,7 +397,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                     Constants.PREF_MAXIMIZER -> setMaximizer(
                         maxrEnabled, maxrMode, maxrGain, maxrCeiling, maxrRelease,
                         maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
-                        maxrOversample
+                        maxrOversample, maxrClipShape
                     )
                     Constants.PREF_LOWEND -> setLowEnd(
                         leEnabled, leSubsonic, leWeightFreq, leWeightGain,
@@ -786,7 +787,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
     abstract fun setDynamicEq(enable: Boolean, mix: Float): Boolean
     protected abstract fun setDynamicEqBandsInternal(bands: FloatArray?): Boolean
 
-    abstract fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean
+    abstract fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int, clipShape: Int): Boolean
     protected abstract fun setMultibandDistBandsInternal(bands: FloatArray?): Boolean
     abstract fun setMultibandDist(enable: Boolean, routing: Int, model: Int, drive: Float, bias: Float, shape: Float, bits: Float, downsample: Float, tone: Float, bandGain: Float, chorusRate: Float, chorusDepth: Float, chorusFeedback: Float, chorusSpread: Float, chorusVoices: Int, chorusMix: Float, mix: Float): Boolean
     abstract fun setEchoDelay(enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean

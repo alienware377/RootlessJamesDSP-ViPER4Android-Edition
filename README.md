@@ -118,13 +118,13 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - ~~**Multiband stereo imaging**~~ — width chosen per frequency range rather than all at once, with a mono-below control, so the low end can be folded to the centre while the top opens up; mono recordings come through untouched
 - ~~**Impact (attack & sustain)**~~ — shapes how a note starts and how long it takes to die rather than how loud it is, per frequency range, so a held tone is left completely untouched while a drum hit can be sharpened or softened
 - ~~**Low end**~~ — a steep subsonic filter to stop inaudible rumble eating headroom, one knob for body, and a wide dip where recordings turn thick (mono-below lives in the imaging card and punch in Impact, so neither is duplicated)
+- ~~**Soft clipper**~~ — three curves for the maximiser's Character control, from one that bends immediately and adds density to one that stays linear until the very top and only clips peaks; a shape inside the maximiser rather than a second thing doing the limiter's job
 
 ### 🔜 Planned
 
 - **Global "Poweramp-style" mode** — process the whole output mix with Android's built-in effect API instead of audio capture: no capture permission, no persistent notification, and apps that block capture (Spotify) would work. Trade-off: only EQ/bass/limiter-class effects can run there — the ViPER effects need the capture engine. Deprecated by Google and device-dependent (works on many Samsungs, often not Pixels), so it'll ship clearly labelled as experimental.
 - **Full exciter** — four bands with selectable saturation characters (warm, retro, tape, tube, triode) and per-band mix, replacing the current two-band bass-only design
 - **Spectral shaper** — dynamic taming of harshness and resonances, especially handy on bright IEMs
-- **Soft clipper** — shaped clipping to reclaim headroom alongside the limiter
 - **Match EQ** — match playback to a target curve, pairing naturally with the AutoEq and DDC profiles already supported
 - **Vintage tape** — wow, flutter, bias and tape saturation as a colour effect
 - **Mid/side and transient/sustain modes** — a cross-cutting option for the EQ and dynamics rather than a module of its own

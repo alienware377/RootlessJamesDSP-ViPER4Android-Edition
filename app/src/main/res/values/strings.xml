@@ -1057,6 +1057,8 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
 
     <string name="mbd_knob_cutoff">CUTOFF</string>
     <string name="mbd_knob_slope">SLOPE</string>
+    <string name="maxr_clip_shape">Clip shape</string>
+    <string name="maxr_clip_shape_summary">Which curve Character uses to round peaks. Smooth starts bending straight away, so it adds the most density and warmth. Hard stays linear until the very top, so it leaves quiet detail alone and only clips the peaks. Classic sits between them. Does nothing while Character is at zero.</string>
     <string name="lowend_enable">Low end</string>
     <string name="lowend_info">Three things for the bottom of the spectrum. The subsonic filter throws away rumble below anything you can hear, which is pure wasted headroom pushing the limiter around. Weight is one knob for body. Mud eases back the region where recordings pile up and turn thick. Folding bass to mono lives in the stereo imaging card, and putting punch back into a kick lives in Impact — neither is repeated here.</string>
     <string name="lowend_subsonic">Subsonic filter</string>

@@ -342,6 +342,7 @@
     <string name="key_imaging_mix" translatable="false">imaging_mix</string>
     <string name="key_dyneq_enable" translatable="false">dyneq_enable</string>
     <string name="key_dyneq_mix" translatable="false">dyneq_mix</string>
+    <string name="key_maxr_clip_shape" translatable="false">maxr_clip_shape</string>
     <string name="key_maxr_enable" translatable="false">maxr_enable</string>
     <string name="key_maxr_mode" translatable="false">maxr_mode</string>
     <string name="key_maxr_gain" translatable="false">maxr_gain</string>

@@ -148,8 +148,8 @@ class JamesDspLocalEngine(context: Context, callbacks: JamesDspWrapper.JamesDspC
         return JamesDspWrapper.setSpeakerOpt(handle, enable, strength)
     }
 
-    override fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int): Boolean =
-        JamesDspWrapper.setMaximizer(handle, enable, mode, gain, ceiling, release, character, transient, truePeak, stereoLink, oversample)
+    override fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int, clipShape: Int): Boolean =
+        JamesDspWrapper.setMaximizer(handle, enable, mode, gain, ceiling, release, character, transient, truePeak, stereoLink, oversample, clipShape)
 
     override fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean =
         JamesDspWrapper.setLowEnd(handle, enable, subsonic, weightHz, weightDb, mudHz, mudDb, mix)

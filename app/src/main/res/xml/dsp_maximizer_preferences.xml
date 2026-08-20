@@ -18,6 +18,14 @@
             android:entryValues="@array/maxr_modes_values"
             app:useSimpleSummaryProvider="true"
             app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        <ListPreference
+            android:key="@string/key_maxr_clip_shape"
+            android:title="@string/maxr_clip_shape"
+            android:summary="@string/maxr_clip_shape_summary"
+            android:defaultValue="0"
+            android:entries="@array/maxr_clip_shapes"
+            android:entryValues="@array/maxr_clip_shapes_values"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
         <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
             android:key="@string/key_maxr_gain"
             android:title="@string/maxr_gain"

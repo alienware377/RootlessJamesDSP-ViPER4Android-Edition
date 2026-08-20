@@ -92,7 +92,7 @@ static void maxrUpdateOversampling(Maximizer *m, int request, int truePeak)
 void MaximizerSetParam(JamesDSPLib *jdsp,
 	int mode, float gainDb, float ceilingDb, float releaseMs,
 	float characterPct, float transientPct, int truePeak,
-	float stereoLinkPct, int oversample)
+	float stereoLinkPct, int oversample, int clipShape)
 {
 	Maximizer *m = &jdsp->maximizer;
 	float fs = (float)jdsp->fs;
@@ -101,6 +101,9 @@ void MaximizerSetParam(JamesDSPLib *jdsp,
 
 	if (mode < 0 || mode >= MAXR_MODE_COUNT) mode = MAXR_MODE_TRANSPARENT;
 	m->mode = mode;
+
+	if (clipShape < 0 || clipShape >= MAXR_CLIP_COUNT) clipShape = MAXR_CLIP_SMOOTH;
+	m->clipShape = clipShape;
 
 	if (gainDb < 0.0f) gainDb = 0.0f;
 	if (gainDb > 24.0f) gainDb = 24.0f;
@@ -265,7 +268,43 @@ void MaximizerProcess(JamesDSPLib *jdsp, size_t n)
 				// level control rather than a character one.
 				float c = (ceiling > 1e-6f) ? ceiling : 1e-6f;
 				float yn = y / c;
-				float sat = c * (yn / sqrtf(1.0f + yn * yn)) * 1.41421356f;
+				float sat;
+				// Three shapes for the same job, differing in how sharply they
+				// turn over. Each is scaled so a signal already on the ceiling
+				// comes out on the ceiling, so switching shape changes texture
+				// and not level. Smooth is the curve this shipped with and is
+				// reproduced here exactly.
+				switch (m->clipShape)
+				{
+				case MAXR_CLIP_TANH:
+					// Firmer knee than the algebraic curve, and the classic
+					// choice; tanh(1) is what puts it back on the ceiling.
+					sat = c * tanhf(yn) * (1.0f / 0.761594156f);
+					break;
+				case MAXR_CLIP_HARD:
+				{
+					// Closest to clipping: linear until two thirds, then a
+					// cubic that meets the ceiling with zero slope. Reclaims
+					// the most headroom of the three, at the cost of the most
+					// harmonics.
+					const float a = fabsf(yn);
+					float shaped;
+					if (a >= 1.5f) shaped = 1.0f;
+					else if (a <= 0.5f) shaped = a;
+					else
+					{
+						const float t = (a - 0.5f);
+						shaped = 0.5f + t - (t * t * t) * (1.0f / 3.0f);
+						if (shaped > 1.0f) shaped = 1.0f;
+					}
+					sat = c * (yn < 0.0f ? -shaped : shaped) * (1.0f / 0.9583333f);
+					break;
+				}
+				case MAXR_CLIP_SMOOTH:
+				default:
+					sat = c * (yn / sqrtf(1.0f + yn * yn)) * 1.41421356f;
+					break;
+				}
 				y = y * (1.0f - m->character) + sat * m->character;
 			}
 

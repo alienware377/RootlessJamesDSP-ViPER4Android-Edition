@@ -555,11 +555,12 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMaximizer(JN
         jfloat transient,
         jboolean truePeak,
         jfloat stereoLink,
-        jint oversample)
+        jint oversample,
+        jint clipShape)
 {
     DECLARE_DSP_B
     MaximizerSetParam(dsp, mode, gain, ceiling, release, character, transient,
-                      truePeak, stereoLink, oversample);
+                      truePeak, stereoLink, oversample, clipShape);
     if (enable) MaximizerEnable(dsp); else MaximizerDisable(dsp);
     return true;
 }

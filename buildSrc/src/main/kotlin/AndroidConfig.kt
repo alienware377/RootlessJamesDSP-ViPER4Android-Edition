@@ -5,7 +5,7 @@ object AndroidConfig {
     const val targetSdk = 34
 
     // Version of this fork (RootlessViPER4Android)
-    const val versionName = "2.28.0"
+    const val versionName = "2.29.0"
     const val versionCode = 112
 
     // Upstream RootlessJamesDSP release this fork is based on
