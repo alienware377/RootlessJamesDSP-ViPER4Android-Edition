@@ -532,6 +532,11 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 		if (jdsp->imagingEnabled) ImagingProcess(jdsp, n);
 		jdsp_unlock(jdsp);
 		break;
+	case JDSP_EFX_TRANSIENT:
+		jdsp_lock(jdsp);
+		if (jdsp->transientEnabled) TransientProcess(jdsp, n);
+		jdsp_unlock(jdsp);
+		break;
 	default:
 		break;
 	}
@@ -1465,6 +1470,14 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	// stereo material without being a trick.
 	ImagingSetParam(jdsp, 120.0f, 250.0f, 1500.0f, 6000.0f,
 		1.0f, 1.15f, 1.6f, 100.0f);
+	jdsp->transientEnabled = 0;
+	// Punch added low and low-mid, a little of the room taken off the tail,
+	// top left alone so cymbals are not sharpened.
+	TransientSetParam(jdsp, 200.0f, 3000.0f,
+		45.0f, -20.0f,
+		30.0f, -15.0f,
+		0.0f, 0.0f,
+		9.0f, 100.0f);
 	for (int i = 0; i < JDSP_LIVEPROG_EXTRA; i++)
 		jdsp->liveprogExtraEnabled[i] = 0;
 	JamesDSPResetChainOrder(jdsp);

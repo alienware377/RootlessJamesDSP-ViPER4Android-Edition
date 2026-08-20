@@ -593,6 +593,19 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDis
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setTransient(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat freqLow, jfloat freqHigh,
+        jfloat attackLow, jfloat sustainLow, jfloat attackMid, jfloat sustainMid,
+        jfloat attackHigh, jfloat sustainHigh, jfloat range, jfloat mix)
+{
+    DECLARE_DSP_B
+    TransientSetParam(dsp, freqLow, freqHigh, attackLow, sustainLow,
+                      attackMid, sustainMid, attackHigh, sustainHigh, range, mix);
+    if (enable) TransientEnable(dsp); else TransientDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setImaging(JNIEnv *env, jobject obj, jlong self,
         jboolean enable, jfloat monoBelow, jfloat freqLow, jfloat freqMid, jfloat freqHigh,
         jfloat widthLow, jfloat widthMid, jfloat widthHigh, jfloat mix)

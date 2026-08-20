@@ -118,6 +118,13 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
         break;
     case 26114: if (on) ImagingEnable(d); else ImagingDisable(d); break;
 
+    case 26015:
+        if (fn >= 10)
+            TransientSetParam(d, fv[0], fv[1], fv[2], fv[3], fv[4], fv[5],
+                              fv[6], fv[7], fv[8], fv[9]);
+        break;
+    case 26115: if (on) TransientEnable(d); else TransientDisable(d); break;
+
     /* The order arrives as ints, so it is read from the raw payload rather
        than through the float view every other effect uses. */
     case 26012:

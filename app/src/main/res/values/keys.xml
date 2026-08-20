@@ -313,6 +313,17 @@
     <string name="key_dyneq3_release" translatable="false">dyneq3_release</string>
     <string name="key_dyneq3_range" translatable="false">dyneq3_range</string>
     <string name="key_dyneq3_mode" translatable="false">dyneq3_mode</string>
+    <string name="key_transient_enable" translatable="false">transient_enable</string>
+    <string name="key_transient_freq_low" translatable="false">transient_freq_low</string>
+    <string name="key_transient_freq_high" translatable="false">transient_freq_high</string>
+    <string name="key_transient_attack_low" translatable="false">transient_attack_low</string>
+    <string name="key_transient_sustain_low" translatable="false">transient_sustain_low</string>
+    <string name="key_transient_attack_mid" translatable="false">transient_attack_mid</string>
+    <string name="key_transient_sustain_mid" translatable="false">transient_sustain_mid</string>
+    <string name="key_transient_attack_high" translatable="false">transient_attack_high</string>
+    <string name="key_transient_sustain_high" translatable="false">transient_sustain_high</string>
+    <string name="key_transient_range" translatable="false">transient_range</string>
+    <string name="key_transient_mix" translatable="false">transient_mix</string>
     <string name="key_imaging_enable" translatable="false">imaging_enable</string>
     <string name="key_imaging_mono_below" translatable="false">imaging_mono_below</string>
     <string name="key_imaging_freq_low" translatable="false">imaging_freq_low</string>

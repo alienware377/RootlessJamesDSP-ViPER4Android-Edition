@@ -1057,6 +1057,24 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
 
     <string name="mbd_knob_cutoff">CUTOFF</string>
     <string name="mbd_knob_slope">SLOPE</string>
+    <string name="transient_enable">Impact (attack &amp; sustain)</string>
+    <string name="transient_info">Shapes how a note starts and how long it takes to die, rather than how loud it is. Two envelope followers chase the signal at different speeds, and the gap between them says which part of a note you are in — so a held tone comes through completely untouched while a drum hit can be sharpened or softened. Use it to put the snap back into over-compressed music, or to take the room off a boomy recording.</string>
+    <string name="transient_low_header">Low</string>
+    <string name="transient_mid_header">Mid</string>
+    <string name="transient_high_header">High</string>
+    <string name="transient_split_header">Where the ranges divide</string>
+    <string name="transient_attack">Attack</string>
+    <string name="transient_attack_summary">Above zero sharpens the start of each note, below zero softens it.</string>
+    <string name="transient_sustain">Sustain</string>
+    <string name="transient_sustain_summary">Above zero lets notes ring on, below zero shortens their tails.</string>
+    <string name="transient_freq_low">Low ends at</string>
+    <string name="transient_freq_low_summary">Everything below this is shaped by the Low controls.</string>
+    <string name="transient_freq_high">High starts at</string>
+    <string name="transient_freq_high_summary">Everything above this is shaped by the High controls.</string>
+    <string name="transient_range">Range</string>
+    <string name="transient_range_summary">The most any range may ever be moved. Zero switches the whole effect off.</string>
+    <string name="transient_mix">Mix</string>
+    <string name="transient_mix_summary">How much of the shaped signal is blended back in. At 0%% nothing is changed at all.</string>
     <string name="imaging_enable">Stereo imaging (per band)</string>
     <string name="imaging_info">Width, but chosen per frequency range instead of all at once. The plain widener pulls the bass apart along with everything else, which thins the centre and falls apart in mono; here the low end can be folded to mono while the top opens up. Mono recordings are left exactly as they are, whatever the settings.</string>
     <string name="imaging_mono_below">Mono below</string>

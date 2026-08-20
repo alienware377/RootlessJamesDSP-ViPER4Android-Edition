@@ -184,6 +184,29 @@ typedef struct
 	float chPhase, chInc, chBase, chDepth, chFeedback, chSpread, chMix;
 	float fs;
 } MultibandDist;
+#define TRANSIENT_BANDS 3
+typedef struct
+{
+	float b0, b1, b2, a1, a2;
+	float z1[2], z2[2];
+} TransientStage;
+typedef struct
+{
+	// Two follower pairs. The gap inside the first says how hard a note is
+	// starting; the gap inside the second says how long it is taking to die.
+	float envAtkFast, envAtkSlow, envSusFast, envSusSlow;
+	float atkFastC, atkSlowC, atkRelC, susAttC, susFastC, susSlowC;
+	float attack, sustain, gainDb;
+} TransientBand;
+typedef struct
+{
+	// Two running lowpasses; the bands are their differences and the
+	// remainder, so the three always sum back to the input.
+	TransientStage split[TRANSIENT_BANDS - 1];
+	TransientBand band[TRANSIENT_BANDS];
+	float freqLow, freqHigh, rangeDb, fs, mix;
+	int transparent;
+} Transient;
 typedef struct
 {
 	// One channel of state: everything here runs on the side signal alone.
@@ -747,6 +770,7 @@ enum JdspEffectId
 	JDSP_EFX_MAXIMIZER,
 	JDSP_EFX_DYNAMICEQ,
 	JDSP_EFX_IMAGING,
+	JDSP_EFX_TRANSIENT,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -919,6 +943,8 @@ typedef struct dspsys
 	DynamicEq dynamicEq;
 	int imagingEnabled;
 	Imaging imaging;
+	int transientEnabled;
+	Transient transient;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1074,6 +1100,12 @@ extern void EchoDelaySetParam(JamesDSPLib *jdsp, float inputLevel, float timeMs,
 extern void EchoDelayUpdateFilter(EchoDelay *e, float cutoffHz);
 extern void EchoDelayProcess(JamesDSPLib *jdsp, size_t n);
 extern void EchoDelayEnable(JamesDSPLib *jdsp);
+extern void TransientSetParam(JamesDSPLib *jdsp, float freqLow, float freqHigh,
+	float attackLow, float sustainLow, float attackMid, float sustainMid,
+	float attackHigh, float sustainHigh, float rangeDb, float mixPct);
+extern void TransientProcess(JamesDSPLib *jdsp, size_t n);
+extern void TransientEnable(JamesDSPLib *jdsp);
+extern void TransientDisable(JamesDSPLib *jdsp);
 extern void ImagingSetParam(JamesDSPLib *jdsp, float monoBelowHz,
 	float freqLow, float freqMid, float freqHigh,
 	float widthLow, float widthMid, float widthHigh, float mixPct);

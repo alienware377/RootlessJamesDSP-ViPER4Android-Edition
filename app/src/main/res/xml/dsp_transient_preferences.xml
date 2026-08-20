@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup
+        android:key="@string/key_transient_enable"
+        android:disableDependentsState="false"
+        android:title="@string/transient_enable"
+        android:icon="@drawable/ic_twotone_speaker_24dp"
+        app:iconSpaceReserved="false">
+        <Preference android:key="section_info" android:title="@string/section_info_title"
+            android:summary="@string/transient_info" android:persistent="false"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+
+        <PreferenceCategory android:title="@string/transient_low_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_attack_low"
+                android:title="@string/transient_attack"
+                android:summary="@string/transient_attack_summary"
+                android:defaultValue="45"
+                app:minValue="-100" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_sustain_low"
+                android:title="@string/transient_sustain"
+                android:summary="@string/transient_sustain_summary"
+                android:defaultValue="-20"
+                app:minValue="-100" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/transient_mid_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_attack_mid"
+                android:title="@string/transient_attack"
+                android:defaultValue="30"
+                app:minValue="-100" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_sustain_mid"
+                android:title="@string/transient_sustain"
+                android:defaultValue="-15"
+                app:minValue="-100" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/transient_high_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_attack_high"
+                android:title="@string/transient_attack"
+                android:defaultValue="0"
+                app:minValue="-100" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_sustain_high"
+                android:title="@string/transient_sustain"
+                android:defaultValue="0"
+                app:minValue="-100" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/transient_split_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_freq_low"
+                android:title="@string/transient_freq_low"
+                android:summary="@string/transient_freq_low_summary"
+                android:defaultValue="200"
+                app:minValue="60" app:maxValue="1000" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_transient_freq_high"
+                android:title="@string/transient_freq_high"
+                android:summary="@string/transient_freq_high_summary"
+                android:defaultValue="3000"
+                app:minValue="1000" app:maxValue="12000" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_transient_range"
+            android:title="@string/transient_range"
+            android:summary="@string/transient_range_summary"
+            android:defaultValue="9"
+            app:minValue="0" app:maxValue="24" app:unit="dB" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_transient_mix"
+            android:title="@string/transient_mix"
+            android:summary="@string/transient_mix_summary"
+            android:defaultValue="100"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+    </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
+</PreferenceScreen>

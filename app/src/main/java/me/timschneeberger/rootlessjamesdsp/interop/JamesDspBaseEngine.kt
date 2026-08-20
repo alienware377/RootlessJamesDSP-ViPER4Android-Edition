@@ -181,6 +181,19 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrStereoLink = cache.get(R.string.key_maxr_stereo_link, 100f)
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
 
+            cache.select(Constants.PREF_TRANSIENT)
+            val trEnabled = cache.get(R.string.key_transient_enable, false)
+            val trFreqLow = cache.get(R.string.key_transient_freq_low, 200f)
+            val trFreqHigh = cache.get(R.string.key_transient_freq_high, 3000f)
+            val trAttackLow = cache.get(R.string.key_transient_attack_low, 45f)
+            val trSustainLow = cache.get(R.string.key_transient_sustain_low, -20f)
+            val trAttackMid = cache.get(R.string.key_transient_attack_mid, 30f)
+            val trSustainMid = cache.get(R.string.key_transient_sustain_mid, -15f)
+            val trAttackHigh = cache.get(R.string.key_transient_attack_high, 0f)
+            val trSustainHigh = cache.get(R.string.key_transient_sustain_high, 0f)
+            val trRange = cache.get(R.string.key_transient_range, 9f)
+            val trMix = cache.get(R.string.key_transient_mix, 100f)
+
             cache.select(Constants.PREF_IMAGING)
             val imgEnabled = cache.get(R.string.key_imaging_enable, false)
             val imgMonoBelow = cache.get(R.string.key_imaging_mono_below, 120f)
@@ -375,6 +388,11 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         maxrEnabled, maxrMode, maxrGain, maxrCeiling, maxrRelease,
                         maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
                         maxrOversample
+                    )
+                    Constants.PREF_TRANSIENT -> setTransient(
+                        trEnabled, trFreqLow, trFreqHigh,
+                        trAttackLow, trSustainLow, trAttackMid, trSustainMid,
+                        trAttackHigh, trSustainHigh, trRange, trMix
                     )
                     Constants.PREF_IMAGING -> setImaging(
                         imgEnabled, imgMonoBelow, imgFreqLow, imgFreqMid, imgFreqHigh,
@@ -749,6 +767,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
         return setMultibandDistBandsInternal(flat)
     }
 
+    abstract fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean
     abstract fun setImaging(enable: Boolean, monoBelow: Float, freqLow: Float, freqMid: Float, freqHigh: Float, widthLow: Float, widthMid: Float, widthHigh: Float, mix: Float): Boolean
     abstract fun setDynamicEq(enable: Boolean, mix: Float): Boolean
     protected abstract fun setDynamicEqBandsInternal(bands: FloatArray?): Boolean

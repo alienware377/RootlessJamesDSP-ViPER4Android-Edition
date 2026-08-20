@@ -184,6 +184,11 @@ class JamesDspRemoteEngine(
      */
     private var pendingDyneqBands: FloatArray? = null
 
+    override fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean =
+        sendForkEffect(PARAM_TRANSIENT, enable, floatArrayOf(
+            freqLow, freqHigh, attackLow, sustainLow, attackMid, sustainMid,
+            attackHigh, sustainHigh, range, mix))
+
     override fun setImaging(enable: Boolean, monoBelow: Float, freqLow: Float, freqMid: Float, freqHigh: Float, widthLow: Float, widthMid: Float, widthHigh: Float, mix: Float): Boolean =
         sendForkEffect(PARAM_IMAGING, enable, floatArrayOf(
             monoBelow, freqLow, freqMid, freqHigh, widthLow, widthMid, widthHigh, mix))
@@ -456,6 +461,7 @@ class JamesDspRemoteEngine(
         private const val PARAM_CHAIN_ORDER = PARAM_FORK_BASE + 12
         private const val PARAM_DYNAMIC_EQ = PARAM_FORK_BASE + 13
         private const val PARAM_IMAGING = PARAM_FORK_BASE + 14
+        private const val PARAM_TRANSIENT = PARAM_FORK_BASE + 15
         /** Enable flags live one hundred above their value id. */
         private const val PARAM_FORK_ENABLE_OFFSET = 100
 
