@@ -28,8 +28,22 @@ class PreferenceCache(val context: Context) {
             throw IllegalStateException("No active namespace selected")
 
         val name = context.getString(nameRes)
+        // Remembered per namespace, not per key name. Nothing reads the same key
+        // from two namespaces today, but one preference key IS already shared by
+        // two cards - the parametric EQ screen reuses the graphic EQ's
+        // linear-phase key - so it is one line of engine code away from being
+        // live, and the failure it produces is silent and very hard to see.
+        //
+        // What this list decides is whether a namespace's parameters get sent to
+        // the engine at all. With a name-only cache, two namespaces sharing a key
+        // overwrite each other's remembered value every sync. Mostly that marks
+        // both as changed when neither is, which merely wastes work. But when the
+        // value left behind by the other namespace happens to equal the new one,
+        // the change reads as no change, the namespace is never marked, and the
+        // control the user just moved is never applied.
+        val cacheKey = "$selectedNamespace/$name"
         val current = uncachedGet(context, selectedNamespace!!, nameRes, default, type)
-        val unchanged = cache.containsKey(name) && cache[name] == current
+        val unchanged = cache.containsKey(cacheKey) && cache[cacheKey] == current
         if(!unchanged && !changedNamespaces.contains(selectedNamespace)) {
             selectedNamespace?.let {
                 changedNamespaces.add(it)
@@ -37,7 +51,7 @@ class PreferenceCache(val context: Context) {
         }
 
         CrashlyticsImpl.setCustomKey("dsp_$name", current.toString())
-        cache[name] = current as Any
+        cache[cacheKey] = current as Any
         return current
     }
 
