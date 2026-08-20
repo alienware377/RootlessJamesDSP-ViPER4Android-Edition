@@ -594,6 +594,18 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setMultibandDis
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setExciter(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat f1, jfloat f2, jfloat f3,
+        jfloat a1, jfloat a2, jfloat a3, jfloat a4,
+        jint character, jfloat drive, jfloat mix)
+{
+    DECLARE_DSP_B
+    ExciterSetParam(dsp, f1, f2, f3, a1, a2, a3, a4, character, drive, mix);
+    if (enable) ExciterEnable(dsp); else ExciterDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setLowEnd(JNIEnv *env, jobject obj, jlong self,
         jboolean enable, jfloat subsonic, jfloat weightHz, jfloat weightDb,
         jfloat mudHz, jfloat mudDb, jfloat mix)

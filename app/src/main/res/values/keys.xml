@@ -313,6 +313,17 @@
     <string name="key_dyneq3_release" translatable="false">dyneq3_release</string>
     <string name="key_dyneq3_range" translatable="false">dyneq3_range</string>
     <string name="key_dyneq3_mode" translatable="false">dyneq3_mode</string>
+    <string name="key_exciter_enable" translatable="false">exciter_enable</string>
+    <string name="key_exciter_freq1" translatable="false">exciter_freq1</string>
+    <string name="key_exciter_freq2" translatable="false">exciter_freq2</string>
+    <string name="key_exciter_freq3" translatable="false">exciter_freq3</string>
+    <string name="key_exciter_amount1" translatable="false">exciter_amount1</string>
+    <string name="key_exciter_amount2" translatable="false">exciter_amount2</string>
+    <string name="key_exciter_amount3" translatable="false">exciter_amount3</string>
+    <string name="key_exciter_amount4" translatable="false">exciter_amount4</string>
+    <string name="key_exciter_character" translatable="false">exciter_character</string>
+    <string name="key_exciter_drive" translatable="false">exciter_drive</string>
+    <string name="key_exciter_mix" translatable="false">exciter_mix</string>
     <string name="key_lowend_enable" translatable="false">lowend_enable</string>
     <string name="key_lowend_subsonic" translatable="false">lowend_subsonic</string>
     <string name="key_lowend_weight_freq" translatable="false">lowend_weight_freq</string>

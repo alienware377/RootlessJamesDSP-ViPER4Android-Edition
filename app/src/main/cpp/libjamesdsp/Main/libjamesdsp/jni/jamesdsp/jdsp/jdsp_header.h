@@ -184,6 +184,35 @@ typedef struct
 	float chPhase, chInc, chBase, chDepth, chFeedback, chSpread, chMix;
 	float fs;
 } MultibandDist;
+#define EXCITER_BANDS 4
+// Ordered softest to most lopsided. The first three are odd-harmonic, the last
+// two asymmetric and so even-harmonic, which is most of what separates a valve
+// sound from a transistor one.
+enum ExciterCharacter
+{
+	EXCITER_WARM = 0,	// plain tanh, softest knee
+	EXCITER_RETRO,		// cubic clip, third harmonic
+	EXCITER_TAPE,		// gentle, never quite limits
+	EXCITER_TUBE,		// asymmetric
+	EXCITER_TRIODE,		// most asymmetric of the set
+	EXCITER_CHAR_COUNT
+};
+typedef struct
+{
+	float b0, b1, b2, a1, a2;
+	float z1[2], z2[2];
+} ExciterStage;
+typedef struct { float x1, y1; } ExciterDc;
+typedef struct
+{
+	ExciterStage split[EXCITER_BANDS - 1];
+	ExciterDc dc[EXCITER_BANDS][2];
+	float freq[EXCITER_BANDS - 1];
+	float amount[EXCITER_BANDS];
+	int character;
+	float drive, fs, mix, dcCoef;
+	int transparent;
+} Exciter;
 typedef struct
 {
 	float b0, b1, b2, a1, a2;
@@ -811,6 +840,7 @@ enum JdspEffectId
 	JDSP_EFX_IMAGING,
 	JDSP_EFX_TRANSIENT,
 	JDSP_EFX_LOWEND,
+	JDSP_EFX_EXCITER,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -987,6 +1017,8 @@ typedef struct dspsys
 	Transient transient;
 	int lowEndEnabled;
 	LowEnd lowEnd;
+	int exciterEnabled;
+	Exciter exciter;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1142,6 +1174,12 @@ extern void EchoDelaySetParam(JamesDSPLib *jdsp, float inputLevel, float timeMs,
 extern void EchoDelayUpdateFilter(EchoDelay *e, float cutoffHz);
 extern void EchoDelayProcess(JamesDSPLib *jdsp, size_t n);
 extern void EchoDelayEnable(JamesDSPLib *jdsp);
+extern void ExciterSetParam(JamesDSPLib *jdsp, float freq1, float freq2, float freq3,
+	float amount1, float amount2, float amount3, float amount4,
+	int character, float drive, float mixPct);
+extern void ExciterProcess(JamesDSPLib *jdsp, size_t n);
+extern void ExciterEnable(JamesDSPLib *jdsp);
+extern void ExciterDisable(JamesDSPLib *jdsp);
 extern void LowEndSetParam(JamesDSPLib *jdsp, float subsonicHz,
 	float weightHz, float weightDb, float mudHz, float mudDb, float mixPct);
 extern void LowEndProcess(JamesDSPLib *jdsp, size_t n);

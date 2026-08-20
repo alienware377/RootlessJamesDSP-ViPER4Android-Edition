@@ -182,6 +182,19 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
             val maxrClipShape = cache.get(R.string.key_maxr_clip_shape, "0").toInt()
 
+            cache.select(Constants.PREF_EXCITER)
+            val exEnabled = cache.get(R.string.key_exciter_enable, false)
+            val exF1 = cache.get(R.string.key_exciter_freq1, 150f)
+            val exF2 = cache.get(R.string.key_exciter_freq2, 900f)
+            val exF3 = cache.get(R.string.key_exciter_freq3, 4500f)
+            val exA1 = cache.get(R.string.key_exciter_amount1, 30f)
+            val exA2 = cache.get(R.string.key_exciter_amount2, 12f)
+            val exA3 = cache.get(R.string.key_exciter_amount3, 18f)
+            val exA4 = cache.get(R.string.key_exciter_amount4, 35f)
+            val exChar = cache.get(R.string.key_exciter_character, "3").toInt()
+            val exDrive = cache.get(R.string.key_exciter_drive, 6f)
+            val exMix = cache.get(R.string.key_exciter_mix, 100f)
+
             cache.select(Constants.PREF_LOWEND)
             val leEnabled = cache.get(R.string.key_lowend_enable, false)
             val leSubsonic = cache.get(R.string.key_lowend_subsonic, 30f)
@@ -399,6 +412,10 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                         maxrEnabled, maxrMode, maxrGain, maxrCeiling, maxrRelease,
                         maxrCharacter, maxrTransient, maxrTruePeak, maxrStereoLink,
                         maxrOversample, maxrClipShape
+                    )
+                    Constants.PREF_EXCITER -> setExciter(
+                        exEnabled, exF1, exF2, exF3, exA1, exA2, exA3, exA4,
+                        exChar, exDrive, exMix
                     )
                     Constants.PREF_LOWEND -> setLowEnd(
                         leEnabled, leSubsonic, leWeightFreq, leWeightGain,
@@ -782,6 +799,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
         return setMultibandDistBandsInternal(flat)
     }
 
+    abstract fun setExciter(enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean
     abstract fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean
     abstract fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean
     abstract fun setImaging(enable: Boolean, monoBelow: Float, freqLow: Float, freqMid: Float, freqHigh: Float, widthLow: Float, widthMid: Float, widthHigh: Float, mix: Float): Boolean

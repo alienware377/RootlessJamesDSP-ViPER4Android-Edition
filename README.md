@@ -120,11 +120,11 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - ~~**Low end**~~ — a steep subsonic filter to stop inaudible rumble eating headroom, one knob for body, and a wide dip where recordings turn thick (mono-below lives in the imaging card and punch in Impact, so neither is duplicated)
 - ~~**Soft clipper**~~ — three curves for the maximiser's Character control, from one that bends immediately and adds density to one that stays linear until the very top and only clips peaks; a shape inside the maximiser rather than a second thing doing the limiter's job
 - ~~**Mid/side modes**~~ — the dynamic EQ can be pointed at the centre of the image or at its edges, so a de-esser can catch a vocal without dulling the reverb around it; the untouched half comes through bit-for-bit
+- ~~**Exciter**~~ — four ranges, each with its own amount, and five characters: three symmetrical ones that add odd harmonics and two lopsided ones that add even harmonics, which is the difference between a transistor sound and a valve one. The older two-band Bass exciter card is left in place so existing setups keep working
 
 ### 🔜 Planned
 
 - **Global "Poweramp-style" mode** — process the whole output mix with Android's built-in effect API instead of audio capture: no capture permission, no persistent notification, and apps that block capture (Spotify) would work. Trade-off: only EQ/bass/limiter-class effects can run there — the ViPER effects need the capture engine. Deprecated by Google and device-dependent (works on many Samsungs, often not Pixels), so it'll ship clearly labelled as experimental.
-- **Full exciter** — four bands with selectable saturation characters (warm, retro, tape, tube, triode) and per-band mix, replacing the current two-band bass-only design
 - **Spectral shaper** — dynamic taming of harshness and resonances, especially handy on bright IEMs
 - **Match EQ** — match playback to a target curve, pairing naturally with the AutoEq and DDC profiles already supported
 - **Vintage tape** — wow, flutter, bias and tape saturation as a colour effect

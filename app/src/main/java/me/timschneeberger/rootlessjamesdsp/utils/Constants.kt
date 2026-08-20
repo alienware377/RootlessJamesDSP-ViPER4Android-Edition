@@ -46,6 +46,7 @@ object Constants {
     const val PREF_IMAGING = "dsp_imaging"
     const val PREF_TRANSIENT = "dsp_transient"
     const val PREF_LOWEND = "dsp_lowend"
+    const val PREF_EXCITER = "dsp_exciter"
     const val PREF_CHAIN_ORDER = "dsp_chain_order"
     const val PREF_FILELIBRARY = "dsp_filelibrary"
     const val KEY_CHAIN_ORDER = "order"

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup
+        android:key="@string/key_exciter_enable"
+        android:disableDependentsState="false"
+        android:title="@string/exciter_enable"
+        android:icon="@drawable/ic_twotone_speaker_24dp"
+        app:iconSpaceReserved="false">
+        <Preference android:key="section_info" android:title="@string/section_info_title"
+            android:summary="@string/exciter_info" android:persistent="false"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+
+        <ListPreference
+            android:key="@string/key_exciter_character"
+            android:title="@string/exciter_character"
+            android:summary="@string/exciter_character_summary"
+            android:defaultValue="3"
+            android:entries="@array/exciter_characters"
+            android:entryValues="@array/exciter_characters_values"
+            app:allowDividerAbove="false" app:iconSpaceReserved="false"/>
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_exciter_drive"
+            android:title="@string/exciter_drive"
+            android:summary="@string/exciter_drive_summary"
+            android:defaultValue="6"
+            app:minValue="1" app:maxValue="20" app:unit="x" app:precision="1"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+
+        <PreferenceCategory android:title="@string/exciter_amounts_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_exciter_amount1"
+                android:title="@string/exciter_amount1"
+                android:defaultValue="30"
+                app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_exciter_amount2"
+                android:title="@string/exciter_amount2"
+                android:defaultValue="12"
+                app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_exciter_amount3"
+                android:title="@string/exciter_amount3"
+                android:defaultValue="18"
+                app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_exciter_amount4"
+                android:title="@string/exciter_amount4"
+                android:defaultValue="35"
+                app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <PreferenceCategory android:title="@string/exciter_split_header"
+            app:iconSpaceReserved="false">
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_exciter_freq1"
+                android:title="@string/exciter_freq1"
+                android:defaultValue="150"
+                app:minValue="50" app:maxValue="500" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_exciter_freq2"
+                android:title="@string/exciter_freq2"
+                android:defaultValue="900"
+                app:minValue="300" app:maxValue="3000" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+            <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+                android:key="@string/key_exciter_freq3"
+                android:title="@string/exciter_freq3"
+                android:defaultValue="4500"
+                app:minValue="2000" app:maxValue="12000" app:unit="Hz" app:precision="0"
+                app:allowDividerAbove="false" app:updatesContinuously="true"
+                app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+        </PreferenceCategory>
+
+        <me.timschneeberger.rootlessjamesdsp.preference.MaterialSeekbarPreference
+            android:key="@string/key_exciter_mix"
+            android:title="@string/exciter_mix"
+            android:summary="@string/exciter_mix_summary"
+            android:defaultValue="100"
+            app:minValue="0" app:maxValue="100" app:unit="%" app:precision="0"
+            app:allowDividerAbove="false" app:updatesContinuously="true"
+            app:showSeekBarValue="true" app:iconSpaceReserved="false"/>
+    </me.timschneeberger.rootlessjamesdsp.preference.SwitchPreferenceGroup>
+</PreferenceScreen>
