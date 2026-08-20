@@ -173,6 +173,82 @@ static void dynEqSetup(JamesDSPLib *j)
 	DynamicEqSetParam(j, 100.0f, MS_MODE_STEREO);
 }
 
+/* The other half of the same question. Switching a card OFF is not symmetric
+   with switching it on: the chain simply stops calling Process, so the output
+   reverts to dry between one sample and the next with nothing able to smooth
+   it. Whether that is audible depends entirely on how far the effect's output
+   had drifted from the dry signal - which for a delay line is as far as it is
+   possible to get, since the two are at different points in the waveform. */
+static void trialOff(const char *name, Fn setup, Fn enable, Fn disable,
+                     void (*run)(JamesDSPLib *, size_t), int (*stillOn)(JamesDSPLib *))
+{
+	prepare();
+	setup(&g_lib);
+	fillTone();
+	enable(&g_lib);
+
+	g_lib.tmpBuffer[0] = bufL;
+	g_lib.tmpBuffer[1] = bufR;
+	run(&g_lib, SWITCH);
+
+	disable(&g_lib);
+
+	/* The chain calls Process for exactly as long as the flag is set, so the
+	   harness has to as well - otherwise an effect that asks to be kept alive
+	   while it fades out would be measured as though it had been cut off, which
+	   is the very thing being tested. Blocks rather than one long call, because
+	   the flag is only re-read between them. */
+	size_t pos = SWITCH;
+	while (pos < N && stillOn(&g_lib))
+	{
+		const size_t blk = (N - pos) < 256 ? (N - pos) : 256;
+		g_lib.tmpBuffer[0] = bufL + pos;
+		g_lib.tmpBuffer[1] = bufR + pos;
+		run(&g_lib, blk);
+		pos += blk;
+	}
+
+	const double normalStep = maxStep(SWITCH - 4800, 4700);
+	/* The worst step anywhere across the switch-off AND any fade that follows
+	   it - a fade that ends in a step has only moved the click later. */
+	const double switchStep = maxStep(SWITCH - 2, 1500);
+
+	/* Judged as a fraction of the programme peak, not as a multiple of the
+	   signal's own slope.
+
+	   Every effect steps a little when it is bypassed instantly, because its
+	   output has drifted from the dry signal - by a filter's group delay for
+	   most of these, which at 200 Hz is a fraction of a period. That is
+	   inherent to instant bypass and is true of all thirty-odd effects in this
+	   app, so a ratio against the local slope condemns any effect with a
+	   filter in it and says nothing about whether the result is audible.
+
+	   What determines audibility is how much of the waveform appears out of
+	   nowhere in one sample. The tape was jumping twelve milliseconds along a
+	   five-millisecond period - two and a half periods, so wet and dry were
+	   entirely uncorrelated - and injected 80% of full scale. A group delay
+	   injects a few percent. Fifteen percent sits well above every filter here
+	   and well below anything that decorrelated. */
+	const double peak = 0.5;
+	const double frac = switchStep / peak * 100.0;
+
+	printf("\n%s (switched off)\n", name);
+	printf("      step %.4f = %.1f%% of peak (local slope %.4f)\n",
+	       switchStep, frac, normalStep);
+
+	char buf[128];
+	snprintf(buf, sizeof(buf), "%s: no click when switched off (%% of peak)", name);
+	check(buf, frac, 0.0, 15.0);
+}
+
+/* Whether the chain would still be calling this effect. */
+static int tapeOn(JamesDSPLib *j)      { return j->tapeEnabled; }
+static int exciterOn(JamesDSPLib *j)   { return j->exciterEnabled; }
+static int lowEndOn(JamesDSPLib *j)    { return j->lowEndEnabled; }
+static int transientOn(JamesDSPLib *j) { return j->transientEnabled; }
+static int imagingOn(JamesDSPLib *j)   { return j->imagingEnabled; }
+static int dynEqOn(JamesDSPLib *j)     { return j->dynamicEqEnabled; }
+
 int main(void)
 {
 	printf("== switching a card on during playback ==\n");
@@ -182,6 +258,14 @@ int main(void)
 	trial("impact", transientSetup, TransientEnable, TransientProcess);
 	trial("stereo imaging", imagingSetup, ImagingEnable, ImagingProcess);
 	trial("dynamic EQ", dynEqSetup, DynamicEqEnable, DynamicEqProcess);
+
+	printf("\n== switching a card off during playback ==\n");
+	trialOff("vintage tape", tapeSetup, TapeEnable, TapeDisable, TapeProcess, tapeOn);
+	trialOff("exciter", exciterSetup, ExciterEnable, ExciterDisable, ExciterProcess, exciterOn);
+	trialOff("low end", lowEndSetup, LowEndEnable, LowEndDisable, LowEndProcess, lowEndOn);
+	trialOff("impact", transientSetup, TransientEnable, TransientDisable, TransientProcess, transientOn);
+	trialOff("stereo imaging", imagingSetup, ImagingEnable, ImagingDisable, ImagingProcess, imagingOn);
+	trialOff("dynamic EQ", dynEqSetup, DynamicEqEnable, DynamicEqDisable, DynamicEqProcess, dynEqOn);
 
 	printf("\n%s (%d failure%s)\n", failures ? "FAILED" : "PASSED",
 	       failures, failures == 1 ? "" : "s");

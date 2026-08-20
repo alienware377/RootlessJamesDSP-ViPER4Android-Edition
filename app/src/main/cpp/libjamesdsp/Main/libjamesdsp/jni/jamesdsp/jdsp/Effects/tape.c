@@ -199,7 +199,7 @@ void TapeSetParam(JamesDSPLib *jdsp, float wowPct, float flutterPct,
 	if (wasIdle && !t->transparent && t->mix > 0.0f)
 	{
 		t->filled = 0;
-		t->faded = 0;
+		t->wetGain = 0.0f;
 	}
 	jdsp_unlock(jdsp);
 }
@@ -208,7 +208,18 @@ void TapeProcess(JamesDSPLib *jdsp, size_t n)
 {
 	Tape *t = &jdsp->tape;
 	if (t->mix <= 0.0f || t->transparent)
+	{
+		/* Nothing audible to fade, so a pending switch-off can finish here.
+		   Without this the flag would never be cleared and the effect would sit
+		   enabled and inaudible for the rest of the session. */
+		if (t->fadingOut)
+		{
+			t->fadingOut = 0;
+			t->wetGain = 0.0f;
+			jdsp->tapeEnabled = 0;
+		}
 		return;
+	}
 
 	float *left = jdsp->tmpBuffer[0];
 	float *right = jdsp->tmpBuffer[1];
@@ -228,16 +239,28 @@ void TapeProcess(JamesDSPLib *jdsp, size_t n)
 
 		   Then in over a few milliseconds, because arriving all at once at the
 		   moment the line happens to be full is just a later click. */
-		float wetAmount = t->mix;
+		float wetAmount;
 		if (t->filled < (int)t->base)
 		{
 			t->filled++;
+			t->wetGain = 0.0f;
 			wetAmount = 0.0f;
 		}
-		else if (t->faded < t->fadeLen)
+		else
 		{
-			t->faded++;
-			wetAmount = t->mix * ((float)t->faded / (float)t->fadeLen);
+			const float step = 1.0f / (float)t->fadeLen;
+			const float target = t->fadingOut ? 0.0f : 1.0f;
+			if (t->wetGain < target)
+			{
+				t->wetGain += step;
+				if (t->wetGain > target) t->wetGain = target;
+			}
+			else if (t->wetGain > target)
+			{
+				t->wetGain -= step;
+				if (t->wetGain < target) t->wetGain = target;
+			}
+			wetAmount = t->mix * t->wetGain;
 		}
 
 		/* One pair of oscillators drives both channels, so the two sides drift
@@ -285,21 +308,37 @@ void TapeProcess(JamesDSPLib *jdsp, size_t n)
 
 		t->widx = (t->widx + 1) & (TAPE_LINE - 1);
 	}
+
+	/* The switch-off has run its course, so the chain can stop calling us. */
+	if (t->fadingOut && t->wetGain <= 0.0f)
+	{
+		t->fadingOut = 0;
+		jdsp->tapeEnabled = 0;
+	}
 }
 
 void TapeEnable(JamesDSPLib *jdsp)
 {
-	if (jdsp->tapeEnabled)
-		return;
 	jdsp_lock(jdsp);
 	Tape *t = &jdsp->tape;
+	if (jdsp->tapeEnabled)
+	{
+		/* Either it is already on, in which case there is nothing to do, or a
+		   switch-off is still fading. In the latter case the delay line is
+		   still full and still current, so turn round and fade back in rather
+		   than clearing it and making the user wait through another fill. */
+		t->fadingOut = 0;
+		jdsp_unlock(jdsp);
+		return;
+	}
 	t->fs = jdsp->fs > 0.0f ? jdsp->fs : 48000.0f;
 	memset(t->line, 0, sizeof(t->line));
 	t->widx = 0;
 	/* The line is empty, so the wet signal has to wait for it and then arrive
 	   gradually. See the note in Process. */
 	t->filled = 0;
-	t->faded = 0;
+	t->wetGain = 0.0f;
+	t->fadingOut = 0;
 	t->wowPhase = 0.0f;
 	t->flutterPhase = 0.0f;
 	t->biasShelf.z1[0] = t->biasShelf.z2[0] = 0.0f;
@@ -313,6 +352,21 @@ void TapeEnable(JamesDSPLib *jdsp)
 void TapeDisable(JamesDSPLib *jdsp)
 {
 	jdsp_lock(jdsp);
-	jdsp->tapeEnabled = 0;
+	Tape *t = &jdsp->tape;
+	if (!jdsp->tapeEnabled)
+	{
+		jdsp_unlock(jdsp);
+		return;
+	}
+	/* The flag is deliberately NOT cleared here. Clearing it is what makes the
+	   chain stop calling Process, and the output would revert to dry between
+	   one sample and the next - which for a delay line means jumping twelve
+	   milliseconds along the waveform. Measured as a step thirty times the
+	   steepest the signal itself ever manages: a loud click, on every tap.
+
+	   So the switch-off is only requested here. Process takes the wet signal
+	   down over the same few milliseconds it uses coming in, and clears the
+	   flag once it arrives at nothing. */
+	t->fadingOut = 1;
 	jdsp_unlock(jdsp);
 }

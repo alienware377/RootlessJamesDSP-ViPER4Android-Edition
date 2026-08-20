@@ -207,11 +207,16 @@ typedef struct
 	TapeStage biasShelf, headBump;
 	float fs, mix;
 	// Switching the card on starts the delay line empty, so there is nothing
-	// behind the write head to read. `filled` counts samples written until
-	// there is, and `faded` then brings the wet signal in over `fadeLen`.
-	// Both are counts up to a limit rather than countdowns, so that a sample
-	// rate change - which moves both limits - cannot leave them inconsistent.
-	int filled, faded, fadeLen;
+	// behind the write head to read: `filled` counts samples written until
+	// there is. `wetGain` then walks towards 1 or 0 - in over `fadeLen` when
+	// the card goes on, and back out again when it goes off. `filled` is a
+	// count up to a limit rather than a countdown, so that a sample rate
+	// change - which moves that limit - cannot leave it inconsistent.
+	// `fadingOut` means a switch-off is in progress: the enabled flag stays
+	// set until the fade finishes, because clearing it is what makes the chain
+	// stop calling Process.
+	int filled, fadeLen, fadingOut;
+	float wetGain;
 	int transparent;
 } Tape;
 #define EXCITER_BANDS 4
