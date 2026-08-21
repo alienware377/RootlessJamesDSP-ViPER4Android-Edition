@@ -24,7 +24,27 @@ tools/mbd_harness
 tools/crashes/presets/
 
 # Harness build products
+#
+# Each tools/<name>_harness.c builds to an extensionless tools/<name>, so this
+# is one line per harness. Add a line when you add one: several of these were
+# committed by accident, and an arm64 executable rebuilt on every run is pure
+# churn in a diff.
 tools/objs*/
 tools/*.rsp
 tools/param_harness
 tools/param_harness_*
+tools/chain
+tools/cutoff
+tools/defaults
+tools/dsur
+tools/dyneq
+tools/enable
+tools/exciter
+tools/imaging
+tools/lowend
+tools/maxr
+tools/mbd_audible
+tools/perf
+tools/ratechange
+tools/tape
+tools/transient
