@@ -34,10 +34,11 @@
 #include <math.h>
 #include "jdsp_header.h"
 
-#define FS     48000.0
-#define N      (48000 * 2)
-#define SWITCH (48000)          /* one second in, on a zero crossing */
-#define WIN    960              /* 20 ms */
+#define FS      48000.0
+#define N       (48000 * 3)
+#define SWITCH  (48000)         /* one second in, on a zero crossing */
+#define SWITCH2 (96000)         /* two seconds in, likewise */
+#define WIN     960             /* 20 ms */
 
 static JamesDSPLib g_lib;
 static float bufL[N], bufR[N];
@@ -241,6 +242,63 @@ static void trialOff(const char *name, Fn setup, Fn enable, Fn disable,
 	check(buf, frac, 0.0, 15.0);
 }
 
+/*
+ * The third way an effect starts contributing, and the one with no card tap
+ * behind it: the user turns every control down to nothing and later turns them
+ * back up.
+ *
+ * That is not the same as switching the card off. The effect stays enabled and
+ * the chain keeps calling Process, but Process returns early because there is
+ * nothing to do - so for the tape the delay line stops being written while the
+ * music carries on. Whatever was in it when the controls went to zero is still
+ * there when they come back up, which could be minutes of the track ago.
+ * Reading that out is a fragment of old audio spliced into the present.
+ *
+ * Only the tape has a delay line, so only the tape can do this, but the test is
+ * written for any effect since any of them could grow one.
+ */
+static void trialIdleReturn(const char *name, Fn setupActive, Fn setupIdle,
+                            Fn enable, void (*run)(JamesDSPLib *, size_t))
+{
+	prepare();
+	setupActive(&g_lib);
+	fillTone();
+	enable(&g_lib);
+
+	/* Working normally, so the line fills with audio. */
+	g_lib.tmpBuffer[0] = bufL;
+	g_lib.tmpBuffer[1] = bufR;
+	run(&g_lib, SWITCH);
+
+	/* Controls to zero. Process now returns early and the line goes stale. */
+	setupIdle(&g_lib);
+	g_lib.tmpBuffer[0] = bufL + SWITCH;
+	g_lib.tmpBuffer[1] = bufR + SWITCH;
+	run(&g_lib, SWITCH2 - SWITCH);
+
+	/* Back up again a whole second later. */
+	setupActive(&g_lib);
+	g_lib.tmpBuffer[0] = bufL + SWITCH2;
+	g_lib.tmpBuffer[1] = bufR + SWITCH2;
+	run(&g_lib, N - SWITCH2);
+
+	const double normalStep = maxStep(SWITCH2 - 4800, 4700);
+	const double switchStep = maxStep(SWITCH2 - 2, 1500);
+	const double peak = 0.5;
+	const double frac = switchStep / peak * 100.0;
+
+	printf("\n%s (turned down, then back up)\n", name);
+	printf("      step %.4f = %.1f%% of peak (local slope %.4f)\n",
+	       switchStep, frac, normalStep);
+
+	char buf[128];
+	snprintf(buf, sizeof(buf), "%s: no stale audio on the way back (%% of peak)", name);
+	check(buf, frac, 0.0, 15.0);
+}
+
+static void tapeIdle(JamesDSPLib *j)
+{ TapeSetParam(j, 0, 0, 0, 0, 0, 100.0f); }
+
 /* Whether the chain would still be calling this effect. */
 static int tapeOn(JamesDSPLib *j)      { return j->tapeEnabled; }
 static int exciterOn(JamesDSPLib *j)   { return j->exciterEnabled; }
@@ -266,6 +324,9 @@ int main(void)
 	trialOff("impact", transientSetup, TransientEnable, TransientDisable, TransientProcess, transientOn);
 	trialOff("stereo imaging", imagingSetup, ImagingEnable, ImagingDisable, ImagingProcess, imagingOn);
 	trialOff("dynamic EQ", dynEqSetup, DynamicEqEnable, DynamicEqDisable, DynamicEqProcess, dynEqOn);
+
+	printf("\n== controls turned to zero and back up ==\n");
+	trialIdleReturn("vintage tape", tapeSetup, tapeIdle, TapeEnable, TapeProcess);
 
 	printf("\n%s (%d failure%s)\n", failures ? "FAILED" : "PASSED",
 	       failures, failures == 1 ? "" : "s");
