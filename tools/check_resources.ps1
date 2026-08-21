@@ -26,6 +26,13 @@
 #      illegal, but the engine's change detection remembers values per
 #      namespace and key, and a shared key is one line of engine code away from
 #      dropping a change silently. See PreferenceCache.
+#
+#   5. Every card the fragment binds agrees with the namespace-to-card map, and
+#      has a master switch that map can actually find. Loading a preset is
+#      allowed to unhide a card the preset switches on, and that is the only
+#      thing it may change about the layout - so if the map disagrees with the
+#      fragment, or a card's switch is not named the way the matcher expects,
+#      a preset turns an effect on and leaves it invisible.
 param([switch]$Quiet)
 
 $ErrorActionPreference = 'Stop'
@@ -146,6 +153,45 @@ $where.GetEnumerator() | Where-Object { $_.Value.Count -gt 1 } | ForEach-Object 
     if ($sharedKnown -contains $_.Key) { Write-Host "  known  $msg" -ForegroundColor Yellow }
     else { Fail $msg }
 }
+
+# ---- 5: card bindings against the reveal map -------------------------------
+
+Write-Host "`ncard bindings and their master switches"
+$df = Get-Content "$root\app\src\main\java\me\timschneeberger\rootlessjamesdsp\fragment\DspFragment.kt" -Raw
+$ec = Get-Content "$root\app\src\main\java\me\timschneeberger\rootlessjamesdsp\utils\EffectCards.kt" -Raw
+$ecMap = @{}
+[regex]::Matches($ec, 'Constants\.(PREF_[A-Z0-9]+)\s+to\s+"(card_[a-z0-9_]+)"') |
+    ForEach-Object { $ecMap[$_.Groups[1].Value] = $_.Groups[2].Value }
+# The fragment is the authority: it names the card, the namespace and the screen
+# together. Note the file name is NOT derivable from the namespace - the echo
+# card is dsp_echodelay backed by dsp_echo_preferences - so it has to be read
+# from here rather than guessed.
+$specs = [regex]::Matches($df,
+    'CardSpec\(R\.id\.(card_[a-z0-9_]+),\s*Constants\.(PREF_[A-Z0-9]+),\s*R\.xml\.([a-z0-9_]+)\)')
+foreach ($m in $specs) {
+    $card = $m.Groups[1].Value; $pref = $m.Groups[2].Value; $xmlName = $m.Groups[3].Value
+    if (-not $ecMap.ContainsKey($pref)) {
+        Fail "$pref is bound to $card but is missing from EffectCards, so a preset can never reveal it"
+    }
+    elseif ($ecMap[$pref] -ne $card) {
+        Fail ("$pref : EffectCards says '{0}' but the fragment binds '{1}'" -f $ecMap[$pref], $card)
+    }
+    $path = "$res\xml\$xmlName.xml"
+    if (-not (Test-Path $path)) { Fail "$card : no such screen $xmlName"; continue }
+    $x = [xml](Get-Content $path -Raw)
+    $hasEnable = $false
+    $x.SelectNodes('//*') | ForEach-Object {
+        $k = ($_.GetAttribute('key', $ns)) -replace '@string/',''
+        # The stored key is the string resource's VALUE, not its name, and that
+        # is what the preset matcher sees - key_crossfeed_enable, for one,
+        # resolves to bs2b_crossfeed_enable.
+        if ($k -and $strings.ContainsKey($k) -and $strings[$k] -like '*_enable') { $script:hasEnable = $true }
+    }
+    if (-not $hasEnable) {
+        Fail "$card ($xmlName) has no key resolving to *_enable, so a preset could switch it on invisibly"
+    }
+}
+Note "$($specs.Count) card bindings checked"
 
 # ---- report ----------------------------------------------------------------
 
