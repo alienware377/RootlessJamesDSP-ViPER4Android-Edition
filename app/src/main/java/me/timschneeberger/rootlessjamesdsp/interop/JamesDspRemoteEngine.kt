@@ -125,18 +125,29 @@ class JamesDspRemoteEngine(
         super.close()
     }
 
+    // The three below are not sent in root mode, so their cards do nothing
+    // there. Worth being exact about why, because "unsupported" is what these
+    // comments used to say and it is not true: bassex.c, vdynbass.c and
+    // diffsurround.c are all compiled into the HAL library, which is built from
+    // the same source glob as the app's own. Nothing is missing behind them -
+    // they simply have no parameter id and no case in the dispatch.
+    //
+    // Wiring one up is the same mechanical change the maximiser just had: a
+    // PARAM_ constant, a sendForkEffect call here, a case in EffectParams.h and
+    // an assertion in the parameter harness. Left alone for now because it is a
+    // question of how far root mode should reach rather than a defect - but
+    // stated plainly so nobody concludes from the old wording that the code is
+    // absent. That reading is exactly what left the maximiser dead.
+
     override fun setBassExciter(enable: Boolean, cutoff: Float, intensity: Float, mix: Float, band2: Boolean, cutoff2: Float, intensity2: Float, mix2: Float): Boolean {
-        // Bass exciter is unsupported in root/plugin mode (remote engine)
         return true
     }
 
     override fun setVDynBass(enable: Boolean, gain: Float, x1: Float, x2: Float, y1: Float, y2: Float, sgx: Float, sgy: Float): Boolean {
-        // ViPER dynamic bass is unsupported in root/plugin mode (remote engine)
         return true
     }
 
     override fun setDiffSurround(enable: Boolean, delayLms: Float, delayRms: Float): Boolean {
-        // Differential surround is unsupported in root/plugin mode (remote engine)
         return true
     }
 
