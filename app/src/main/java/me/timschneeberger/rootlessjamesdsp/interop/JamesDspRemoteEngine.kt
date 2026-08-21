@@ -171,7 +171,11 @@ class JamesDspRemoteEngine(
     override fun setSpeakerOpt(enable: Boolean, strength: Float): Boolean =
         sendForkEffect(PARAM_SPEAKER_OPT, enable, floatArrayOf(strength))
 
-    override fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int, clipShape: Int): Boolean = true
+    override fun setMaximizer(enable: Boolean, mode: Int, gain: Float, ceiling: Float, release: Float, character: Float, transient: Float, truePeak: Boolean, stereoLink: Float, oversample: Int, clipShape: Int): Boolean =
+        sendForkEffect(PARAM_MAXIMIZER, enable, floatArrayOf(
+            mode.toFloat(), gain, ceiling, release, character, transient,
+            if (truePeak) 1f else 0f, stereoLink, oversample.toFloat(),
+            clipShape.toFloat()))
 
     // The legacy AudioEffect parameter path has no slot for an arbitrary
     // array, and the plugin build has no multiband distortion behind it, so
@@ -477,6 +481,7 @@ class JamesDspRemoteEngine(
         private const val PARAM_LOWEND = PARAM_FORK_BASE + 16
         private const val PARAM_EXCITER = PARAM_FORK_BASE + 17
         private const val PARAM_TAPE = PARAM_FORK_BASE + 18
+        private const val PARAM_MAXIMIZER = PARAM_FORK_BASE + 19
         /** Enable flags live one hundred above their value id. */
         private const val PARAM_FORK_ENABLE_OFFSET = 100
 

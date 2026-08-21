@@ -139,6 +139,39 @@ int main()
 		check("26010 echo/delay accepted", true, "(state is internal)");
 	}
 
+	// 26019, the maximiser. Ten values in the order MaximizerSetParam takes
+	// them, so a slipped argument shows up as the wrong field moving rather
+	// than as nothing happening.
+	{
+		float v[10] = {
+			1.0f,      // mode
+			4.5f,      // gain dB
+			-1.5f,     // ceiling dB
+			120.0f,    // release ms
+			40.0f,     // character %
+			25.0f,     // transient %
+			1.0f,      // true peak
+			80.0f,     // stereo link %
+			2.0f,      // oversample
+			2.0f       // clip shape - the control this whole path was missing
+		};
+		sendFloats(26019, v, 10);
+		check("26019 maximizer mode lands", g_lib.maximizer.mode == 1);
+		check("26019 maximizer clip shape lands", g_lib.maximizer.clipShape == 2);
+		check("26019 maximizer true peak lands", g_lib.maximizer.truePeak == 1);
+		// Stored as a linear factor, not as the decibels it arrived as:
+		// 10^(-1.5/20) is 0.841. The output stage's post gain does the same
+		// thing and caught this harness out once before, so it is worth
+		// asserting the converted value rather than the one that was sent.
+		check("26019 maximizer ceiling lands, converted to linear",
+			  fabsf(g_lib.maximizer.ceiling - 0.84139f) < 0.001f);
+
+		sendEnable(26119, true);
+		check("26119 switches the maximizer on", g_lib.maximizerEnabled != 0);
+		sendEnable(26119, false);
+		check("26119 switches it off again", g_lib.maximizerEnabled == 0);
+	}
+
 	// 26013 is the only payload here whose length is not fixed: mix, band
 	// count, works-on mode, then that many bands. Worth testing both that it
 	// arrives and that it cannot be lied to - any app on the device can address
