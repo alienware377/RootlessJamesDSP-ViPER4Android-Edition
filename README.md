@@ -94,6 +94,7 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - 🗂 All ViPER-equivalent sections renamed to their **authentic V4A titles** and reordered into the classic V4A layout under a dedicated header
 - ➖ Removed the redundant Parametric EQ card (Arbitrary-response/graphic EQ covers it)
 - 📛 App renamed to **RootlessViPER4Android** (installs alongside the original RootlessJamesDSP)
+- 🆔 From **v3.35.0** the package is this project's own — `com.alienware377.viper4android.rootless`, and `com.alienware377.viper4android.rootful` for the rooted build. Earlier releases still carried upstream's `me.timschneeberger.rootlessjamesdsp`, which this fork stopped being a long time ago. The rooted build is now called **RootfulViPER4Android** rather than confusingly shipping "Rootless" in its own name
 
 ## 🗺 Roadmap
 
@@ -122,6 +123,7 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - ~~**Mid/side modes**~~ — the dynamic EQ can be pointed at the centre of the image or at its edges, so a de-esser can catch a vocal without dulling the reverb around it; the untouched half comes through bit-for-bit
 - ~~**Exciter**~~ — four ranges, each with its own amount, and five characters: three symmetrical ones that add odd harmonics and two lopsided ones that add even harmonics, which is the difference between a transistor sound and a valve one. The older two-band Bass exciter card is left in place so existing setups keep working
 - ~~**Vintage tape**~~ — wow and flutter as a genuinely modulated delay rather than a phase trick, gentle tape saturation, a bias control that runs the right way round (down is brighter and grittier, up is duller), and the head bump that makes tape masters sound weightier
+- ~~**Rooted mode**~~ — a Magisk module carrying this fork's own engine as a system-wide audio effect, so rooted devices run these effects rather than the stock JamesDSP set. Ships as **RootfulViPER4Android**, a separate app that installs alongside the rootless one. Legacy effect HAL, so Android 14 and below
 
 ### 🔜 Planned
 
@@ -130,7 +132,7 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - **Match EQ** — match playback to a target curve, pairing naturally with the AutoEq and DDC profiles already supported
 - **Binaural upmix** — build a surround bed from stereo, then fold it back to headphones through HRTF/BRIR convolution so sources can sit behind and above you. Headphones only; two speakers can't do this without crosstalk cancellation
 - **AIDL effect HAL** — a second module for Android 15 and newer, where the effect framework moved from the legacy plugin interface to a binder service. Not a port of the existing one: the engine has to be exposed behind a new interface and driven from fast message queues rather than a process callback
-- **Rooted mode** — for devices with the JamesDSP magisk module (testers welcome!)
+- **Rooted mode on Android 15+** — the effect framework moved to a binder service there, so the Magisk module above does not apply; that work is the AIDL item above
 - **GitHub search for new profile sources** — built but parked while its edge cases are ironed out; adding your own repository link already works
 - **Built-in media player** *(after everything above)* — a library browser in the spirit of jetAudio, with independent tempo and pitch control as well as combined speed, and a now-playing screen modelled on vintage turntables: platter wow and flutter, motor speed drift, surface noise and other period defects as deliberate, adjustable colour. Visual and behavioural reference: the iPad app *Vinyl* ([demo](https://www.youtube.com/watch?v=8leOYocOGSs))
 - **Remember effect on/off states** across a ViPER4Android-only mode round trip — your settings already survive, but effects switched off by the mode stay off when you leave it
@@ -141,6 +143,13 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 3. Play music, open the app, and start flipping switches 🎶
 
 Installs **alongside** the original RootlessJamesDSP as a separate app — keep both or remove the original, your choice.
+
+> ### ⚠️ Upgrading from v2.8.2 or earlier
+> v3.35.0 changes the package name, so Android treats it as a new app: it **installs alongside your existing copy instead of updating it**, and settings do not carry across on their own.
+>
+> **Back up first.** In the old app: *Settings → Backup & restore → Create backup*. Install v3.35.0, then restore that file in the new app. Your presets, card layout and every effect setting come across intact. Once you are happy, uninstall the old one.
+
+Rooted? Grab **RootfulViPER4Android** and the Magisk module from the same release. It is a separate app again, so it sits happily beside the rootless build.
 
 ## ⚠️ Limitations
 Rootless audio capture on Android has inherent restrictions (inherited from upstream RootlessJamesDSP):
