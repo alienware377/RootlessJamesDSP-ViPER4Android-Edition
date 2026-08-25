@@ -290,6 +290,8 @@
     <string name="liveprog_info">Runs custom EEL2 audio scripts for effects the app doesn\'t have built in. For tinkerers!</string>
     <string name="section_info_title">ℹ️ What is this?</string>
     <string name="section_info_tap_hint">Tap to learn what this section does</string>
+    <string name="card_collapse">Hide this effect\'s settings</string>
+    <string name="card_expand">Show this effect\'s settings</string>
     <string name="clarity_enable">ViPER clarity</string>
     <string name="clarity_info">Makes music sound crisper and more detailed. Natural sharpens transients (attacks of notes), XHiFi lifts the treble shelf, and OZone+ does both.</string>
     <string name="clarity_mode">Mode</string>

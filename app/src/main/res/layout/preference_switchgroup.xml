@@ -66,6 +66,25 @@
 
     </RelativeLayout>
 
+    <!--
+      Collapses this card's parameters without switching the effect off. With a
+      dozen cards enabled the screen becomes a very long scroll, and turning an
+      effect off to shorten it changes what you are listening to. Hidden while
+      the card is off, because there is nothing showing to collapse.
+    -->
+    <androidx.appcompat.widget.AppCompatImageView
+        android:id="@+id/collapseToggle"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:padding="8dp"
+        android:scaleType="fitCenter"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:src="@drawable/ic_baseline_keyboard_arrow_up_24dp"
+        android:contentDescription="@string/card_collapse" />
+
     <!-- Preference should place its actual preference widget here. -->
     <LinearLayout
         android:id="@android:id/widget_frame"

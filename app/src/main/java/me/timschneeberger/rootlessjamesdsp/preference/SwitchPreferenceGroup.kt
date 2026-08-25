@@ -29,6 +29,22 @@ class SwitchPreferenceGroup(context: Context, attrs: AttributeSet) : PreferenceG
     private var isIconVisible: Boolean = false
 
     /**
+     * Whether this card's parameters are folded away while the effect stays on.
+     *
+     * Separate from the switch on purpose. The switch already hides the
+     * parameters, but only by turning the effect off, which changes what you
+     * are hearing - no use to someone who wants a dozen effects running and a
+     * screen they can still scroll. Defaults to expanded, so nothing moves for
+     * anyone who does not go looking for it.
+     *
+     * Persisted beside the effect's own enable flag under its own key, so it
+     * travels with a preset and a backup the same way every other setting does.
+     */
+    private var collapsed = false
+    private var collapseToggle: View? = null
+    private val collapseKey get() = "${key}_collapsed"
+
+    /**
      * When set, user taps are routed here instead of changing this preference.
      * Needed because this class drives its switch directly and never calls
      * OnPreferenceChangeListener, so that listener can't intercept a toggle.
@@ -43,6 +59,9 @@ class SwitchPreferenceGroup(context: Context, attrs: AttributeSet) : PreferenceG
     }
 
     override fun onSetInitialValue(defaultValue: Any?) {
+        // Read before the children are shown, or the card would flash open on
+        // every bind and then fold itself.
+        collapsed = preferenceManager?.sharedPreferences?.getBoolean(collapseKey, false) ?: false
         setValueInternal(getPersistedBoolean((defaultValue as? Boolean) ?: false), true)
     }
 
@@ -86,11 +105,38 @@ class SwitchPreferenceGroup(context: Context, attrs: AttributeSet) : PreferenceG
             }
         }
 
+        collapseToggle = holder.findViewById(R.id.collapseToggle)?.apply {
+            // Its own click listener, so tapping the chevron does not fall
+            // through to the row and toggle the effect instead.
+            setOnClickListener { setCollapsed(!collapsed) }
+        }
+        refreshCollapseToggle()
+
         holder.itemView.apply {
             setOnClickListener {
                 switch?.toggle()
             }
         }
+    }
+
+    private fun setCollapsed(value: Boolean) {
+        if (collapsed == value) return
+        collapsed = value
+        preferenceManager?.sharedPreferences?.edit()?.putBoolean(collapseKey, value)?.apply()
+        setChildrenVisibility(state)
+        refreshCollapseToggle()
+    }
+
+    private fun refreshCollapseToggle() {
+        // Nothing to fold away when the card is off, and showing a control that
+        // appears to do nothing is worse than not showing it.
+        collapseToggle?.isVisible = state && isSelectable
+        (collapseToggle as? androidx.appcompat.widget.AppCompatImageView)?.setImageResource(
+            if (collapsed) R.drawable.ic_baseline_keyboard_arrow_down_24dp
+            else R.drawable.ic_baseline_keyboard_arrow_up_24dp
+        )
+        collapseToggle?.contentDescription =
+            context.getString(if (collapsed) R.string.card_expand else R.string.card_collapse)
     }
 
     override fun onPrepareAddPreference(preference: Preference): Boolean {
@@ -118,6 +164,10 @@ class SwitchPreferenceGroup(context: Context, attrs: AttributeSet) : PreferenceG
                 notifyChanged()
             }
         }
+        // After the state settles, not before: the chevron only belongs on a
+        // card that is showing something, so it follows the switch as well as
+        // its own state.
+        refreshCollapseToggle()
     }
 
     private fun animateHeaderState(selected: Boolean) {
@@ -154,7 +204,7 @@ class SwitchPreferenceGroup(context: Context, attrs: AttributeSet) : PreferenceG
         children.forEach {
             val allowed = (childVisibilityFilter?.invoke(it) != false) &&
                     !(hideInfo && it.key == KEY_SECTION_INFO)
-            it.isVisible = visible && allowed
+            it.isVisible = visible && !collapsed && allowed
         }
     }
 
