@@ -1,4 +1,4 @@
-package me.timschneeberger.rootlessjamesdsp.interop
+﻿package me.timschneeberger.rootlessjamesdsp.interop
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -201,6 +201,11 @@ class JamesDspRemoteEngine(
 
     override fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean =
         sendForkEffect(PARAM_TAPE, enable, floatArrayOf(wow, flutter, saturation, bias, headBump, mix))
+
+    override fun setVinyl(enable: Boolean, surface: Float, crackle: Float, crackleSize: Float, pops: Float, clicks: Float, sizzle: Float, hiss: Float, prickle: Float, rumble: Float, wear: Float, follow: Float, mix: Float): Boolean =
+        sendForkEffect(PARAM_VINYL, enable, floatArrayOf(
+            surface, crackle, crackleSize, pops, clicks, sizzle,
+            hiss, prickle, rumble, wear, follow, mix))
 
     override fun setExciter(enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean =
         sendForkEffect(PARAM_EXCITER, enable, floatArrayOf(
@@ -493,6 +498,7 @@ class JamesDspRemoteEngine(
         private const val PARAM_EXCITER = PARAM_FORK_BASE + 17
         private const val PARAM_TAPE = PARAM_FORK_BASE + 18
         private const val PARAM_MAXIMIZER = PARAM_FORK_BASE + 19
+        private const val PARAM_VINYL = PARAM_FORK_BASE + 20
         /** Enable flags live one hundred above their value id. */
         private const val PARAM_FORK_ENABLE_OFFSET = 100
 

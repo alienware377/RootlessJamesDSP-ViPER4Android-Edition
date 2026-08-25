@@ -605,6 +605,19 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setTape(JNIEnv 
 }
 
 extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setVinyl(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat surface, jfloat crackle, jfloat crackleSize,
+        jfloat pops, jfloat clicks, jfloat sizzle, jfloat hiss, jfloat prickle,
+        jfloat rumble, jfloat wear, jfloat follow, jfloat mix)
+{
+    DECLARE_DSP_B
+    VinylSetParam(dsp, surface, crackle, crackleSize, pops, clicks, sizzle,
+                  hiss, prickle, rumble, wear, follow, mix);
+    if (enable) VinylEnable(dsp); else VinylDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
 Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setExciter(JNIEnv *env, jobject obj, jlong self,
         jboolean enable, jfloat f1, jfloat f2, jfloat f3,
         jfloat a1, jfloat a2, jfloat a3, jfloat a4,

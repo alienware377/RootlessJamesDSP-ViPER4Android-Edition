@@ -1,4 +1,4 @@
-#ifndef _EEL_JDSP_HD_H_
+﻿#ifndef _EEL_JDSP_HD_H_
 #define _EEL_JDSP_HD_H_
 #include <stdint.h>
 #include "../cpthread.h"
@@ -302,6 +302,34 @@ typedef struct
 	float fs, mix;
 	int transparent;
 } Imaging;
+typedef struct
+{
+	float b0, b1, b2, a1, a2;
+	float z1[2], z2[2];
+} VinylStage;
+typedef struct
+{
+	// Shared filters: one record, not nine unrelated noises stacked up.
+	VinylStage surfaceLp, surfaceHp, crackleLp, prickleBp, rumbleLp, hissLp;
+	// The only stage that touches the music rather than adding to it.
+	VinylStage wearShelf;
+	// Settings, 0..1 except wear which stays in dB.
+	float surface, crackle, crackleSize, pops, clicks, sizzle;
+	float hiss, prickle, rumble, wearDb, follow, mix;
+	// Per-sample probability that each kind of event fires, derived from the
+	// settings and the rate so a record crackles at the same speed whatever
+	// it is sampled at.
+	float crackleRate, popRate, clickRate, sizzleRate, prickleRate;
+	// Decaying stores, one per event kind, plus their decay factors.
+	float crackleEnv, popEnv, clickEnv, sizzleEnv, prickleEnv;
+	float crackleDecay, popDecay, clickDecay, prickleDecay;
+	// Programme follower, so the bed can track the music instead of crackling
+	// through a silence.
+	float followEnv, followAtt, followRel;
+	unsigned int rng;
+	float fs;
+	int transparent;
+} Vinyl;
 #define DYNEQ_MAX_BANDS 8
 // freq, Q, threshold dB, ratio, attack ms, release ms, range dB, mode
 #define DYNEQ_VALUES_PER_BAND 8
@@ -877,6 +905,7 @@ enum JdspEffectId
 	JDSP_EFX_LOWEND,
 	JDSP_EFX_EXCITER,
 	JDSP_EFX_TAPE,
+	JDSP_EFX_VINYL,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -1057,6 +1086,8 @@ typedef struct dspsys
 	Exciter exciter;
 	int tapeEnabled;
 	Tape tape;
+	int vinylEnabled;
+	Vinyl vinyl;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1245,7 +1276,14 @@ extern void DynamicEqSetParam(JamesDSPLib *jdsp, float mixPct, int msMode);
 extern void DynamicEqProcess(JamesDSPLib *jdsp, size_t n);
 extern void DynamicEqEnable(JamesDSPLib *jdsp);
 extern void DynamicEqDisable(JamesDSPLib *jdsp);
-// Redesign at the current jdsp->fs from settings already held. All six MUST be
+extern void VinylSetParam(JamesDSPLib *jdsp, float surfacePct, float cracklePct,
+	float crackleSizePct, float popsPct, float clicksPct, float sizzlePct,
+	float hissPct, float pricklePct, float rumblePct, float wearDb,
+	float followPct, float mixPct);
+extern void VinylProcess(JamesDSPLib *jdsp, size_t n);
+extern void VinylEnable(JamesDSPLib *jdsp);
+extern void VinylDisable(JamesDSPLib *jdsp);
+// Redesign at the current jdsp->fs from settings already held. All seven MUST be
 // called with the lock already held and take none themselves - jdsp_lock is not
 // recursive. JamesDSPSetSampleRate is the only caller.
 extern void TapeRefresh(JamesDSPLib *jdsp);
@@ -1254,6 +1292,7 @@ extern void LowEndRefresh(JamesDSPLib *jdsp);
 extern void TransientRefresh(JamesDSPLib *jdsp);
 extern void ImagingRefresh(JamesDSPLib *jdsp);
 extern void DynamicEqRefresh(JamesDSPLib *jdsp);
+extern void VinylRefresh(JamesDSPLib *jdsp);
 extern void MultibandDistSetBands(JamesDSPLib *jdsp, const float *bands, int count);
 extern void MultibandDistSetParam(JamesDSPLib *jdsp,
 	int routing, int model,

@@ -320,6 +320,19 @@
     <string name="key_tape_bias" translatable="false">tape_bias</string>
     <string name="key_tape_head_bump" translatable="false">tape_head_bump</string>
     <string name="key_tape_mix" translatable="false">tape_mix</string>
+    <string name="key_vinyl_enable" translatable="false">vinyl_enable</string>
+    <string name="key_vinyl_surface" translatable="false">vinyl_surface</string>
+    <string name="key_vinyl_crackle" translatable="false">vinyl_crackle</string>
+    <string name="key_vinyl_crackle_size" translatable="false">vinyl_crackle_size</string>
+    <string name="key_vinyl_pops" translatable="false">vinyl_pops</string>
+    <string name="key_vinyl_clicks" translatable="false">vinyl_clicks</string>
+    <string name="key_vinyl_sizzle" translatable="false">vinyl_sizzle</string>
+    <string name="key_vinyl_hiss" translatable="false">vinyl_hiss</string>
+    <string name="key_vinyl_prickle" translatable="false">vinyl_prickle</string>
+    <string name="key_vinyl_rumble" translatable="false">vinyl_rumble</string>
+    <string name="key_vinyl_wear" translatable="false">vinyl_wear</string>
+    <string name="key_vinyl_follow" translatable="false">vinyl_follow</string>
+    <string name="key_vinyl_mix" translatable="false">vinyl_mix</string>
     <string name="key_exciter_enable" translatable="false">exciter_enable</string>
     <string name="key_exciter_freq1" translatable="false">exciter_freq1</string>
     <string name="key_exciter_freq2" translatable="false">exciter_freq2</string>

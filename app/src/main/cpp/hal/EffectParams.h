@@ -154,6 +154,13 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
         break;
     case 26118: if (on) TapeEnable(d); else TapeDisable(d); break;
 
+    case 26020:
+        if (fn >= 12)
+            VinylSetParam(d, fv[0], fv[1], fv[2], fv[3], fv[4], fv[5],
+                          fv[6], fv[7], fv[8], fv[9], fv[10], fv[11]);
+        break;
+    case 26120: if (on) VinylEnable(d); else VinylDisable(d); break;
+
     /* The maximiser. Present in this build all along - the HAL library is
        compiled from the same source glob as the app's, so maximizer.c has
        always been linked in here - but with no case to reach it, and a sender

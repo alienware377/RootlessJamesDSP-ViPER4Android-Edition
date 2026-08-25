@@ -1,4 +1,4 @@
-package me.timschneeberger.rootlessjamesdsp.utils
+﻿package me.timschneeberger.rootlessjamesdsp.utils
 
 import android.content.Context
 import me.timschneeberger.rootlessjamesdsp.R
@@ -42,6 +42,7 @@ object V4aMode {
         Constants.PREF_LOWEND to R.string.key_lowend_enable,
         Constants.PREF_EXCITER to R.string.key_exciter_enable,
         Constants.PREF_TAPE to R.string.key_tape_enable,
+        Constants.PREF_VINYL to R.string.key_vinyl_enable,
         Constants.PREF_GEQ to R.string.key_geq_enable,
         Constants.PREF_PEQ to R.string.key_peq_enable,
         Constants.PREF_LIVEPROG to R.string.key_liveprog_enable,

@@ -1,4 +1,4 @@
-package me.timschneeberger.rootlessjamesdsp.interop
+﻿package me.timschneeberger.rootlessjamesdsp.interop
 
 import android.content.Context
 import android.content.Intent
@@ -153,6 +153,9 @@ class JamesDspLocalEngine(context: Context, callbacks: JamesDspWrapper.JamesDspC
 
     override fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean =
         JamesDspWrapper.setTape(handle, enable, wow, flutter, saturation, bias, headBump, mix)
+
+    override fun setVinyl(enable: Boolean, surface: Float, crackle: Float, crackleSize: Float, pops: Float, clicks: Float, sizzle: Float, hiss: Float, prickle: Float, rumble: Float, wear: Float, follow: Float, mix: Float): Boolean =
+        JamesDspWrapper.setVinyl(handle, enable, surface, crackle, crackleSize, pops, clicks, sizzle, hiss, prickle, rumble, wear, follow, mix)
 
     override fun setExciter(enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean =
         JamesDspWrapper.setExciter(handle, enable, f1, f2, f3, a1, a2, a3, a4, character, drive, mix)

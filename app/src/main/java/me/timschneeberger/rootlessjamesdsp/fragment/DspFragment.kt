@@ -1,4 +1,4 @@
-package me.timschneeberger.rootlessjamesdsp.fragment
+﻿package me.timschneeberger.rootlessjamesdsp.fragment
 
 import android.animation.LayoutTransition
 import android.content.Intent
@@ -245,6 +245,7 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
         CardEntry(R.id.card_lowend, R.string.lowend_enable),
         CardEntry(R.id.card_exciter, R.string.exciter_enable),
         CardEntry(R.id.card_tape, R.string.tape_enable),
+        CardEntry(R.id.card_vinyl, R.string.vinyl_enable),
         CardEntry(R.id.card_agc, R.string.v4a_agc_title),
         CardEntry(R.id.card_eq, R.string.v4a_eq_title),
         CardEntry(R.id.card_geq, R.string.geq_enable),
@@ -314,6 +315,7 @@ class DspFragment : Fragment(), SharedPreferences.OnSharedPreferenceChangeListen
         CardSpec(R.id.card_lowend, Constants.PREF_LOWEND, R.xml.dsp_lowend_preferences),
         CardSpec(R.id.card_exciter, Constants.PREF_EXCITER, R.xml.dsp_exciter_preferences),
         CardSpec(R.id.card_tape, Constants.PREF_TAPE, R.xml.dsp_tape_preferences),
+        CardSpec(R.id.card_vinyl, Constants.PREF_VINYL, R.xml.dsp_vinyl_preferences),
         CardSpec(R.id.card_liveprog2, Constants.PREF_LIVEPROG2, R.xml.dsp_liveprog2_preferences),
         CardSpec(R.id.card_liveprog3, Constants.PREF_LIVEPROG3, R.xml.dsp_liveprog3_preferences),
         CardSpec(R.id.card_liveprog4, Constants.PREF_LIVEPROG4, R.xml.dsp_liveprog4_preferences),

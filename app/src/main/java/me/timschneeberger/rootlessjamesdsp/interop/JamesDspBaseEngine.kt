@@ -1,4 +1,4 @@
-package me.timschneeberger.rootlessjamesdsp.interop
+﻿package me.timschneeberger.rootlessjamesdsp.interop
 
 import android.content.Context
 import android.content.Intent
@@ -181,6 +181,21 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrStereoLink = cache.get(R.string.key_maxr_stereo_link, 100f)
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
             val maxrClipShape = cache.get(R.string.key_maxr_clip_shape, "0").toInt()
+
+            cache.select(Constants.PREF_VINYL)
+            val vnEnabled = cache.get(R.string.key_vinyl_enable, false)
+            val vnSurface = cache.get(R.string.key_vinyl_surface, 30f)
+            val vnCrackle = cache.get(R.string.key_vinyl_crackle, 35f)
+            val vnCrackleSize = cache.get(R.string.key_vinyl_crackle_size, 30f)
+            val vnPops = cache.get(R.string.key_vinyl_pops, 12f)
+            val vnClicks = cache.get(R.string.key_vinyl_clicks, 10f)
+            val vnSizzle = cache.get(R.string.key_vinyl_sizzle, 0f)
+            val vnHiss = cache.get(R.string.key_vinyl_hiss, 15f)
+            val vnPrickle = cache.get(R.string.key_vinyl_prickle, 8f)
+            val vnRumble = cache.get(R.string.key_vinyl_rumble, 20f)
+            val vnWear = cache.get(R.string.key_vinyl_wear, 2f)
+            val vnFollow = cache.get(R.string.key_vinyl_follow, 60f)
+            val vnMix = cache.get(R.string.key_vinyl_mix, 100f)
 
             cache.select(Constants.PREF_TAPE)
             val tpEnabled = cache.get(R.string.key_tape_enable, false)
@@ -424,6 +439,11 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                     )
                     Constants.PREF_TAPE -> setTape(
                         tpEnabled, tpWow, tpFlutter, tpSat, tpBias, tpBump, tpMix
+                    )
+                    Constants.PREF_VINYL -> setVinyl(
+                        vnEnabled, vnSurface, vnCrackle, vnCrackleSize, vnPops,
+                        vnClicks, vnSizzle, vnHiss, vnPrickle, vnRumble, vnWear,
+                        vnFollow, vnMix
                     )
                     Constants.PREF_EXCITER -> setExciter(
                         exEnabled, exF1, exF2, exF3, exA1, exA2, exA3, exA4,
@@ -812,6 +832,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
     }
 
     abstract fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean
+    abstract fun setVinyl(enable: Boolean, surface: Float, crackle: Float, crackleSize: Float, pops: Float, clicks: Float, sizzle: Float, hiss: Float, prickle: Float, rumble: Float, wear: Float, follow: Float, mix: Float): Boolean
     abstract fun setExciter(enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean
     abstract fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean
     abstract fun setTransient(enable: Boolean, freqLow: Float, freqHigh: Float, attackLow: Float, sustainLow: Float, attackMid: Float, sustainMid: Float, attackHigh: Float, sustainHigh: Float, range: Float, mix: Float): Boolean
@@ -902,7 +923,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
 
 }
 
-// x1, x2, y1, y2, sideGainX, sideGainY — from the ViperFX DynamicBass presets
+// x1, x2, y1, y2, sideGainX, sideGainY â€” from the ViperFX DynamicBass presets
 internal val vdynBassPresets = arrayOf(
     floatArrayOf(140f,6200f,40f,60f,10f,80f),
     floatArrayOf(180f,5800f,55f,80f,10f,70f),

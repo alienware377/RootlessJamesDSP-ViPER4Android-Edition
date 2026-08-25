@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -354,7 +354,7 @@ static const int jdspDefaultChain[] =
 	JDSP_EFX_SPECTRUMEXT, JDSP_EFX_CLARITY, JDSP_EFX_AGC,
 	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY, JDSP_EFX_MULTIBANDDIST,
 	// Colour last, but still ahead of the limiter.
-	JDSP_EFX_TAPE,
+	JDSP_EFX_TAPE, JDSP_EFX_VINYL,
 	JDSP_EFX_MAXIMIZER
 };
 
@@ -589,6 +589,11 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 	case JDSP_EFX_TAPE:
 		jdsp_lock(jdsp);
 		if (jdsp->tapeEnabled) TapeProcess(jdsp, n);
+		jdsp_unlock(jdsp);
+		break;
+	case JDSP_EFX_VINYL:
+		jdsp_lock(jdsp);
+		if (jdsp->vinylEnabled) VinylProcess(jdsp, n);
 		jdsp_unlock(jdsp);
 		break;
 	default:
@@ -1531,6 +1536,14 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	// A worn but working machine: audible wobble, gentle saturation, the head
 	// bump that makes tape masters sound weightier than the mix did.
 	TapeSetParam(jdsp, 25.0f, 30.0f, 35.0f, -20.0f, 3.0f, 100.0f);
+	jdsp->vinylEnabled = 0;
+	// A record played a lot but looked after: quiet surface, steady crackle, the
+	// occasional pop, a little rumble underneath. Deliberately short on pops and
+	// clicks, which are what make a record sound broken rather than old, and no
+	// sizzle at all since that is a wet or ruined disc. Follow at 60 so a paused
+	// phone is not left crackling to itself.
+	VinylSetParam(jdsp, 30.0f, 35.0f, 30.0f, 12.0f, 10.0f, 0.0f,
+		15.0f, 8.0f, 20.0f, 2.0f, 60.0f, 100.0f);
 	jdsp->exciterEnabled = 0;
 	// Weight underneath, a touch through the mids, air on top - and a valve
 	// character so the added harmonics are even rather than edgy.
@@ -1687,6 +1700,7 @@ void JamesDSPSetSampleRate(JamesDSPLib *jdsp, float new_sample_rate, int forceRe
 	TransientRefresh(jdsp);
 	ImagingRefresh(jdsp);
 	DynamicEqRefresh(jdsp);
+	VinylRefresh(jdsp);
 	jdsp_unlock(jdsp);
 }
 void JamesDSPReleaseEffectBuffers(JamesDSPLib *jdsp)

@@ -1,4 +1,4 @@
-package me.timschneeberger.rootlessjamesdsp.utils
+﻿package me.timschneeberger.rootlessjamesdsp.utils
 
 import me.timschneeberger.rootlessjamesdsp.BuildConfig
 
@@ -48,6 +48,7 @@ object Constants {
     const val PREF_LOWEND = "dsp_lowend"
     const val PREF_EXCITER = "dsp_exciter"
     const val PREF_TAPE = "dsp_tape"
+    const val PREF_VINYL = "dsp_vinyl"
     const val PREF_CHAIN_ORDER = "dsp_chain_order"
     const val PREF_FILELIBRARY = "dsp_filelibrary"
     const val KEY_CHAIN_ORDER = "order"
