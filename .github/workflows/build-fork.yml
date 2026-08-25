@@ -23,16 +23,17 @@ jobs:
           name: RootlessViPER4Android-release
           path: app/build/outputs/apk/rootlessFdroid/release/*.apk
 
-      # Root testers need the root-flavour APK, which is a different package
-      # (james.dsp.v4a) and installs alongside the rootless build.
-      - name: Build root release APK
-        run: ./gradlew assembleRootFdroidRelease --no-daemon
+      # Root testers need the rootful APK, which is a different package
+      # (com.alienware377.viper4android.rootful) and installs alongside the
+      # rootless build.
+      - name: Build rootful release APK
+        run: ./gradlew assembleRootfulFdroidRelease --no-daemon
 
-      - name: Upload root APK
+      - name: Upload rootful APK
         uses: actions/upload-artifact@v4
         with:
-          name: RootlessViPER4Android-root-release
-          path: app/build/outputs/apk/rootFdroid/release/*.apk
+          name: RootfulViPER4Android-release
+          path: app/build/outputs/apk/rootfulFdroid/release/*.apk
 
       # The Magisk module carries this fork's engine as a system-wide effect,
       # so root mode runs our effects rather than the stock JamesDSP set.

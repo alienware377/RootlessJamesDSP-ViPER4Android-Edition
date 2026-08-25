@@ -1,4 +1,4 @@
-import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
+﻿import com.google.firebase.crashlytics.buildtools.gradle.CrashlyticsExtension
 import java.util.Base64
 
 plugins {
@@ -16,7 +16,10 @@ android {
 
     val SUPPORTED_ABIS = setOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
     compileSdk = AndroidConfig.compileSdk
-    project.setProperty("archivesBaseName", "RootlessViPER4Android-v${AndroidConfig.versionName}")
+    // Neutral on purpose: this is project-wide, so it cannot say "Rootless"
+    // without stamping that onto the rooted build's file names too. The variant
+    // part of each output already reads rootless-... or rootful-...
+    project.setProperty("archivesBaseName", "ViPER4Android-v${AndroidConfig.versionName}")
 
     defaultConfig {
         targetSdk = AndroidConfig.targetSdk
@@ -62,7 +65,9 @@ android {
             manifestPlaceholders["crashlyticsCollectionEnabled"] = "false"
         }
         getByName("release") {
-            applicationIdSuffix = ".v4a"
+            // No suffix. Up to v2.8.2 a release appended .v4a to distinguish
+            // this fork from upstream's package; the identifiers now say
+            // viper4android themselves, so the suffix was only noise.
             manifestPlaceholders += mapOf("crashlyticsCollectionEnabled" to "true")
             configure<CrashlyticsExtension> {
                 nativeSymbolUploadEnabled = true
@@ -101,21 +106,25 @@ android {
             dimension = "version"
 
             manifestPlaceholders["label"] = "RootlessViPER4Android"
-            applicationId = "me.timschneeberger.rootlessjamesdsp"
+            applicationId = "com.alienware377.viper4android.rootless"
             AndroidConfig.minSdk = 29
             minSdk = AndroidConfig.minSdk
             buildConfigField("boolean", "ROOTLESS", "true")
             buildConfigField("boolean", "PLUGIN", "false")
         }
-        create("root") {
+        // Named "rootful" rather than "root" so every artefact this produces
+        // says so: the variant name reaches task names, output paths and APK
+        // file names, and calling the rooted build "Rootless...-root-..." was
+        // the single most confusing thing about the downloads.
+        create("rootful") {
             dimension = "version"
 
-            manifestPlaceholders["label"] = "JamesDSP"
+            manifestPlaceholders["label"] = "RootfulViPER4Android"
             // NOTE: archivesBaseName is a project-wide property, so setting it per
             // flavor makes the last-configured flavor win for every variant. The
-            // base name is set once above; the variant suffix (rootless-fdroid /
-            // root-fdroid) already distinguishes the outputs.
-            applicationId = "james.dsp"
+            // base name is set once above and deliberately says neither rootless
+            // nor rootful; the variant suffix distinguishes the outputs.
+            applicationId = "com.alienware377.viper4android.rootful"
             AndroidConfig.minSdk = 26
             minSdk = AndroidConfig.minSdk
             buildConfigField("boolean", "ROOTLESS", "false")
@@ -181,12 +190,12 @@ android {
 // Hooks to upload native symbols to crashlytics automatically
 afterEvaluate {
     getTasksByName("bundleRootlessFullRelease", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootlessFullRelease")
-    getTasksByName("bundleRootFullRelease", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootFullRelease")
+    getTasksByName("bundleRootfulFullRelease", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootfulFullRelease")
     getTasksByName("assembleRootlessFullRelease", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootlessFullRelease")
-    getTasksByName("assembleRootFullRelease", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootFullRelease")
+    getTasksByName("assembleRootfulFullRelease", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootfulFullRelease")
 
     getTasksByName("assembleRootlessFullPreview", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootlessFullRelease")
-    getTasksByName("assembleRootFullPreview", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootFullRelease")
+    getTasksByName("assembleRootfulFullPreview", false).firstOrNull()?.finalizedBy("uploadCrashlyticsSymbolFileRootfulFullRelease")
 }
 
 dependencies {
@@ -254,7 +263,7 @@ dependencies {
     implementation("com.github.tachiyomiorg:unifile:17bec43")
 
     // Root APIs
-    "rootImplementation"("com.github.topjohnwu.libsu:core:5.0.4")
+    "rootfulImplementation"("com.github.topjohnwu.libsu:core:5.0.4")
 
     // Hidden APIs
     implementation("dev.rikka.tools.refine:runtime:${AndroidConfig.rikkaRefineVersion}")
@@ -311,14 +320,15 @@ tasks.register("verifyLaunchAllowlist") {
         val packages = decodedSet("PKGNAME_REFS")
         val labels = decodedSet("APPNAME_REFS")
 
-        // applicationId per flavour, plus the suffix release builds carry
+        // applicationId per flavour, plus the .debug suffix debug builds carry.
+        // Release builds no longer add a suffix.
         val expected = listOf(
-            "me.timschneeberger.rootlessjamesdsp" to "RootlessViPER4Android",
-            "james.dsp" to "JamesDSP"
+            "com.alienware377.viper4android.rootless" to "RootlessViPER4Android",
+            "com.alienware377.viper4android.rootful" to "RootfulViPER4Android"
         )
         val missing = mutableListOf<String>()
         expected.forEach { (appId, label) ->
-            listOf(appId, "$appId.v4a").forEach { pkg ->
+            listOf(appId, "$appId.debug").forEach { pkg ->
                 if (pkg !in packages) {
                     val enc = Base64.getEncoder().encodeToString(pkg.toByteArray(Charsets.UTF_8))
                     missing += "package '$pkg' -> add \"$enc\" to PKGNAME_REFS"

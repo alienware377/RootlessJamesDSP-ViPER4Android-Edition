@@ -68,5 +68,5 @@ jobs:
       - name: Upload module
         uses: actions/upload-artifact@v4
         with:
-          name: RootlessViPER4Android-aidl-module
+          name: RootfulViPER4Android-aidl-module
           path: build/rv4a-effect-aidl.zip

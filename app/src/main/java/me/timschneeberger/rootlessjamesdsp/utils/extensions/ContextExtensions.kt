@@ -168,13 +168,21 @@ object ContextExtensions {
     }
 
     // Very simple & naive app cloner checks; please don't use multiple instances at once
-    private val PKGNAME_REFS = setOf("bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3A=",
+    private val PKGNAME_REFS = setOf(
+        // This fork's own identifiers, from v3.35.0 onwards.
+        "Y29tLmFsaWVud2FyZTM3Ny52aXBlcjRhbmRyb2lkLnJvb3RsZXNz",
+        "Y29tLmFsaWVud2FyZTM3Ny52aXBlcjRhbmRyb2lkLnJvb3RsZXNzLmRlYnVn",
+        "Y29tLmFsaWVud2FyZTM3Ny52aXBlcjRhbmRyb2lkLnJvb3RmdWw=",
+        "Y29tLmFsaWVud2FyZTM3Ny52aXBlcjRhbmRyb2lkLnJvb3RmdWwuZGVidWc=",
+        // The identifiers used up to v2.8.2, kept so an older build still
+        // launches. They cost nothing, and dropping them would strand anyone
+        // who has not moved across.
+        "bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3A=",
         "bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3AuZGVidWc=",
         "amFtZXMuZHNw", "amFtZXMuZHNwLmRlYnVn", "bWUudGltc2NobmVlYmVyZ2VyLnJvb3RsZXNzamFtZXNkc3AudjRh",
-        // Root flavour of this fork: james.dsp + the .v4a suffix every build
-        // carries. Without it the launch check fails with code 1.
         "amFtZXMuZHNwLnY0YQ==")
-    private val APPNAME_REFS = setOf("Um9vdGxlc3NKYW1lc0RTUA==", "SmFtZXNEU1A=", "Um9vdGxlc3NWaVBFUjRBbmRyb2lk")
+    private val APPNAME_REFS = setOf("Um9vdGxlc3NKYW1lc0RTUA==", "SmFtZXNEU1A=",
+        "Um9vdGxlc3NWaVBFUjRBbmRyb2lk", "Um9vdGZ1bFZpUEVSNEFuZHJvaWQ=")
     fun Context.check(): Int {
         val appName = getAppName()
         if(isPlugin()) return 0

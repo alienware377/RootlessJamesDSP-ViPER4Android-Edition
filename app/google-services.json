@@ -1,184 +1,300 @@
-{
-  "project_info": {
-    "project_number": "1418102932",
-    "project_id": "rootlessjamesdsp",
-    "storage_bucket": "rootlessjamesdsp.appspot.com"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1418102932:android:709f97bf213439039c4c81",
-        "android_client_info": {
-          "package_name": "james.dsp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1418102932:android:00044677a03ce0099c4c81",
-        "android_client_info": {
-          "package_name": "james.dsp.debug"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1418102932:android:e5a20ec31bf9c2b19c4c81",
-        "android_client_info": {
-          "package_name": "me.timschneeberger.rootlessjamesdsp"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1418102932:android:e37e4526a91d86ba9c4c81",
-        "android_client_info": {
-          "package_name": "me.timschneeberger.rootlessjamesdsp.debug"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1418102932:android:e5a20ec31bf9c2b19c4c81",
-        "android_client_info": {
-          "package_name": "me.timschneeberger.rootlessjamesdsp.v4a"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1418102932:android:709f97bf213439039c4c81",
-        "android_client_info": {
-          "package_name": "james.dsp.v4a"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    }
-  ],
-  "configuration_version": "1"
+﻿{
+    "project_info":  {
+                         "project_number":  "1418102932",
+                         "project_id":  "rootlessjamesdsp",
+                         "storage_bucket":  "rootlessjamesdsp.appspot.com"
+                     },
+    "client":  [
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:709f97bf213439039c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "james.dsp"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:00044677a03ce0099c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "james.dsp.debug"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:e5a20ec31bf9c2b19c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "me.timschneeberger.rootlessjamesdsp"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:e37e4526a91d86ba9c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "me.timschneeberger.rootlessjamesdsp.debug"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:e5a20ec31bf9c2b19c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "me.timschneeberger.rootlessjamesdsp.v4a"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:709f97bf213439039c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "james.dsp.v4a"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:e37e4526a91d86ba9c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "com.alienware377.viper4android.rootless.debug"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:709f97bf213439039c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "com.alienware377.viper4android.rootful"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:00044677a03ce0099c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "com.alienware377.viper4android.rootful.debug"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   },
+                   {
+                       "client_info":  {
+                                           "mobilesdk_app_id":  "1:1418102932:android:e5a20ec31bf9c2b19c4c81",
+                                           "android_client_info":  {
+                                                                       "package_name":  "com.alienware377.viper4android.rootless"
+                                                                   }
+                                       },
+                       "oauth_client":  [
+                                            {
+                                                "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                "client_type":  3
+                                            }
+                                        ],
+                       "api_key":  [
+                                       {
+                                           "current_key":  "AIzaSyAmOKROX4dY-SuRJk5vd046_6zW6kV_UL8"
+                                       }
+                                   ],
+                       "services":  {
+                                        "appinvite_service":  {
+                                                                  "other_platform_oauth_client":  [
+                                                                                                      {
+                                                                                                          "client_id":  "1418102932-44cspu1cfn147b8gr84ov1f023lk8msc.apps.googleusercontent.com",
+                                                                                                          "client_type":  3
+                                                                                                      }
+                                                                                                  ]
+                                                              }
+                                    }
+                   }
+               ],
+    "configuration_version":  "1"
 }
