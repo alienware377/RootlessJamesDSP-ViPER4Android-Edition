@@ -366,6 +366,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.card.MaterialCardView>
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="1dp">
+
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/card_balance"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </com.google.android.material.card.MaterialCardView>
         <TextView
             android:id="@+id/v4a_section_header"
             android:layout_width="match_parent"

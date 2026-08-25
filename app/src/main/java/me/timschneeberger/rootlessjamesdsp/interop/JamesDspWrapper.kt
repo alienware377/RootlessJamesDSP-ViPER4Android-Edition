@@ -1,4 +1,4 @@
-package me.timschneeberger.rootlessjamesdsp.interop
+﻿package me.timschneeberger.rootlessjamesdsp.interop
 
 import me.timschneeberger.rootlessjamesdsp.interop.structure.EelVmVariable
 import me.timschneeberger.rootlessjamesdsp.model.ProcessorMessage
@@ -49,6 +49,7 @@ object JamesDspWrapper {
     external fun setMultibandDistBands(self: JamesDspHandle, bands: FloatArray?): Boolean
     external fun setEchoDelay(self: JamesDspHandle, enable: Boolean, input: Float, time: Float, smoothing: Float, offset: Float, keepPitch: Boolean, model: Int, stereo: Float, feedback: Float, cutoff: Float, res: Float, filter: Int, smpRate: Float, bits: Float, modRate: Float, modTime: Float, modCutoff: Float, diffusion: Float, spread: Float, distMode: Int, distLevel: Float, knee: Float, symmetry: Float, tone: Float, wet: Float, dry: Float): Boolean
     external fun setTape(self: JamesDspHandle, enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean
+    external fun setBalance(self: JamesDspHandle, enable: Boolean, balance: Float, swap: Boolean, mono: Float): Boolean
     external fun setVinyl(self: JamesDspHandle, enable: Boolean, surface: Float, crackle: Float, crackleSize: Float, pops: Float, clicks: Float, sizzle: Float, hiss: Float, prickle: Float, rumble: Float, wear: Float, follow: Float, mix: Float): Boolean
     external fun setExciter(self: JamesDspHandle, enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean
     external fun setLowEnd(self: JamesDspHandle, enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean

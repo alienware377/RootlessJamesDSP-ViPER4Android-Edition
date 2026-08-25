@@ -40,6 +40,7 @@ object EffectCards {
         Constants.PREF_EXCITER to "card_exciter",
         Constants.PREF_TAPE to "card_tape",
         Constants.PREF_VINYL to "card_vinyl",
+        Constants.PREF_BALANCE to "card_balance",
         Constants.PREF_AGC to "card_agc",
         Constants.PREF_EQ to "card_eq",
         Constants.PREF_GEQ to "card_geq",

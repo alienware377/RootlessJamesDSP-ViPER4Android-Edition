@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Shared parameter dispatch.
  *
  * Both HALs receive the same ids from the app and must act on them identically:
@@ -160,6 +160,12 @@ static inline void applyParam(JamesDSPLib *d, int32_t id, int16_t sv, bool on,
                           fv[6], fv[7], fv[8], fv[9], fv[10], fv[11]);
         break;
     case 26120: if (on) VinylEnable(d); else VinylDisable(d); break;
+
+    case 26021:
+        if (fn >= 3)
+            BalanceSetParam(d, fv[0], (int)(fv[1] + 0.5f), fv[2]);
+        break;
+    case 26121: if (on) BalanceEnable(d); else BalanceDisable(d); break;
 
     /* The maximiser. Present in this build all along - the HAL library is
        compiled from the same source glob as the app's, so maximizer.c has

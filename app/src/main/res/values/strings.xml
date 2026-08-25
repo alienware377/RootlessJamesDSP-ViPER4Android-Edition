@@ -69,7 +69,7 @@
     <string name="no_activity_found">No Activity found to handle action</string>
     <string name="permission_allowed">Allowed</string>
     <string name="permission_not_allowed">Not allowed</string>
-    <string name="preparing">Preparing…</string>
+    <string name="preparing">Preparingâ€¦</string>
     <string name="error_projection_api_missing">Your device manufacturer has disabled the internal audio recording APIs. This application cannot work without them.</string>
 
     <!-- Main screen -->
@@ -121,7 +121,7 @@
     <string name="peq_info">Fully adjustable parametric EQ: drag any point to move its frequency (left/right) and gain (up/down). Pinch with two fingers on a selected point to widen or narrow its bandwidth (Q). Tap the band count to add or remove bands.</string>
     <string name="peq_undo">Undo</string>
     <string name="peq_redo">Redo</string>
-    <string name="peq_hint_interactive">Drag a point to move it · pinch to change its width · long-press empty space to add a band, or a point to delete it</string>
+    <string name="peq_hint_interactive">Drag a point to move it Â· pinch to change its width Â· long-press empty space to add a band, or a point to delete it</string>
     <string name="peq_enable">Parametric equalizer</string>
     <string name="peq_bands">Parametric EQ bands</string>
     <string name="title_activity_peq">Parametric equalizer</string>
@@ -194,11 +194,11 @@
     <string name="convolver_sample_rate_files_summary">Assign a different impulse response to each output sample rate</string>
     <string name="convolver_sample_rate_files_count">%1$d sample-rate assignments</string>
     <string name="convolver_processing_rate">Current processing</string>
-    <string name="convolver_processing_rate_status">%1$s kHz • Selected IR: %2$s</string>
+    <string name="convolver_processing_rate_status">%1$s kHz â€¢ Selected IR: %2$s</string>
     <string name="convolver_sample_rate_select_file">Impulse response for %1$s kHz</string>
     <string name="convolver_sample_rate_use_default">None (use default impulse response)</string>
     <string name="convolver_sample_rate_unassigned">None (default)</string>
-    <string name="convolver_sample_rate_processing_status">Processing: %1$s kHz • Selected IR: %2$s</string>
+    <string name="convolver_sample_rate_processing_status">Processing: %1$s kHz â€¢ Selected IR: %2$s</string>
     <string name="convolver_sample_rate_processing_inactive">Processing inactive</string>
     <string name="convolver_sample_rate_label">%1$s kHz - %2$s</string>
     <string name="convolver_sample_rate_disabled">Convolver disabled</string>
@@ -253,8 +253,8 @@
     <string name="limiter_mode_soft">Soft saturation (loudness maximizer)</string>
     <string name="limiter_mode_off">Off (may clip!)</string>
     <string name="bassex_enable">Bass exciter (psychoacoustic bass)</string>
-    <string name="bassex_info_title">ℹ️ What is this?</string>
-    <string name="bassex_info">Makes bass sound louder and chunkier without using extra volume headroom. It listens to your sub-bass and generates matching overtones your ears interpret as more bass — great with small speakers and for staying loud without clipping.</string>
+    <string name="bassex_info_title">â„¹ï¸ What is this?</string>
+    <string name="bassex_info">Makes bass sound louder and chunkier without using extra volume headroom. It listens to your sub-bass and generates matching overtones your ears interpret as more bass â€” great with small speakers and for staying loud without clipping.</string>
     <string name="bassex_cutoff">Bass range</string>
     <string name="bassex_cutoff_summary">Sounds below this frequency get enhanced</string>
     <string name="bassex_intensity">Intensity</string>
@@ -262,23 +262,23 @@
     <string name="bassex_mix">Amount</string>
     <string name="bassex_mix_summary">How much of the effect is blended into the music</string>
     <string name="compander_enable_v2">Auto-loudness (multiband compressor)</string>
-    <string name="compander_info_title">ℹ️ What is this?</string>
-    <string name="compander_info">This is a multiband compressor/expander: it splits the sound into frequency bands and evens out volume differences — quiet parts come up, loud peaks get tamed. Push the graph up to make a frequency range consistently louder and fuller.
+    <string name="compander_info_title">â„¹ï¸ What is this?</string>
+    <string name="compander_info">This is a multiband compressor/expander: it splits the sound into frequency bands and evens out volume differences â€” quiet parts come up, loud peaks get tamed. Push the graph up to make a frequency range consistently louder and fuller.
 
-• Reaction speed: how fast it responds to volume changes. Faster = punchier but can distort deep bass.
-• Detail level: how finely it analyzes frequencies. Higher = more precise, uses more battery.
-• Analysis engine: the math used to split frequencies. The default is fine — Wavelets treat bass in a more natural, ear-like way.
-• Graph: drag bands up (+) to boost leveling loudness in that range, down (−) to reduce.</string>
+â€¢ Reaction speed: how fast it responds to volume changes. Faster = punchier but can distort deep bass.
+â€¢ Detail level: how finely it analyzes frequencies. Higher = more precise, uses more battery.
+â€¢ Analysis engine: the math used to split frequencies. The default is fine â€” Wavelets treat bass in a more natural, ear-like way.
+â€¢ Graph: drag bands up (+) to boost leveling loudness in that range, down (âˆ’) to reduce.</string>
     <string name="compander_timeconstant_v2">Reaction speed</string>
     <string name="compander_granularity_v2">Detail level</string>
     <string name="compander_tftransforms_v2">Analysis engine (advanced)</string>
     <string name="spectrumext_enable">Spectrum extension (treble exciter)</string>
-    <string name="spectrumext_info_title">ℹ️ What is this?</string>
-    <string name="spectrumext_info">Restores sparkle and \"air\" to dull or compressed music. It listens to the upper mids and synthesizes new matching treble overtones above the chosen frequency — like ViPER4Android\'s Spectrum Extension.</string>
+    <string name="spectrumext_info_title">â„¹ï¸ What is this?</string>
+    <string name="spectrumext_info">Restores sparkle and \"air\" to dull or compressed music. It listens to the upper mids and synthesizes new matching treble overtones above the chosen frequency â€” like ViPER4Android\'s Spectrum Extension.</string>
     <string name="spectrumext_bark">Start frequency</string>
     <string name="spectrumext_bark_summary">New treble gets generated above this point</string>
     <string name="spectrumext_strength">Strength</string>
-    <string name="spectrumext_strength_summary">How much synthesized treble is mixed in — subtle is best</string>
+    <string name="spectrumext_strength_summary">How much synthesized treble is mixed in â€” subtle is best</string>
     <string name="bass_info">Boosts low frequencies with a smart filter that adapts to how much bass the music already has, keeping it clean instead of muddy.</string>
     <string name="tube_info">Simulates the warm, slightly saturated sound of vintage tube amplifiers. Adds gentle harmonic color.</string>
     <string name="stereowide_info">Makes the stereo image feel wider (or narrower) by adjusting the difference between the left and right channels.</string>
@@ -286,9 +286,9 @@
     <string name="reverb_info">Adds simulated room echo/space to the sound, from small room to concert hall.</string>
     <string name="output_info">Final volume stage. Post gain makes everything louder/quieter; the limiter decides what happens when audio would get too loud and distort. Soft saturation mode lets you push much louder while staying smooth.</string>
     <string name="ddc_info">Loads ViPER DDC (.vdc) correction files that reshape the sound for specific headphone models.</string>
-    <string name="convolver_info">Applies an impulse response (IRS/WAV) file — a sound \"fingerprint\" that can simulate speakers, rooms, or custom EQ curves with studio-grade accuracy.</string>
+    <string name="convolver_info">Applies an impulse response (IRS/WAV) file â€” a sound \"fingerprint\" that can simulate speakers, rooms, or custom EQ curves with studio-grade accuracy.</string>
     <string name="liveprog_info">Runs custom EEL2 audio scripts for effects the app doesn\'t have built in. For tinkerers!</string>
-    <string name="section_info_title">ℹ️ What is this?</string>
+    <string name="section_info_title">â„¹ï¸ What is this?</string>
     <string name="section_info_tap_hint">Tap to learn what this section does</string>
     <string name="card_collapse">Hide this effect\'s settings</string>
     <string name="card_expand">Show this effect\'s settings</string>
@@ -304,18 +304,18 @@
     <string name="fieldsurround_strength">Surround strength</string>
     <string name="fieldsurround_mid">Mid image</string>
     <string name="agc_enable">Auto gain control (AGC)</string>
-    <string name="agc_info">Keeps volume consistent automatically — quiet songs get gently boosted toward your target level, loud ones are left alone. Slow and smooth, no pumping.</string>
+    <string name="agc_info">Keeps volume consistent automatically â€” quiet songs get gently boosted toward your target level, loud ones are left alone. Slow and smooth, no pumping.</string>
     <string name="agc_target">Target level</string>
     <string name="agc_maxboost">Maximum boost</string>
     <string name="hpsurround_enable">Headphone surround+ (lite)</string>
-    <string name="hpsurround_info">Pulls the sound out of the middle of your head and places it in front of you: head-shadowed crossfeed with realistic ear-to-ear timing, multi-tap early reflections with a short room tail, and stereo widening. Headphones only — try 60-90% strength. Inspired by ViPER\'s VHS+.</string>
+    <string name="hpsurround_info">Pulls the sound out of the middle of your head and places it in front of you: head-shadowed crossfeed with realistic ear-to-ear timing, multi-tap early reflections with a short room tail, and stereo widening. Headphones only â€” try 60-90% strength. Inspired by ViPER\'s VHS+.</string>
     <string name="hpsurround_strength">Effect strength</string>
     <string name="hpsurround_room">Room reflections</string>
     <string name="about_version_summary">%1$s (based on RootlessJamesDSP %2$s)</string>
     <string name="chain_order_title">Processing order</string>
-    <string name="chain_order_explainer">This is the order effects are applied to the audio — not the card order on screen. The output limiter always runs last.</string>
+    <string name="chain_order_explainer">This is the order effects are applied to the audio â€” not the card order on screen. The output limiter always runs last.</string>
     <string name="chain_order_reset">Reset</string>
-    <string name="chain_order_button">Processing order…</string>
+    <string name="chain_order_button">Processing orderâ€¦</string>
     <string name="liveprog_slot_2">Liveprog script 2</string>
     <string name="liveprog_slot_3">Liveprog script 3</string>
     <string name="liveprog_slot_4">Liveprog script 4</string>
@@ -327,10 +327,10 @@
     <string name="effect_reset_layout_confirm">Restore the default effect order and show all hidden effects?</string>
     <string name="effect_edit_layout">Customize layout</string>
     <string name="effect_edit_done">Done</string>
-    <string name="effect_edit_hint">Drag cards to reorder · tap the eye to hide · move a card past a group heading to change its group</string>
+    <string name="effect_edit_hint">Drag cards to reorder Â· tap the eye to hide Â· move a card past a group heading to change its group</string>
     <string name="effect_search_hint">Search effects</string>
     <string name="effect_search_empty">No effects match your search</string>
-    <string name="v4a_section_header">〰 ViPER4Android effects 〰</string>
+    <string name="v4a_section_header">ã€° ViPER4Android effects ã€°</string>
     <string name="fetcomp_enable">FET compressor</string>
     <string name="fetcomp_info">A fast, punchy studio-style compressor (like classic FET hardware): it tames peaks above the threshold so you can raise overall loudness. Lower threshold + higher ratio = more squeeze.</string>
     <string name="fetcomp_threshold">Threshold</string>
@@ -406,7 +406,7 @@
     <string name="v4a_limit_release">Limit release</string>
     <string name="v4a_fir_equalizer">FIR equalizer</string>
     <string name="v4a_playback_gain">Playback gain control</string>
-    <string name="filelib_search_hint">Search this library…</string>
+    <string name="filelib_search_hint">Search this libraryâ€¦</string>
     <string name="filelib_edit_layout">Edit layout</string>
     <string name="filelib_hide_all">Hide all</string>
     <string name="filelib_show_all">Show all</string>
@@ -414,22 +414,22 @@
     <string name="filelib_move_down">Move down</string>
     <string name="filelib_hide">Hide</string>
     <string name="filelib_more">More options</string>
-    <string name="filelib_move_to_group">Move to group…</string>
+    <string name="filelib_move_to_group">Move to groupâ€¦</string>
     <string name="filelib_no_group">No group (top of list)</string>
     <string name="filelib_download_title">Download from</string>
-    <string name="filelib_download_more">Download more…</string>
+    <string name="filelib_download_more">Download moreâ€¦</string>
     <string name="filelib_source_search">Search GitHub for sources</string>
     <string name="filelib_source_search_hint">Search terms, e.g. headphone name</string>
     <string name="filelib_source_add">Add a source</string>
-    <string name="filelib_source_add_hint">Paste a GitHub repository link, e.g. github.com/user/repo — every matching file in it becomes downloadable here. Long-press a source to remove it.</string>
+    <string name="filelib_source_add_hint">Paste a GitHub repository link, e.g. github.com/user/repo â€” every matching file in it becomes downloadable here. Long-press a source to remove it.</string>
     <string name="filelib_source_invalid">That doesn\'t look like a GitHub repository link</string>
     <string name="filelib_source_removed">Removed %1$s</string>
-    <string name="filelib_searching">Searching GitHub…</string>
-    <string name="filelib_loading_list">Fetching file list…</string>
+    <string name="filelib_searching">Searching GitHubâ€¦</string>
+    <string name="filelib_loading_list">Fetching file listâ€¦</string>
     <string name="filelib_all_downloaded">Everything from this source is already in your library</string>
     <string name="filelib_pick_files">%1$d new files available</string>
     <string name="filelib_download">Download</string>
-    <string name="filelib_downloading">Downloading %1$d file(s)…</string>
+    <string name="filelib_downloading">Downloading %1$d file(s)â€¦</string>
     <string name="filelib_downloaded">Downloaded %1$d file(s)</string>
     <string name="filelib_network_failed">Couldn\'t reach GitHub. Check your connection and try again.</string>
     <string name="vreverb_model">Room type</string>
@@ -479,7 +479,7 @@
     <string name="echo_open_panel">Open delay panel</string>
     <string name="echo_open_panel_summary">Knob controls for every parameter</string>
     <string name="echo_enable">Echo / delay</string>
-    <string name="echo_info">A full echo unit: repeats with feedback, a filter inside the feedback loop so each repeat gets darker, tape-style modulation, diffusion to smear the tail, and saturation. Ping-pong bounces repeats between your ears — lovely on headphones.</string>
+    <string name="echo_info">A full echo unit: repeats with feedback, a filter inside the feedback loop so each repeat gets darker, tape-style modulation, diffusion to smear the tail, and saturation. Ping-pong bounces repeats between your ears â€” lovely on headphones.</string>
     <string name="echo_time">Delay time</string>
     <string name="echo_feedback">Feedback</string>
     <string name="echo_model">Delay model</string>
@@ -501,7 +501,7 @@
     <string name="echo_wet">Wet signal</string>
     <string name="echo_dry">Dry signal</string>
     <string name="pitchshift_enable">Pitch shifter</string>
-    <string name="pitchshift_info">Shifts the pitch of everything up or down without changing playback speed — deep-voice, chipmunk, or subtle retunes in half-semitone steps. A slight watery shimmer at extreme settings is normal for real-time shifting.</string>
+    <string name="pitchshift_info">Shifts the pitch of everything up or down without changing playback speed â€” deep-voice, chipmunk, or subtle retunes in half-semitone steps. A slight watery shimmer at extreme settings is normal for real-time shifting.</string>
     <string name="pitchshift_semitones">Pitch shift</string>
     <string name="pitchshift_mix">Mix</string>
     <string name="v4a_tube_title">Tube simulator (6N1J)</string>
@@ -511,7 +511,7 @@
     <string name="v4a_hpsurround_title">Headphone surround +</string>
     <string name="v4a_vdynbass_title">Dynamic system (ViPER dynamic bass)</string>
     <string name="bassex_band2">Second band</string>
-    <string name="bassex_band2_summary">Adds a second, independent bass harmonic generator — set it lower (sub warmth) while band 1 handles punch</string>
+    <string name="bassex_band2_summary">Adds a second, independent bass harmonic generator â€” set it lower (sub warmth) while band 1 handles punch</string>
     <string name="bassex_cutoff2">Band 2 bass range</string>
     <string name="bassex_intensity2">Band 2 intensity</string>
     <string name="bassex_mix2">Band 2 amount</string>
@@ -527,7 +527,7 @@
     <string name="vdynbass_sgy">Custom: side gain Y</string>
     <string name="vdynbass_custom_note">Custom sliders only apply when Mode is set to Custom</string>
     <string name="diffsurround_enable">Differential surround</string>
-    <string name="diffsurround_info">Delays one ear by a few milliseconds (the Haas effect) — your brain reads the tiny timing difference as width and space, like ViPER\'s Differential Surround. ⚠️ Headphones only — on speakers the delayed channel causes comb filtering and a smeared image. Keep one side at 0 and raise the other slightly.</string>
+    <string name="diffsurround_info">Delays one ear by a few milliseconds (the Haas effect) â€” your brain reads the tiny timing difference as width and space, like ViPER\'s Differential Surround. âš ï¸ Headphones only â€” on speakers the delayed channel causes comb filtering and a smeared image. Keep one side at 0 and raise the other slightly.</string>
     <string name="diffsurround_delay_l">Left delay</string>
     <string name="diffsurround_delay_r">Right delay</string>
     <string name="output_control_postgain">Post gain</string>
@@ -639,7 +639,7 @@
     <string name="limit_latency_title">Increased latency</string>
     <string name="limit_latency">This app may add some delay to the audio stream. You can add movie/video apps to the exclusion list to prevent AV-desync by not processing them.</string>
     <string name="limit_tested_devices_title">Tested devices</string>
-    <string name="limit_tested_devices">Changes made to Android\'s audio subsystem by your device manufacturer can easily break this app because it uses a few undocumented APIs.\nIt has been tested on these devices:\n• Samsung S20+ (Android 12)\n• AOSP emulator (Android 10–13)\n• Google Pixel 6 Pro (Android 13)</string>
+    <string name="limit_tested_devices">Changes made to Android\'s audio subsystem by your device manufacturer can easily break this app because it uses a few undocumented APIs.\nIt has been tested on these devices:\nâ€¢ Samsung S20+ (Android 12)\nâ€¢ AOSP emulator (Android 10â€“13)\nâ€¢ Google Pixel 6 Pro (Android 13)</string>
 
     <!-- Settings -->
     <string name="title_activity_settings">Settings</string>
@@ -685,7 +685,7 @@
     <string name="audio_format_optimization_refresh">Refresh benchmarking data</string>
     <string name="audio_format_optimization_benchmark">Use benchmarks to optimize performance</string>
     <string name="audio_format_optimization_benchmark_summary">Increases performance of effects that use convolver modules</string>
-    <string name="audio_format_optimization_benchmark_ongoing">Benchmark in progress…</string>
+    <string name="audio_format_optimization_benchmark_ongoing">Benchmark in progressâ€¦</string>
     <string name="profiles_section_header">Device profiles</string>
     <string name="profiles_summary">Per-device profiles, automatic switching</string>
     <string name="profiles_enable">Per-device profiles</string>
@@ -713,7 +713,7 @@
     <string name="troubleshooting_summary">Advanced options, documentation, diagnostics</string>
     <string name="troubleshooting_docs">Documentation</string>
     <string name="troubleshooting_actions">Miscellaneous actions</string>
-    <string name="troubleshooting_dump">Export audio session dump…</string>
+    <string name="troubleshooting_dump">Export audio session dumpâ€¦</string>
     <string name="troubleshooting_dump_summary">Collect and save troubleshooting data</string>
     <string name="troubleshooting_dump_share_title">Share audio session dump..</string>
     <string name="troubleshooting_view_limitations">Technical limitations</string>
@@ -734,7 +734,7 @@
     <string name="network_services">Network services</string>
     <string name="network_autoeq_api_url">AutoEQ API backend URL</string>
     <string name="network_invalid_url">Invalid URL format</string>
-    <string name="network_autoeq_conntest_running">Testing connection to server…</string>
+    <string name="network_autoeq_conntest_running">Testing connection to serverâ€¦</string>
     <string name="network_autoeq_conntest_done">Connection test succeeded</string>
     <string name="network_autoeq_conntest_fail">Connection test failed</string>
     <string name="network_autoeq_conntest_fail_summary">Server did not respond correctly. Make sure the software at https://github.com/ThePBone/AutoEqApi is correctly set up on the server.\n\nNetwork error: %1$s\n\nDo you want to restore this setting to the default value?</string>
@@ -752,7 +752,7 @@
     <string name="credits_project_page_summary">Report issues, keep yourself updated, and read the source code</string>
     <string name="credits_project_play_page">Visit RootlessJamesDSP on Google Play</string>
     <string name="credits_project_play_page_summary">Search for new updates</string>
-    <string name="credits_project_check_update">Check for new updates…</string>
+    <string name="credits_project_check_update">Check for new updatesâ€¦</string>
     <string name="credits_project_check_update_summary">Download and install updates if available</string>
     <string name="credits_project_translate">Contribute translations</string>
     <string name="credits_project_translate_summary">Help us to translate this app into your language</string>
@@ -780,7 +780,7 @@
     <string name="backup_24hour">Daily</string>
     <string name="backup_48hour">Every 2 days</string>
     <string name="backup_weekly">Weekly</string>
-    <string name="backup_select_location">Please create and select a backup directory…</string>
+    <string name="backup_select_location">Please create and select a backup directoryâ€¦</string>
 
     <!-- Theme names -->
     <string name="theme_default">Default</string>
@@ -801,7 +801,7 @@
     <string name="filelibrary_context_edit">Edit</string>
     <string name="filelibrary_context_overwrite">Overwrite</string>
     <string name="filelibrary_context_rename">Rename</string>
-    <string name="filelibrary_context_share">Share…</string>
+    <string name="filelibrary_context_share">Shareâ€¦</string>
     <string name="filelibrary_context_resample">Offline resample</string>
     <string name="filelibrary_context_duplicate">Duplicate</string>
     <string name="filelibrary_context_delete">Delete</string>
@@ -867,7 +867,7 @@
     <string name="geq_api_network_error">Failed to connect to server. %1$s</string>
     <string name="geq_api_network_error_details_code">Server responded with error code: %1$d</string>
     <string name="autoeq_search">AutoEQ search</string>
-    <string name="autoeq_enter_model">Enter your headphone model…</string>
+    <string name="autoeq_enter_model">Enter your headphone modelâ€¦</string>
     <string name="autoeq_partial_results_warning">Showing the first %1$d results. Please fine-tune your search to get more relevant results.</string>
     <string name="autoeq_no_results">No results found</string>
 
@@ -877,7 +877,7 @@
 
     <!-- Liveprog script editor -->
     <string name="title_activity_liveprog_editor">Script editor</string>
-    <string name="editor_find_and_replace">Find/replace…</string>
+    <string name="editor_find_and_replace">Find/replaceâ€¦</string>
     <string name="editor_docs">Help</string>
     <string name="editor_open_fail">Script file does not exist or cannot be opened.</string>
     <string name="editor_run">Save and run</string>
@@ -932,7 +932,7 @@
     <string name="enhanced_processing_missing_perm">Enhanced processing has been disabled due to a missing permission. Please re-setup it in settings.</string>
 
     <!-- App list -->
-    <string name="app_list_loading">Loading apps…</string>
+    <string name="app_list_loading">Loading appsâ€¦</string>
     <string name="app_list_search">Search</string>
     <string name="app_list_icon_alt">App icon</string>
 
@@ -969,15 +969,15 @@
     <string name="self_update_install_error">Update failed</string>
     <string name="self_update_download_fail">Failed to download update package. Please check your internet connection. Details: %1$s</string>
     <string name="self_update_install_fail">Installation failed. %1$s</string>
-    <string name="self_update_finished">Update installed. The app is now restarting…</string>
+    <string name="self_update_finished">Update installed. The app is now restartingâ€¦</string>
     <string name="self_update_no_updates">No new updates available at the moment</string>
     <string name="self_update_notice">New update available (%1$s)</string>
     <string name="self_update_notice_summary">Tap here to download and install the new update.</string>
     <string name="self_update_notice_dismiss_install">Install now</string>
     <string name="self_update_notice_dismiss_snooze">Remind me later</string>
     <string name="self_update_notice_dismiss_skip">Skip this update</string>
-    <string name="self_update_state_downloading">Downloading…</string>
-    <string name="self_update_state_installing">Installing…</string>
+    <string name="self_update_state_downloading">Downloadingâ€¦</string>
+    <string name="self_update_state_installing">Installingâ€¦</string>
 
     <!-- Backups -->
     <string name="backup_restore_progress">Restoring backup</string>
@@ -1008,8 +1008,8 @@
     <string name="group_usb">USB</string>
     <string name="group_unknown">Unknown</string>
     <string name="device_profile_status">Active device profile</string>
-    <string name="device_profile_manage_copy">Copy profile…</string>
-    <string name="device_profile_manage_delete">Delete profiles…</string>
+    <string name="device_profile_manage_copy">Copy profileâ€¦</string>
+    <string name="device_profile_manage_delete">Delete profilesâ€¦</string>
     <string name="device_profile_manage_copy_select_no_target">No profiles to overwrite available</string>
     <string name="device_profile_manage_copy_select">Select profile to copy</string>
     <string name="device_profile_manage_paste_select">Select profiles to overwrite</string>
@@ -1075,8 +1075,16 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="tape_head_bump_summary">The low resonance around 60 Hz a tape head produces.</string>
     <string name="tape_mix">Mix</string>
     <string name="tape_mix_summary">How much of the tape signal is blended back in. At 0%% nothing is changed at all.</string>
+    <string name="balance_enable">Balance</string>
+    <string name="balance_info">Which ear the sound sits in. Useful for uneven hearing, a headphone with a tired driver, or one earbud that is simply quieter than the other. Balance cuts the far side rather than boosting the near one, so it never costs headroom or pushes the limiter. Mono blends the two channels together, which is what you want if you are listening with a single earbud — otherwise anything panned to the other side is lost.</string>
+    <string name="balance_balance">Balance</string>
+    <string name="balance_balance_summary">Left at the bottom, right at the top, centred in the middle.</string>
+    <string name="balance_swap">Swap left and right</string>
+    <string name="balance_swap_summary">For a miswired cable, an adapter, or a recording that came out the wrong way round.</string>
+    <string name="balance_mono">Blend to mono</string>
+    <string name="balance_mono_summary">Mixes the channels together. At 100%% both ears hear everything, which is the one to use with a single earbud.</string>
     <string name="vinyl_enable">Vintage vinyl</string>
-    <string name="vinyl_info">The noises a record makes, as separate controls. Vintage tape models a machine that is working badly — drifting in pitch, running out of headroom. This models a worn disc, which fails differently: it adds things that were never in the recording. Everything here except Wear is a noise mixed alongside the music, so with every control at zero nothing is added at all.</string>
+    <string name="vinyl_info">The noises a record makes, as separate controls. Vintage tape models a machine that is working badly â€” drifting in pitch, running out of headroom. This models a worn disc, which fails differently: it adds things that were never in the recording. Everything here except Wear is a noise mixed alongside the music, so with every control at zero nothing is added at all.</string>
     <string name="vinyl_surface">Surface noise</string>
     <string name="vinyl_surface_summary">The continuous bed a record sits on. Band-limited, because a groove reproduces neither the very top nor the very bottom.</string>
     <string name="vinyl_crackle">Crackle</string>
@@ -1086,23 +1094,23 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="vinyl_pops">Pops</string>
     <string name="vinyl_pops_summary">Rare and much louder, from a scratch or a speck of grit. Rings rather than just ticking.</string>
     <string name="vinyl_clicks">Clicks</string>
-    <string name="vinyl_clicks_summary">Very short and bright — a dust particle rather than a scratch. Reads as an edge instead of an event.</string>
+    <string name="vinyl_clicks_summary">Very short and bright â€” a dust particle rather than a scratch. Reads as an edge instead of an event.</string>
     <string name="vinyl_sizzle">Frying sizzle</string>
     <string name="vinyl_sizzle_summary">Dense high-frequency frying: a record played wet, or worn smooth. Crackle fast enough to stop being separate events.</string>
     <string name="vinyl_hiss">Hiss</string>
     <string name="vinyl_hiss_summary">Flat, quiet and always there. The noise floor of the cutting chain rather than the disc.</string>
     <string name="vinyl_prickle">Prickle</string>
-    <string name="vinyl_prickle_summary">Sharp, thin, upper-mid ticks — the prickly quality of a dirty stylus.</string>
+    <string name="vinyl_prickle_summary">Sharp, thin, upper-mid ticks â€” the prickly quality of a dirty stylus.</string>
     <string name="vinyl_rumble">Turntable rumble</string>
     <string name="vinyl_rumble_summary">The motor and bearing underneath everything. Felt more than heard.</string>
     <string name="vinyl_wear">Groove wear</string>
     <string name="vinyl_wear_summary">The only control that touches the music itself: high end lost to a worn groove.</string>
     <string name="vinyl_follow">Follow the music</string>
-    <string name="vinyl_follow_summary">A real record crackles constantly, which is what you want while music plays — but obviously synthetic in a silence. Turn this up and the noise fades with the music.</string>
+    <string name="vinyl_follow_summary">A real record crackles constantly, which is what you want while music plays â€” but obviously synthetic in a silence. Turn this up and the noise fades with the music.</string>
     <string name="vinyl_mix">Mix</string>
     <string name="vinyl_mix_summary">How much of the record is blended back in. At 0%% nothing is changed at all.</string>
     <string name="exciter_enable">Exciter</string>
-    <string name="exciter_info">Adds harmonics that were never in the recording, which the ear reads as detail and weight. Four ranges, each with its own amount, so you can put air on top without also making the bass fuzzy. Character picks the flavour: Warm, Retro and Tape are symmetrical and add odd harmonics — the transistor end; Tube and Triode are lopsided and add even ones, which is the valve sound. The existing Bass exciter card is the older two-band bass-only version and still works; this replaces it for new setups.</string>
+    <string name="exciter_info">Adds harmonics that were never in the recording, which the ear reads as detail and weight. Four ranges, each with its own amount, so you can put air on top without also making the bass fuzzy. Character picks the flavour: Warm, Retro and Tape are symmetrical and add odd harmonics â€” the transistor end; Tube and Triode are lopsided and add even ones, which is the valve sound. The existing Bass exciter card is the older two-band bass-only version and still works; this replaces it for new setups.</string>
     <string name="exciter_character">Character</string>
     <string name="exciter_character_summary">Warm, Retro and Tape add odd harmonics; Tube and Triode are asymmetric and add even ones, which sounds fuller and less edgy.</string>
     <string name="exciter_drive">Drive</string>
@@ -1119,7 +1127,7 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="exciter_mix">Mix</string>
     <string name="exciter_mix_summary">How much of the excited signal is blended back in. At 0%% nothing is changed at all.</string>
     <string name="lowend_enable">Low end</string>
-    <string name="lowend_info">Three things for the bottom of the spectrum. The subsonic filter throws away rumble below anything you can hear, which is pure wasted headroom pushing the limiter around. Weight is one knob for body. Mud eases back the region where recordings pile up and turn thick. Folding bass to mono lives in the stereo imaging card, and putting punch back into a kick lives in Impact — neither is repeated here.</string>
+    <string name="lowend_info">Three things for the bottom of the spectrum. The subsonic filter throws away rumble below anything you can hear, which is pure wasted headroom pushing the limiter around. Weight is one knob for body. Mud eases back the region where recordings pile up and turn thick. Folding bass to mono lives in the stereo imaging card, and putting punch back into a kick lives in Impact â€” neither is repeated here.</string>
     <string name="lowend_subsonic">Subsonic filter</string>
     <string name="lowend_subsonic_summary">Removes everything below this, steeply. Set to 0 to switch it off.</string>
     <string name="lowend_weight_header">Weight</string>
@@ -1133,7 +1141,7 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="lowend_mix">Mix</string>
     <string name="lowend_mix_summary">How much of the treated signal is blended back in. At 0%% nothing is changed at all.</string>
     <string name="transient_enable">Impact (attack &amp; sustain)</string>
-    <string name="transient_info">Shapes how a note starts and how long it takes to die, rather than how loud it is. Two envelope followers chase the signal at different speeds, and the gap between them says which part of a note you are in — so a held tone comes through completely untouched while a drum hit can be sharpened or softened. Use it to put the snap back into over-compressed music, or to take the room off a boomy recording.</string>
+    <string name="transient_info">Shapes how a note starts and how long it takes to die, rather than how loud it is. Two envelope followers chase the signal at different speeds, and the gap between them says which part of a note you are in â€” so a held tone comes through completely untouched while a drum hit can be sharpened or softened. Use it to put the snap back into over-compressed music, or to take the room off a boomy recording.</string>
     <string name="transient_low_header">Low</string>
     <string name="transient_mid_header">Mid</string>
     <string name="transient_high_header">High</string>
@@ -1168,7 +1176,7 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="dyneq_threshold_summary">The level this band has to reach before it does anything.</string>
     <string name="dyneq_range_summary">The most it may ever change. Negative cuts, positive lifts; zero switches the band off.</string>
     <string name="dyneq_q_summary">How narrow the band is. Wider sounds gentler, narrower is more surgical.</string>
-    <string name="dyneq1_header">Band 1 — Low</string>
+    <string name="dyneq1_header">Band 1 â€” Low</string>
     <string name="dyneq1_freq">Band 1 frequency</string>
     <string name="dyneq1_q">Band 1 width</string>
     <string name="dyneq1_threshold">Band 1 threshold</string>
@@ -1177,7 +1185,7 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="dyneq1_release">Band 1 release</string>
     <string name="dyneq1_range">Band 1 range</string>
     <string name="dyneq1_mode">Band 1 acts on</string>
-    <string name="dyneq2_header">Band 2 — Mid</string>
+    <string name="dyneq2_header">Band 2 â€” Mid</string>
     <string name="dyneq2_freq">Band 2 frequency</string>
     <string name="dyneq2_q">Band 2 width</string>
     <string name="dyneq2_threshold">Band 2 threshold</string>
@@ -1186,7 +1194,7 @@ Please press \'Continue\' below to re-do the setup wizard.</string>
     <string name="dyneq2_release">Band 2 release</string>
     <string name="dyneq2_range">Band 2 range</string>
     <string name="dyneq2_mode">Band 2 acts on</string>
-    <string name="dyneq3_header">Band 3 — High</string>
+    <string name="dyneq3_header">Band 3 â€” High</string>
     <string name="dyneq3_freq">Band 3 frequency</string>
     <string name="dyneq3_q">Band 3 width</string>
     <string name="dyneq3_threshold">Band 3 threshold</string>

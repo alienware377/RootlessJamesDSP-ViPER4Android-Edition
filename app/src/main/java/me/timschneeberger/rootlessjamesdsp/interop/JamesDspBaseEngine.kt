@@ -182,6 +182,12 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
             val maxrOversample = cache.get(R.string.key_maxr_oversample, "1").toInt()
             val maxrClipShape = cache.get(R.string.key_maxr_clip_shape, "0").toInt()
 
+            cache.select(Constants.PREF_BALANCE)
+            val balEnabled = cache.get(R.string.key_balance_enable, false)
+            val balBalance = cache.get(R.string.key_balance_balance, 0f)
+            val balSwap = cache.get(R.string.key_balance_swap, false)
+            val balMono = cache.get(R.string.key_balance_mono, 0f)
+
             cache.select(Constants.PREF_VINYL)
             val vnEnabled = cache.get(R.string.key_vinyl_enable, false)
             val vnSurface = cache.get(R.string.key_vinyl_surface, 30f)
@@ -439,6 +445,9 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
                     )
                     Constants.PREF_TAPE -> setTape(
                         tpEnabled, tpWow, tpFlutter, tpSat, tpBias, tpBump, tpMix
+                    )
+                    Constants.PREF_BALANCE -> setBalance(
+                        balEnabled, balBalance, balSwap, balMono
                     )
                     Constants.PREF_VINYL -> setVinyl(
                         vnEnabled, vnSurface, vnCrackle, vnCrackleSize, vnPops,
@@ -832,6 +841,7 @@ abstract class JamesDspBaseEngine(val context: Context, val callbacks: JamesDspW
     }
 
     abstract fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean
+    abstract fun setBalance(enable: Boolean, balance: Float, swap: Boolean, mono: Float): Boolean
     abstract fun setVinyl(enable: Boolean, surface: Float, crackle: Float, crackleSize: Float, pops: Float, clicks: Float, sizzle: Float, hiss: Float, prickle: Float, rumble: Float, wear: Float, follow: Float, mix: Float): Boolean
     abstract fun setExciter(enable: Boolean, f1: Float, f2: Float, f3: Float, a1: Float, a2: Float, a3: Float, a4: Float, character: Int, drive: Float, mix: Float): Boolean
     abstract fun setLowEnd(enable: Boolean, subsonic: Float, weightHz: Float, weightDb: Float, mudHz: Float, mudDb: Float, mix: Float): Boolean

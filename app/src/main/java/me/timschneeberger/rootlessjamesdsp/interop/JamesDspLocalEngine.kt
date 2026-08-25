@@ -154,6 +154,9 @@ class JamesDspLocalEngine(context: Context, callbacks: JamesDspWrapper.JamesDspC
     override fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean =
         JamesDspWrapper.setTape(handle, enable, wow, flutter, saturation, bias, headBump, mix)
 
+    override fun setBalance(enable: Boolean, balance: Float, swap: Boolean, mono: Float): Boolean =
+        JamesDspWrapper.setBalance(handle, enable, balance, swap, mono)
+
     override fun setVinyl(enable: Boolean, surface: Float, crackle: Float, crackleSize: Float, pops: Float, clicks: Float, sizzle: Float, hiss: Float, prickle: Float, rumble: Float, wear: Float, follow: Float, mix: Float): Boolean =
         JamesDspWrapper.setVinyl(handle, enable, surface, crackle, crackleSize, pops, clicks, sizzle, hiss, prickle, rumble, wear, follow, mix)
 

@@ -333,6 +333,10 @@
     <string name="key_vinyl_wear" translatable="false">vinyl_wear</string>
     <string name="key_vinyl_follow" translatable="false">vinyl_follow</string>
     <string name="key_vinyl_mix" translatable="false">vinyl_mix</string>
+    <string name="key_balance_enable" translatable="false">balance_enable</string>
+    <string name="key_balance_balance" translatable="false">balance_balance</string>
+    <string name="key_balance_swap" translatable="false">balance_swap</string>
+    <string name="key_balance_mono" translatable="false">balance_mono</string>
     <string name="key_exciter_enable" translatable="false">exciter_enable</string>
     <string name="key_exciter_freq1" translatable="false">exciter_freq1</string>
     <string name="key_exciter_freq2" translatable="false">exciter_freq2</string>

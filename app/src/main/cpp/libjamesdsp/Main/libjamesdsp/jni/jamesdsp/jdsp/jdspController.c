@@ -355,6 +355,8 @@ static const int jdspDefaultChain[] =
 	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY, JDSP_EFX_MULTIBANDDIST,
 	// Colour last, but still ahead of the limiter.
 	JDSP_EFX_TAPE, JDSP_EFX_VINYL,
+	// A listening trim, so it goes after everything that shapes the sound.
+	JDSP_EFX_BALANCE,
 	JDSP_EFX_MAXIMIZER
 };
 
@@ -594,6 +596,11 @@ static void jdspDispatchEffect(JamesDSPLib *jdsp, int id, size_t n)
 	case JDSP_EFX_VINYL:
 		jdsp_lock(jdsp);
 		if (jdsp->vinylEnabled) VinylProcess(jdsp, n);
+		jdsp_unlock(jdsp);
+		break;
+	case JDSP_EFX_BALANCE:
+		jdsp_lock(jdsp);
+		if (jdsp->balanceEnabled) BalanceProcess(jdsp, n);
 		jdsp_unlock(jdsp);
 		break;
 	default:
@@ -1536,6 +1543,9 @@ void JamesDSPInit(JamesDSPLib *jdsp, int n, float sample_rate)
 	// A worn but working machine: audible wobble, gentle saturation, the head
 	// bump that makes tape masters sound weightier than the mix did.
 	TapeSetParam(jdsp, 25.0f, 30.0f, 35.0f, -20.0f, 3.0f, 100.0f);
+	jdsp->balanceEnabled = 0;
+	// Centred, unswapped, full stereo: the identity.
+	BalanceSetParam(jdsp, 0.0f, 0, 0.0f);
 	jdsp->vinylEnabled = 0;
 	// A record played a lot but looked after: quiet surface, steady crackle, the
 	// occasional pop, a little rumble underneath. Deliberately short on pops and
@@ -1701,6 +1711,7 @@ void JamesDSPSetSampleRate(JamesDSPLib *jdsp, float new_sample_rate, int forceRe
 	ImagingRefresh(jdsp);
 	DynamicEqRefresh(jdsp);
 	VinylRefresh(jdsp);
+	BalanceRefresh(jdsp);
 	jdsp_unlock(jdsp);
 }
 void JamesDSPReleaseEffectBuffers(JamesDSPLib *jdsp)

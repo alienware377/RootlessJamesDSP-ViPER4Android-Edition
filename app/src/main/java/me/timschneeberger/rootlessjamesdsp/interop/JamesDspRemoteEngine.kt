@@ -202,6 +202,9 @@ class JamesDspRemoteEngine(
     override fun setTape(enable: Boolean, wow: Float, flutter: Float, saturation: Float, bias: Float, headBump: Float, mix: Float): Boolean =
         sendForkEffect(PARAM_TAPE, enable, floatArrayOf(wow, flutter, saturation, bias, headBump, mix))
 
+    override fun setBalance(enable: Boolean, balance: Float, swap: Boolean, mono: Float): Boolean =
+        sendForkEffect(PARAM_BALANCE, enable, floatArrayOf(balance, if (swap) 1f else 0f, mono))
+
     override fun setVinyl(enable: Boolean, surface: Float, crackle: Float, crackleSize: Float, pops: Float, clicks: Float, sizzle: Float, hiss: Float, prickle: Float, rumble: Float, wear: Float, follow: Float, mix: Float): Boolean =
         sendForkEffect(PARAM_VINYL, enable, floatArrayOf(
             surface, crackle, crackleSize, pops, clicks, sizzle,
@@ -499,6 +502,7 @@ class JamesDspRemoteEngine(
         private const val PARAM_TAPE = PARAM_FORK_BASE + 18
         private const val PARAM_MAXIMIZER = PARAM_FORK_BASE + 19
         private const val PARAM_VINYL = PARAM_FORK_BASE + 20
+        private const val PARAM_BALANCE = PARAM_FORK_BASE + 21
         /** Enable flags live one hundred above their value id. */
         private const val PARAM_FORK_ENABLE_OFFSET = 100
 

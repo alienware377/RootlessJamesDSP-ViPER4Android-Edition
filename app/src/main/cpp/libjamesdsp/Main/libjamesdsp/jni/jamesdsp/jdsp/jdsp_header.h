@@ -330,6 +330,17 @@ typedef struct
 	float fs;
 	int transparent;
 } Vinyl;
+typedef struct
+{
+	// Targets are what the controls ask for; the gains walk towards them so a
+	// dragged slider does not step on every touch event.
+	float balance, mono;
+	int swap;
+	float targetL, targetR, targetMono;
+	float gainL, gainR, monoAmt;
+	float smooth, fs;
+	int transparent;
+} Balance;
 #define DYNEQ_MAX_BANDS 8
 // freq, Q, threshold dB, ratio, attack ms, release ms, range dB, mode
 #define DYNEQ_VALUES_PER_BAND 8
@@ -906,6 +917,7 @@ enum JdspEffectId
 	JDSP_EFX_EXCITER,
 	JDSP_EFX_TAPE,
 	JDSP_EFX_VINYL,
+	JDSP_EFX_BALANCE,
 	JDSP_EFX_COUNT
 };
 typedef struct
@@ -1088,6 +1100,8 @@ typedef struct dspsys
 	Tape tape;
 	int vinylEnabled;
 	Vinyl vinyl;
+	int balanceEnabled;
+	Balance balance;
 	Maximizer maximizer;
 	// Crossfeed
 	int crossfeedEnabled, crossfeedForceRefresh;
@@ -1293,6 +1307,11 @@ extern void TransientRefresh(JamesDSPLib *jdsp);
 extern void ImagingRefresh(JamesDSPLib *jdsp);
 extern void DynamicEqRefresh(JamesDSPLib *jdsp);
 extern void VinylRefresh(JamesDSPLib *jdsp);
+extern void BalanceSetParam(JamesDSPLib *jdsp, float balancePct, int swap, float monoPct);
+extern void BalanceProcess(JamesDSPLib *jdsp, size_t n);
+extern void BalanceEnable(JamesDSPLib *jdsp);
+extern void BalanceDisable(JamesDSPLib *jdsp);
+extern void BalanceRefresh(JamesDSPLib *jdsp);
 extern void MultibandDistSetBands(JamesDSPLib *jdsp, const float *bands, int count);
 extern void MultibandDistSetParam(JamesDSPLib *jdsp,
 	int routing, int model,

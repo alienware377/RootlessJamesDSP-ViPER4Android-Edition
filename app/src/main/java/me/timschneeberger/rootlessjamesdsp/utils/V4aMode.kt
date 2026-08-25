@@ -43,6 +43,7 @@ object V4aMode {
         Constants.PREF_EXCITER to R.string.key_exciter_enable,
         Constants.PREF_TAPE to R.string.key_tape_enable,
         Constants.PREF_VINYL to R.string.key_vinyl_enable,
+        Constants.PREF_BALANCE to R.string.key_balance_enable,
         Constants.PREF_GEQ to R.string.key_geq_enable,
         Constants.PREF_PEQ to R.string.key_peq_enable,
         Constants.PREF_LIVEPROG to R.string.key_liveprog_enable,

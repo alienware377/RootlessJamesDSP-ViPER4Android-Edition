@@ -1,4 +1,4 @@
-#include <android/log.h>
+﻿#include <android/log.h>
 
 #define TAG "JamesDspWrapper_JNI"
 #include <Log.h>
@@ -601,6 +601,16 @@ Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setTape(JNIEnv 
     DECLARE_DSP_B
     TapeSetParam(dsp, wow, flutter, saturation, bias, headBump, mix);
     if (enable) TapeEnable(dsp); else TapeDisable(dsp);
+    return true;
+}
+
+extern "C" JNIEXPORT jboolean JNICALL
+Java_me_timschneeberger_rootlessjamesdsp_interop_JamesDspWrapper_setBalance(JNIEnv *env, jobject obj, jlong self,
+        jboolean enable, jfloat balance, jboolean swap, jfloat mono)
+{
+    DECLARE_DSP_B
+    BalanceSetParam(dsp, balance, swap ? 1 : 0, mono);
+    if (enable) BalanceEnable(dsp); else BalanceDisable(dsp);
     return true;
 }
 
