@@ -334,24 +334,63 @@ void jdsp_unlock(JamesDSPLib *jdsp)
 static const int jdspDefaultChain[] =
 {
 	JDSP_EFX_TUBE, JDSP_EFX_COMPRESSOR, JDSP_EFX_PITCHSHIFT, JDSP_EFX_FETCOMP,
+	// Attack shaping belongs with the dynamics, before anything spatial.
+	JDSP_EFX_TRANSIENT,
 	JDSP_EFX_DIFFSURROUND, JDSP_EFX_BASSBOOST, JDSP_EFX_VDYNBASS,
-	JDSP_EFX_VIPERBASS, JDSP_EFX_BASSEX, JDSP_EFX_EQUALIZER,
-	JDSP_EFX_ARBITRARYMAG, JDSP_EFX_CONVOLVER, JDSP_EFX_DDC,
+	JDSP_EFX_VIPERBASS, JDSP_EFX_BASSEX,
+	// Tidy the bottom after the bass processors have had their say, then add
+	// harmonics to what is left.
+	JDSP_EFX_LOWEND, JDSP_EFX_EXCITER,
+	JDSP_EFX_EQUALIZER,
+	JDSP_EFX_ARBITRARYMAG,
+	// Corrective EQ sits with the rest of the EQ block.
+	JDSP_EFX_DYNAMICEQ,
+	JDSP_EFX_CONVOLVER, JDSP_EFX_DDC,
 	JDSP_EFX_LIVEPROG, JDSP_EFX_LIVEPROG2, JDSP_EFX_LIVEPROG3,
 	JDSP_EFX_LIVEPROG4, JDSP_EFX_CROSSFEED, JDSP_EFX_CURE,
+	// Width before the surround effects, so they act on the intended image.
+	JDSP_EFX_IMAGING,
 	JDSP_EFX_STEREOWIDE, JDSP_EFX_FIELDSURROUND, JDSP_EFX_HPSURROUND,
 	JDSP_EFX_SPECTRUMEXT, JDSP_EFX_CLARITY, JDSP_EFX_AGC,
-	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY, JDSP_EFX_MULTIBANDDIST, JDSP_EFX_MAXIMIZER
+	JDSP_EFX_SPEAKEROPT, JDSP_EFX_REVERB, JDSP_EFX_VREVERB, JDSP_EFX_ECHODELAY, JDSP_EFX_MULTIBANDDIST,
+	// Colour last, but still ahead of the limiter.
+	JDSP_EFX_TAPE,
+	JDSP_EFX_MAXIMIZER
 };
 
 void JamesDSPResetChainOrder(JamesDSPLib *jdsp)
 {
+	char seen[JDSP_EFX_COUNT];
+	memset(seen, 0, sizeof(seen));
 	int count = (int)(sizeof(jdspDefaultChain) / sizeof(jdspDefaultChain[0]));
 	if (count > JDSP_EFX_MAX)
 		count = JDSP_EFX_MAX;
+	int written = 0;
 	for (int i = 0; i < count; i++)
-		jdsp->chainOrder[i] = jdspDefaultChain[i];
-	jdsp->chainCount = count;
+	{
+		const int id = jdspDefaultChain[i];
+		if (id < 0 || id >= JDSP_EFX_COUNT || seen[id])
+			continue;
+		seen[id] = 1;
+		jdsp->chainOrder[written++] = id;
+	}
+	/* Anything the list above forgot is appended, exactly as a saved order is
+	   completed. The same reasoning was already written down for saved orders
+	   and not applied here, and this is where it actually bit: the six effects
+	   added most recently were never put in the default list, so every install
+	   that had not customised its chain ran without them. They were enabled,
+	   configured and receiving their parameters - simply never dispatched,
+	   which from the user's side is indistinguishable from six broken cards.
+
+	   Appending rather than asserting because a chain missing an effect is
+	   worse than a chain with one in an unconsidered place; the position can be
+	   argued about afterwards, silence cannot be noticed. */
+	for (int id = 0; id < JDSP_EFX_COUNT && written < JDSP_EFX_MAX; id++)
+	{
+		if (!seen[id])
+			jdsp->chainOrder[written++] = id;
+	}
+	jdsp->chainCount = written;
 }
 
 void JamesDSPSetChainOrder(JamesDSPLib *jdsp, const int *order, int count)

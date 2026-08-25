@@ -139,6 +139,28 @@ int main()
 		check("26010 echo/delay accepted", true, "(state is internal)");
 	}
 
+	// The DEFAULT chain, which is what an install runs until someone reorders
+	// it. Nothing checked this, and the saved-order equivalent below passed
+	// happily throughout - so six effects sat outside the default list and were
+	// never dispatched on any install that had not customised its chain.
+	{
+		JamesDSPResetChainOrder(&g_lib);
+		bool seen[JDSP_EFX_COUNT] = { false };
+		int dupes = 0, bad = 0;
+		for (int i = 0; i < g_lib.chainCount; i++)
+		{
+			const int id = g_lib.chainOrder[i];
+			if (id < 0 || id >= JDSP_EFX_COUNT) { bad++; continue; }
+			if (seen[id]) dupes++;
+			seen[id] = true;
+		}
+		int missing = 0;
+		for (int id = 0; id < JDSP_EFX_COUNT; id++) if (!seen[id]) missing++;
+		check("default chain dispatches every effect", missing == 0);
+		check("default chain has no duplicates", dupes == 0);
+		check("default chain has no out-of-range ids", bad == 0);
+	}
+
 	// 26019, the maximiser. Ten values in the order MaximizerSetParam takes
 	// them, so a slipped argument shows up as the wrong field moving rather
 	// than as nothing happening.
