@@ -40,7 +40,7 @@ A **linear / minimum phase** toggle for the FIR equaliser — the coefficient ge
 
 ## 🐛 Notable fixes
 
-- **Presets now actually load.** Loading a preset applied nothing at all in some cases ([#3](https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition/issues/3)).
+- **Presets now actually load.** Loading a preset applied nothing at all in some cases ([#3](https://github.com/alienware377/RootlessViPER4Android/issues/3)).
 - **Your card layout is yours.** Loading a preset no longer replaces your arrangement. The one thing it may still do is reveal a card it switches on, so an effect can never come on with nothing on screen to show for it. Take a preset's layout deliberately with long-press → *Apply card layout*. Backups now carry the layout too.
 - **The card order stopped decaying as it saved.**
 - **Cutoffs actually cut off** — the control drew a gentle slope across the whole spectrum rather than a corner.

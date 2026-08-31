@@ -4,17 +4,17 @@
   RootlessViPER4Android
   <br>
 </h1>
-<h4 align="center">RootlessJamesDSP — ViPER4Android Edition (V4A)<br>ViPER4Android-style audio effects on Android — <b>no root required</b>.</h4>
+<h4 align="center">RootlessViPER4Android (RV4A) — a RootlessJamesDSP fork<br>ViPER4Android effects natively ported to Android — <b>no root required</b>.</h4>
 
 <p align="center">
-  <a href="https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition/actions/workflows/build-fork.yml">
-      <img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alienware377/RootlessJamesDSP-ViPER4Android-Edition/build-fork.yml?branch=viper-extras">
+  <a href="https://github.com/alienware377/RootlessViPER4Android/actions/workflows/build-fork.yml">
+      <img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alienware377/RootlessViPER4Android/build-fork.yml?branch=viper-extras">
   </a>
-  <a href="https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition/releases">
-      <img alt="Release" src="https://img.shields.io/github/v/release/alienware377/RootlessJamesDSP-ViPER4Android-Edition?include_prereleases">
+  <a href="https://github.com/alienware377/RootlessViPER4Android/releases">
+      <img alt="Release" src="https://img.shields.io/github/v/release/alienware377/RootlessViPER4Android?include_prereleases">
   </a>
   <a href="LICENSE">
-      <img alt="License" src="https://img.shields.io/github/license/alienware377/RootlessJamesDSP-ViPER4Android-Edition">
+      <img alt="License" src="https://img.shields.io/github/license/alienware377/RootlessViPER4Android">
   </a>
 </p>
 
@@ -105,7 +105,7 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - ~~**Full echo / delay unit**~~ — ping-pong, filtered feedback, bit crushing, modulation, on its own knob panel
 - ~~**Chained Liveprog scripts**~~ — multi-select scripts, one card per script, chained in order
 - ~~**Custom effect groups**~~ — create, rename and delete groups, move cards between them, hide what you don't use
-- ~~**More reverb room types**~~ — Plate, Concert hall and Room alongside the classic ViPER model ([#1](https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition/issues/1))
+- ~~**More reverb room types**~~ — Plate, Concert hall and Room alongside the classic ViPER model ([#1](https://github.com/alienware377/RootlessViPER4Android/issues/1))
 - ~~**ViPER classic limiter**~~ — a faithful re-creation of V4A's own limiter, lookahead and all
 - ~~**ViPER4Android-only mode**~~ — the original effect set, naming, processing order and limiter, with everything else switched off
 - ~~**ViPER4Android classic theme**~~ — the classic look, available with or without the mode
@@ -138,7 +138,7 @@ Output limiter (with selectable peak / soft-saturation modes), auto-loudness com
 - **Remember effect on/off states** across a ViPER4Android-only mode round trip — your settings already survive, but effects switched off by the mode stay off when you leave it
 
 ## 📲 Download & Install
-1. Grab the latest APK from the [**Releases**](https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition/releases) page (or fresh builds from [Actions](https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition/actions)).
+1. Grab the latest APK from the [**Releases**](https://github.com/alienware377/RootlessViPER4Android/releases) page (or fresh builds from [Actions](https://github.com/alienware377/RootlessViPER4Android/actions)).
 2. Install and follow the in-app onboarding — it walks you through the permission setup step-by-step.
 3. Play music, open the app, and start flipping switches 🎶
 

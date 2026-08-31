@@ -102,7 +102,7 @@ The app is open source and licensed under the GNU General Public License v3.0. B
 the complete source code and build configuration are public, every claim in this policy
 can be independently verified:
 
-**https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition**
+**https://github.com/alienware377/RootlessViPER4Android**
 
 RootlessViPER4Android is a fork of RootlessJamesDSP by Tim Schneeberger.
 
@@ -117,4 +117,4 @@ are expected to be rare.
 Questions about this policy or the app's privacy practices can be raised as an issue
 in the project repository:
 
-**https://github.com/alienware377/RootlessJamesDSP-ViPER4Android-Edition/issues**
+**https://github.com/alienware377/RootlessViPER4Android/issues**
