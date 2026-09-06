@@ -50,7 +50,8 @@ target_link_libraries(RV4ADynamicSystem PRIVATE sdk)
 smtg_add_vst3plugin(RV4AMultibandDistortion
     src/plugin_multiband.cpp
     src/engine/multibandDist.c
-    src/engine/digitalFilters.c)
+    src/engine/digitalFilters.c
+    ${SDK_EXTRA})
 target_include_directories(RV4AMultibandDistortion PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/engine)
 target_link_libraries(RV4AMultibandDistortion PRIVATE sdk)
