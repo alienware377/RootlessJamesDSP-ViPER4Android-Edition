@@ -1,169 +1,110 @@
-// VST3 wrapper around the RootlessViPER4Android bass exciter.
-//
-// SingleComponentEffect puts the processor and controller in one class. The
-// split exists so a host can run the UI apart from the audio engine, which
-// matters for a plugin with a custom editor; this has no editor, so the split
-// would only add boilerplate.
-#include "public.sdk/source/vst/vstsinglecomponenteffect.h"
+// RV4A Bass Exciter — VST3.
+#include "Rv4aPluginBase.h"
 #include "public.sdk/source/main/pluginfactory.h"
-#include "pluginterfaces/vst/ivstaudioprocessor.h"
-#include "pluginterfaces/vst/ivstparameterchanges.h"
-#include "base/source/fstreamer.h"
-
 #include "BassExciterDsp.h"
 
 using namespace Steinberg;
 using namespace Steinberg::Vst;
+using namespace rv4a;
 
-static const FUID kBassExciterUID(0x52563441, 0x42455801, 0x616C6965, 0x6E773337);
+static const FUID kProcUID (0x52563441, 0x42455801, 0x616C6965, 0x6E773337);
+static const FUID kCtrlUID (0x52563441, 0x42455802, 0x616C6965, 0x6E773337);
 
-enum ParamId : ParamID {
-    kCutoff = 0, kIntensity, kMix,
-    kBand2On, kCutoff2, kIntensity2, kMix2,
-    kNumParams
-};
+enum { kCutoff = 0, kIntensity, kMix, kBand2On, kCutoff2, kIntensity2, kMix2, kNumParams };
 
-class BassExciter : public SingleComponentEffect
+class Processor : public ProcessorBase<kNumParams>
 {
 public:
-    static FUnknown* createInstance(void*) { return (IAudioProcessor*)new BassExciter(); }
+    Processor() { setControllerClass(kCtrlUID); }
+    static FUnknown* createInstance(void*) { return (IAudioProcessor*)new Processor(); }
 
-    tresult PLUGIN_API initialize(FUnknown* context) SMTG_OVERRIDE
+    tresult PLUGIN_API initialize(FUnknown* c) SMTG_OVERRIDE
     {
-        tresult r = SingleComponentEffect::initialize(context);
-        if (r != kResultOk) return r;
-
-        addAudioInput(STR16("Stereo In"), SpeakerArr::kStereo);
-        addAudioOutput(STR16("Stereo Out"), SpeakerArr::kStereo);
-
-        // Ranges match the Android UI so a setting means the same in both.
-        parameters.addParameter(STR16("Cutoff"),    STR16("Hz"), 0, (100.f - 40.f) / 160.f,
-                                ParameterInfo::kCanAutomate, kCutoff);
-        parameters.addParameter(STR16("Intensity"), STR16("%"),  0, 0.40,
-                                ParameterInfo::kCanAutomate, kIntensity);
-        parameters.addParameter(STR16("Mix"),       STR16("%"),  0, 0.50,
-                                ParameterInfo::kCanAutomate, kMix);
-        parameters.addParameter(STR16("Band 2"),    nullptr,     1, 0.0,
-                                ParameterInfo::kCanAutomate, kBand2On);
-        parameters.addParameter(STR16("Cutoff 2"),  STR16("Hz"), 0, (60.f - 30.f) / 170.f,
-                                ParameterInfo::kCanAutomate, kCutoff2);
-        parameters.addParameter(STR16("Intensity 2"), STR16("%"), 0, 0.40,
-                                ParameterInfo::kCanAutomate, kIntensity2);
-        parameters.addParameter(STR16("Mix 2"),     STR16("%"),  0, 0.40,
-                                ParameterInfo::kCanAutomate, kMix2);
-        return kResultOk;
+        // Defaults must match the controller's, or the plugin sounds different
+        // before the user touches anything than after they nudge one knob.
+        mParams[kCutoff] = (100.f - 40.f) / 160.f;
+        mParams[kIntensity] = 0.40f; mParams[kMix] = 0.50f;
+        mParams[kBand2On] = 0.f;
+        mParams[kCutoff2] = (60.f - 30.f) / 170.f;
+        mParams[kIntensity2] = 0.40f; mParams[kMix2] = 0.40f;
+        return ProcessorBase::initialize(c);
     }
 
-    tresult PLUGIN_API setupProcessing(ProcessSetup& setup) SMTG_OVERRIDE
+    tresult PLUGIN_API setupProcessing(ProcessSetup& s) SMTG_OVERRIDE
     {
-        mDsp.setSampleRate((float)setup.sampleRate);
-        applyParams();
+        mDsp.setSampleRate((float)s.sampleRate);
+        onParamsChanged();
         mDsp.reset();
-        return SingleComponentEffect::setupProcessing(setup);
+        return AudioEffect::setupProcessing(s);
     }
 
     tresult PLUGIN_API setActive(TBool state) SMTG_OVERRIDE
     {
         if (state) mDsp.reset();
-        return SingleComponentEffect::setActive(state);
-    }
-
-    // Only 32-bit float: the engine this is ported from is float throughout,
-    // and silently converting would make the plugin subtly unlike the app.
-    tresult PLUGIN_API canProcessSampleSize(int32 symbolicSampleSize) SMTG_OVERRIDE
-    {
-        return symbolicSampleSize == kSample32 ? kResultTrue : kResultFalse;
+        return AudioEffect::setActive(state);
     }
 
     tresult PLUGIN_API process(ProcessData& data) SMTG_OVERRIDE
     {
-        if (data.inputParameterChanges)
-        {
-            int32 count = data.inputParameterChanges->getParameterCount();
-            for (int32 i = 0; i < count; i++)
-            {
-                if (auto* q = data.inputParameterChanges->getParameterData(i))
-                {
-                    ParamValue v; int32 sampleOffset;
-                    // Take the last point in the block: parameters are applied
-                    // per block here, not per sample.
-                    if (q->getPoint(q->getPointCount() - 1, sampleOffset, v) == kResultTrue)
-                    {
-                        setParamNormalized(q->getParameterId(), v);
-                        mDirty = true;
-                    }
-                }
-            }
-        }
-        if (mDirty) { applyParams(); mDirty = false; }
-
+        readParamChanges(data);
         if (data.numSamples <= 0 || data.numInputs == 0 || data.numOutputs == 0)
             return kResultOk;
-
-        float** in  = data.inputs[0].channelBuffers32;
+        float** in = data.inputs[0].channelBuffers32;
         float** out = data.outputs[0].channelBuffers32;
-        int32 chans = data.inputs[0].numChannels < data.outputs[0].numChannels
-                          ? data.inputs[0].numChannels : data.outputs[0].numChannels;
-
-        for (int32 c = 0; c < chans; c++)
+        int32 ch = data.inputs[0].numChannels < data.outputs[0].numChannels
+                       ? data.inputs[0].numChannels : data.outputs[0].numChannels;
+        for (int32 c = 0; c < ch; c++)
             for (int32 i = 0; i < data.numSamples; i++)
                 out[c][i] = mDsp.processSample(in[c][i], c & 1);
-
-        // Anything beyond stereo passes through untouched rather than being
-        // silenced, which is what a user dropping this on a wider bus expects.
-        for (int32 c = chans; c < data.outputs[0].numChannels; c++)
-            if (c < data.inputs[0].numChannels)
-                memcpy(out[c], in[c], sizeof(float) * data.numSamples);
-
         return kResultOk;
     }
 
-    tresult PLUGIN_API setState(IBStream* state) SMTG_OVERRIDE
+protected:
+    void onParamsChanged() SMTG_OVERRIDE
     {
-        IBStreamer s(state, kLittleEndian);
-        for (ParamID p = 0; p < kNumParams; p++)
-        {
-            float v;
-            if (!s.readFloat(v)) return kResultFalse;
-            setParamNormalized(p, v);
-        }
-        applyParams();
-        return kResultOk;
-    }
-
-    tresult PLUGIN_API getState(IBStream* state) SMTG_OVERRIDE
-    {
-        IBStreamer s(state, kLittleEndian);
-        for (ParamID p = 0; p < kNumParams; p++)
-            s.writeFloat((float)getParamNormalized(p));
-        return kResultOk;
+        mDsp.setBand1(40.f + p(kCutoff) * 160.f, p(kIntensity) * 100.f, p(kMix) * 100.f);
+        mDsp.setBand2(p(kBand2On) >= 0.5f, 30.f + p(kCutoff2) * 170.f,
+                      p(kIntensity2) * 100.f, p(kMix2) * 100.f);
     }
 
 private:
-    void applyParams()
-    {
-        auto n = [this](ParamID p) { return (float)getParamNormalized(p); };
-        mDsp.setBand1(40.0f + n(kCutoff) * 160.0f, n(kIntensity) * 100.0f, n(kMix) * 100.0f);
-        mDsp.setBand2(n(kBand2On) >= 0.5f,
-                      30.0f + n(kCutoff2) * 170.0f, n(kIntensity2) * 100.0f, n(kMix2) * 100.0f);
-    }
-
     BassExciterDsp mDsp;
-    bool mDirty = true;
+};
+
+class Controller : public ControllerBase
+{
+public:
+    static FUnknown* createInstance(void*) { return (IEditController*)new Controller(); }
+
+    tresult PLUGIN_API initialize(FUnknown* c) SMTG_OVERRIDE
+    {
+        tresult r = ControllerBase::initialize(c);
+        if (r != kResultOk) return r;
+        parameters.addParameter(STR16("Cutoff"), STR16("Hz"), 0, (100.f - 40.f) / 160.f,
+                                ParameterInfo::kCanAutomate, kCutoff);
+        parameters.addParameter(STR16("Intensity"), STR16("%"), 0, 0.40,
+                                ParameterInfo::kCanAutomate, kIntensity);
+        parameters.addParameter(STR16("Mix"), STR16("%"), 0, 0.50,
+                                ParameterInfo::kCanAutomate, kMix);
+        parameters.addParameter(STR16("Band 2"), nullptr, 1, 0.0,
+                                ParameterInfo::kCanAutomate, kBand2On);
+        parameters.addParameter(STR16("Cutoff 2"), STR16("Hz"), 0, (60.f - 30.f) / 170.f,
+                                ParameterInfo::kCanAutomate, kCutoff2);
+        parameters.addParameter(STR16("Intensity 2"), STR16("%"), 0, 0.40,
+                                ParameterInfo::kCanAutomate, kIntensity2);
+        parameters.addParameter(STR16("Mix 2"), STR16("%"), 0, 0.40,
+                                ParameterInfo::kCanAutomate, kMix2);
+        return kResultOk;
+    }
 };
 
 BEGIN_FACTORY_DEF("alienware377",
                   "https://github.com/alienware377/RootlessViPER4Android",
                   "mailto:noreply@github.com")
-
-    DEF_CLASS2(INLINE_UID_FROM_FUID(kBassExciterUID),
-               PClassInfo::kManyInstances,
-               kVstAudioEffectClass,
-               "RV4A Bass Exciter",
-               0 /* not distributable: one object is both processor and controller */,
-               Vst::PlugType::kFx,
-               "1.0.0",
-               kVstVersionString,
-               BassExciter::createInstance)
-
+    DEF_CLASS2(INLINE_UID_FROM_FUID(kProcUID), PClassInfo::kManyInstances,
+               kVstAudioEffectClass, "RV4A Bass Exciter", Vst::kDistributable,
+               Vst::PlugType::kFx, "1.0.0", kVstVersionString, Processor::createInstance)
+    DEF_CLASS2(INLINE_UID_FROM_FUID(kCtrlUID), PClassInfo::kManyInstances,
+               kVstComponentControllerClass, "RV4A Bass Exciter Controller", 0,
+               "", "1.0.0", kVstVersionString, Controller::createInstance)
 END_FACTORY
