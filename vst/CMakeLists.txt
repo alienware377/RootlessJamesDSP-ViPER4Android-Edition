@@ -32,10 +32,15 @@ smtg_enable_vst3_sdk()
 # in directly - without it the build compiles cleanly then fails at link with
 # every method unresolved. Only this one file: it pulls in the edit controller
 # itself, so adding that separately defines everything twice instead.
-smtg_add_vst3plugin(RV4ABassExciter
-    src/plugin.cpp
-    src/BassExciterDsp.h
-    ${vst3sdk_SOURCE_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp)
+set(SDK_EXTRA ${vst3sdk_SOURCE_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp)
 
+# One bundle per effect rather than one plugin with a mode switch: hosts list
+# them separately, and a user reaching for "dynamic bass" should not have to
+# know it lives inside something called an exciter.
+smtg_add_vst3plugin(RV4ABassExciter src/plugin.cpp src/BassExciterDsp.h ${SDK_EXTRA})
 target_include_directories(RV4ABassExciter PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(RV4ABassExciter PRIVATE sdk)
+
+smtg_add_vst3plugin(RV4ADynamicSystem src/plugin_dynamicbass.cpp src/DynamicBassDsp.h ${SDK_EXTRA})
+target_include_directories(RV4ADynamicSystem PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(RV4ADynamicSystem PRIVATE sdk)
