@@ -18,7 +18,7 @@ FetchContent_Declare(vst3sdk
     GIT_SUBMODULES_RECURSE ON
     GIT_SHALLOW    ON)
 
-set(SMTG_ENABLE_VSTGUI_SUPPORT OFF CACHE BOOL "" FORCE)   # no editor, no VSTGUI
+set(SMTG_ENABLE_VSTGUI_SUPPORT ON CACHE BOOL "" FORCE)    # needed for the editors
 set(SMTG_ENABLE_VST3_PLUGIN_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SMTG_ENABLE_VST3_HOSTING_EXAMPLES OFF CACHE BOOL "" FORCE)
 set(SMTG_CREATE_PLUGIN_LINK OFF CACHE BOOL "" FORCE)
@@ -41,11 +41,13 @@ smtg_enable_vst3_sdk()
 # know it lives inside something called an exciter.
 smtg_add_vst3plugin(RV4ABassExciter src/plugin.cpp src/BassExciterDsp.h)
 target_include_directories(RV4ABassExciter PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(RV4ABassExciter PRIVATE sdk)
+target_link_libraries(RV4ABassExciter PRIVATE sdk vstgui_support)
+smtg_target_add_plugin_resources(RV4ABassExciter RESOURCES resource/RV4ABassExciter.uidesc)
 
 smtg_add_vst3plugin(RV4ADynamicSystem src/plugin_dynamicbass.cpp src/DynamicBassDsp.h)
 target_include_directories(RV4ADynamicSystem PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-target_link_libraries(RV4ADynamicSystem PRIVATE sdk)
+target_link_libraries(RV4ADynamicSystem PRIVATE sdk vstgui_support)
+smtg_target_add_plugin_resources(RV4ADynamicSystem RESOURCES resource/RV4ADynamicSystem.uidesc)
 
 # The distortion is compiled from the app's own source, unmodified, behind a
 # small shim - so it cannot drift from the app as the effect is developed.
@@ -57,4 +59,5 @@ smtg_add_vst3plugin(RV4AMultibandDistortion
    )
 target_include_directories(RV4AMultibandDistortion PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/engine)
-target_link_libraries(RV4AMultibandDistortion PRIVATE sdk)
+target_link_libraries(RV4AMultibandDistortion PRIVATE sdk vstgui_support)
+smtg_target_add_plugin_resources(RV4AMultibandDistortion RESOURCES resource/RV4AMultibandDistortion.uidesc)

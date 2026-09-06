@@ -135,6 +135,7 @@ public:
     {
         tresult r = ControllerBase::initialize(c);
         if (r != kResultOk) return r;
+        mUidesc = "RV4AMultibandDistortion.uidesc";
         auto p = [&](const char16* n, const char16* u, int steps, double def, ParamID id) {
             parameters.addParameter(n, u, steps, def, ParameterInfo::kCanAutomate, id);
         };

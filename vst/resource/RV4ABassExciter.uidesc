@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vstgui-ui-description version="1">
+  <colors>
+    <color name="bg" rgba="#191a1eff"/>
+    <color name="panel" rgba="#232430ff"/>
+    <color name="accent" rgba="#c04ff0ff"/>
+    <color name="knobFace" rgba="#2b2c38ff"/>
+    <color name="knobEdge" rgba="#3d3f4eff"/>
+    <color name="label" rgba="#b9bcccff"/>
+    <color name="value" rgba="#ffffffff"/>
+    <color name="title" rgba="#ffffffff"/>
+    <color name="transparent" rgba="#00000000"/>
+  </colors>
+  <control-tags>
+    <control-tag name="Cutoff" tag="0"/>
+    <control-tag name="Intensity" tag="1"/>
+    <control-tag name="Mix" tag="2"/>
+    <control-tag name="Band 2" tag="3"/>
+    <control-tag name="Cutoff 2" tag="4"/>
+    <control-tag name="Intensity 2" tag="5"/>
+    <control-tag name="Mix 2" tag="6"/>
+  </control-tags>
+  <template name="view" size="514, 298" background-color="bg"
+            minSize="514, 298" maxSize="514, 298" autosize="false">
+    <view class="CViewContainer" origin="0, 0" size="514, 58" background-color="panel"/>
+    <view class="CTextLabel" origin="20, 12" size="474, 22" title="RV4A BASS EXCITER"
+          back-color="transparent" frame-color="transparent" font="~ NormalFontBig"
+          font-color="title" text-alignment="left"/>
+    <view class="CTextLabel" origin="20, 33" size="474, 16" title="psychoacoustic bass"
+          back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="accent" text-alignment="left"/>
+    <view class="CKnob" origin="24, 74" size="62, 62"
+          control-tag="Cutoff" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="12, 138" size="86, 15"
+          control-tag="Cutoff" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="10, 152" size="90, 14"
+          title="Cutoff (Hz)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="120, 74" size="62, 62"
+          control-tag="Intensity" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="108, 138" size="86, 15"
+          control-tag="Intensity" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="106, 152" size="90, 14"
+          title="Intensity (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="216, 74" size="62, 62"
+          control-tag="Mix" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="204, 138" size="86, 15"
+          control-tag="Mix" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="202, 152" size="90, 14"
+          title="Mix (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="312, 74" size="62, 62"
+          control-tag="Band 2" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="300, 138" size="86, 15"
+          control-tag="Band 2" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="298, 152" size="90, 14"
+          title="Band 2" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="408, 74" size="62, 62"
+          control-tag="Cutoff 2" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="396, 138" size="86, 15"
+          control-tag="Cutoff 2" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="394, 152" size="90, 14"
+          title="Cutoff 2 (Hz)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="24, 178" size="62, 62"
+          control-tag="Intensity 2" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="12, 242" size="86, 15"
+          control-tag="Intensity 2" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="10, 256" size="90, 14"
+          title="Intensity 2 (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="120, 178" size="62, 62"
+          control-tag="Mix 2" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="108, 242" size="86, 15"
+          control-tag="Mix 2" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="106, 256" size="90, 14"
+          title="Mix 2 (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+  </template>
+</vstgui-ui-description>

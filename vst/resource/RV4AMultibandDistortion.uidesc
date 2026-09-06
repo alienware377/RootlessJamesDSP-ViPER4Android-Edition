@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vstgui-ui-description version="1">
+  <colors>
+    <color name="bg" rgba="#191a1eff"/>
+    <color name="panel" rgba="#232430ff"/>
+    <color name="accent" rgba="#ff5cc8ff"/>
+    <color name="knobFace" rgba="#2b2c38ff"/>
+    <color name="knobEdge" rgba="#3d3f4eff"/>
+    <color name="label" rgba="#b9bcccff"/>
+    <color name="value" rgba="#ffffffff"/>
+    <color name="title" rgba="#ffffffff"/>
+    <color name="transparent" rgba="#00000000"/>
+  </colors>
+  <control-tags>
+    <control-tag name="Band Type" tag="0"/>
+    <control-tag name="Band Freq" tag="1"/>
+    <control-tag name="Band Q" tag="2"/>
+    <control-tag name="Band Slope" tag="3"/>
+    <control-tag name="Routing" tag="4"/>
+    <control-tag name="Model" tag="5"/>
+    <control-tag name="Drive" tag="6"/>
+    <control-tag name="Bias" tag="7"/>
+    <control-tag name="Shape" tag="8"/>
+    <control-tag name="Bits" tag="9"/>
+    <control-tag name="Downsample" tag="10"/>
+    <control-tag name="Tone" tag="11"/>
+    <control-tag name="Band Gain" tag="12"/>
+    <control-tag name="Mix" tag="13"/>
+    <control-tag name="Chorus Rate" tag="14"/>
+    <control-tag name="Chorus Depth" tag="15"/>
+    <control-tag name="Chorus Feedback" tag="16"/>
+    <control-tag name="Chorus Spread" tag="17"/>
+    <control-tag name="Chorus Voices" tag="18"/>
+    <control-tag name="Chorus Mix" tag="19"/>
+  </control-tags>
+  <template name="view" size="514, 506" background-color="bg"
+            minSize="514, 506" maxSize="514, 506" autosize="false">
+    <view class="CViewContainer" origin="0, 0" size="514, 58" background-color="panel"/>
+    <view class="CTextLabel" origin="20, 12" size="474, 22" title="RV4A MULTIBAND DISTORTION"
+          back-color="transparent" frame-color="transparent" font="~ NormalFontBig"
+          font-color="title" text-alignment="left"/>
+    <view class="CTextLabel" origin="20, 33" size="474, 16" title="band select · drive · chorus"
+          back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="accent" text-alignment="left"/>
+    <view class="CKnob" origin="24, 74" size="62, 62"
+          control-tag="Band Type" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="12, 138" size="86, 15"
+          control-tag="Band Type" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="10, 152" size="90, 14"
+          title="Band Type" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="120, 74" size="62, 62"
+          control-tag="Band Freq" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="108, 138" size="86, 15"
+          control-tag="Band Freq" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="106, 152" size="90, 14"
+          title="Band Freq (Hz)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="216, 74" size="62, 62"
+          control-tag="Band Q" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="204, 138" size="86, 15"
+          control-tag="Band Q" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="202, 152" size="90, 14"
+          title="Band Q" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="312, 74" size="62, 62"
+          control-tag="Band Slope" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="300, 138" size="86, 15"
+          control-tag="Band Slope" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="298, 152" size="90, 14"
+          title="Band Slope" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="408, 74" size="62, 62"
+          control-tag="Routing" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="396, 138" size="86, 15"
+          control-tag="Routing" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="394, 152" size="90, 14"
+          title="Routing" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="24, 178" size="62, 62"
+          control-tag="Model" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="12, 242" size="86, 15"
+          control-tag="Model" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="10, 256" size="90, 14"
+          title="Model" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="120, 178" size="62, 62"
+          control-tag="Drive" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="108, 242" size="86, 15"
+          control-tag="Drive" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="106, 256" size="90, 14"
+          title="Drive (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="216, 178" size="62, 62"
+          control-tag="Bias" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="204, 242" size="86, 15"
+          control-tag="Bias" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="202, 256" size="90, 14"
+          title="Bias (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="312, 178" size="62, 62"
+          control-tag="Shape" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="300, 242" size="86, 15"
+          control-tag="Shape" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="298, 256" size="90, 14"
+          title="Shape (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="408, 178" size="62, 62"
+          control-tag="Bits" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="396, 242" size="86, 15"
+          control-tag="Bits" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="394, 256" size="90, 14"
+          title="Bits" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="24, 282" size="62, 62"
+          control-tag="Downsample" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="12, 346" size="86, 15"
+          control-tag="Downsample" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="10, 360" size="90, 14"
+          title="Downsample (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="120, 282" size="62, 62"
+          control-tag="Tone" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="108, 346" size="86, 15"
+          control-tag="Tone" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="106, 360" size="90, 14"
+          title="Tone (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="216, 282" size="62, 62"
+          control-tag="Band Gain" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="204, 346" size="86, 15"
+          control-tag="Band Gain" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="202, 360" size="90, 14"
+          title="Band Gain (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="312, 282" size="62, 62"
+          control-tag="Mix" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="300, 346" size="86, 15"
+          control-tag="Mix" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="298, 360" size="90, 14"
+          title="Mix (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="408, 282" size="62, 62"
+          control-tag="Chorus Rate" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="396, 346" size="86, 15"
+          control-tag="Chorus Rate" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="394, 360" size="90, 14"
+          title="Chorus Rate (Hz)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="24, 386" size="62, 62"
+          control-tag="Chorus Depth" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="12, 450" size="86, 15"
+          control-tag="Chorus Depth" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="10, 464" size="90, 14"
+          title="Chorus Depth (ms)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="120, 386" size="62, 62"
+          control-tag="Chorus Feedback" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="108, 450" size="86, 15"
+          control-tag="Chorus Feedback" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="106, 464" size="90, 14"
+          title="Chorus Feedback (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="216, 386" size="62, 62"
+          control-tag="Chorus Spread" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="204, 450" size="86, 15"
+          control-tag="Chorus Spread" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="202, 464" size="90, 14"
+          title="Chorus Spread (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="312, 386" size="62, 62"
+          control-tag="Chorus Voices" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="300, 450" size="86, 15"
+          control-tag="Chorus Voices" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="298, 464" size="90, 14"
+          title="Chorus Voices" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+    <view class="CKnob" origin="408, 386" size="62, 62"
+          control-tag="Chorus Mix" angle-start="200" angle-range="320"
+          handle-line-width="3.5" handle-color="accent" corona-color="accent"
+          corona-drawing="true" corona-outline="true" corona-inset="3"
+          circle-drawing="true" value-inset="4" wheel-inc-value="0.02"
+          back-color="knobFace" frame-color="knobEdge" frame-width="1.5"/>
+    <view class="CParamDisplay" origin="396, 450" size="86, 15"
+          control-tag="Chorus Mix" back-color="transparent" frame-color="transparent"
+          font="~ NormalFontVerySmall" font-color="value" text-alignment="center"
+          value-precision="1"/>
+    <view class="CTextLabel" origin="394, 464" size="90, 14"
+          title="Chorus Mix (%)" back-color="transparent"
+          frame-color="transparent" font="~ NormalFontVerySmall"
+          font-color="label" text-alignment="center"/>
+  </template>
+</vstgui-ui-description>

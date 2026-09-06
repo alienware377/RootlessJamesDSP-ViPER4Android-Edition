@@ -80,6 +80,7 @@ public:
     {
         tresult r = ControllerBase::initialize(c);
         if (r != kResultOk) return r;
+        mUidesc = "RV4ABassExciter.uidesc";
         parameters.addParameter(STR16("Cutoff"), STR16("Hz"), 0, (100.f - 40.f) / 160.f,
                                 ParameterInfo::kCanAutomate, kCutoff);
         parameters.addParameter(STR16("Intensity"), STR16("%"), 0, 0.40,

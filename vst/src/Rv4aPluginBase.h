@@ -18,6 +18,8 @@
 #include "public.sdk/source/vst/vsteditcontroller.h"
 #include "pluginterfaces/vst/ivstparameterchanges.h"
 #include "base/source/fstreamer.h"
+#include "public.sdk/source/vst/vstguieditor.h"
+#include "vstgui/plugin-bindings/vst3editor.h"
 
 namespace rv4a {
 
@@ -92,6 +94,20 @@ protected:
 // Controller side: the parameter descriptions, and nothing else.
 class ControllerBase : public EditControllerEx1
 {
+public:
+    // Without this a host has no editor to open. FL Studio then hides the
+    // parameters behind its own "browse parameters" list rather than drawing
+    // anything, which reads as a plugin with no interface at all.
+    IPlugView* PLUGIN_API createView(FIDString name) SMTG_OVERRIDE
+    {
+        if (name && strcmp(name, ViewType::kEditor) == 0 && mUidesc)
+            return new VSTGUI::VST3Editor(this, "view", mUidesc);
+        return nullptr;
+    }
+
+protected:
+    const char* mUidesc = nullptr;   // set by each plugin's controller
+
 public:
     // The host hands the processor's saved state here too, so the UI opens
     // showing what the audio engine is actually doing.

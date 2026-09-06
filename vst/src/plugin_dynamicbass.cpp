@@ -93,6 +93,7 @@ public:
     {
         tresult r = ControllerBase::initialize(c);
         if (r != kResultOk) return r;
+        mUidesc = "RV4ADynamicSystem.uidesc";
         parameters.addParameter(STR16("Bass Gain"), STR16("%"), 0, 0.33,
                                 ParameterInfo::kCanAutomate, kGain);
         parameters.addParameter(STR16("X Lower"), STR16("Hz"), 0, (1000.f - 20.f) / 7980.f,
