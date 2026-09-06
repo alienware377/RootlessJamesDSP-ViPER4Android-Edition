@@ -28,9 +28,15 @@ FetchContent_MakeAvailable(vst3sdk)
 
 smtg_enable_vst3_sdk()
 
+# SingleComponentEffect and EditController live in public.sdk but are not part
+# of the `sdk` link target, so they are compiled in directly. Without these the
+# build compiles cleanly and then fails at link with every method of both
+# classes unresolved.
 smtg_add_vst3plugin(RV4ABassExciter
     src/plugin.cpp
-    src/BassExciterDsp.h)
+    src/BassExciterDsp.h
+    ${vst3sdk_SOURCE_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp
+    ${vst3sdk_SOURCE_DIR}/public.sdk/source/vst/vsteditcontroller.cpp)
 
 target_include_directories(RV4ABassExciter PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(RV4ABassExciter PRIVATE sdk)
