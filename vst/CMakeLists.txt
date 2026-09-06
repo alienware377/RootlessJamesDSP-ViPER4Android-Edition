@@ -44,3 +44,13 @@ target_link_libraries(RV4ABassExciter PRIVATE sdk)
 smtg_add_vst3plugin(RV4ADynamicSystem src/plugin_dynamicbass.cpp src/DynamicBassDsp.h ${SDK_EXTRA})
 target_include_directories(RV4ADynamicSystem PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(RV4ADynamicSystem PRIVATE sdk)
+
+# The distortion is compiled from the app's own source, unmodified, behind a
+# small shim - so it cannot drift from the app as the effect is developed.
+smtg_add_vst3plugin(RV4AMultibandDistortion
+    src/plugin_multiband.cpp
+    src/engine/multibandDist.c
+    src/engine/digitalFilters.c)
+target_include_directories(RV4AMultibandDistortion PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/engine)
+target_link_libraries(RV4AMultibandDistortion PRIVATE sdk)
