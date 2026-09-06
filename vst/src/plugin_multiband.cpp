@@ -200,7 +200,7 @@ BEGIN_FACTORY_DEF("alienware377",
                   "mailto:noreply@github.com")
     DEF_CLASS2(INLINE_UID_FROM_FUID(kMultibandUID),
                PClassInfo::kManyInstances, kVstAudioEffectClass,
-               "RV4A Multiband Distortion", Vst::kDistributable,
+               "RV4A Multiband Distortion", 0 /* not distributable: one object is both processor and controller */,
                Vst::PlugType::kFxDistortion, "1.0.0", kVstVersionString,
                Multiband::createInstance)
 END_FACTORY
