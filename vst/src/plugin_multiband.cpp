@@ -49,7 +49,7 @@ public:
             parameters.addParameter(n, u, steps, def, ParameterInfo::kCanAutomate, id);
         };
         // Band selection
-        p(STR16("Band Type"), nullptr, 3, 2.0 / 3.0, kBandType);   // LP, HP, BP, Peak
+        p(STR16("Band Type"), nullptr, 4, 2.0 / 4.0, kBandType);   // LP, HP, peak, shelves
         p(STR16("Band Freq"), STR16("Hz"), 0, 0.25, kBandFreq);
         p(STR16("Band Q"),    nullptr, 0, 0.2, kBandQ);
         p(STR16("Band Slope"),STR16("dB/oct"), 3, 3.0 / 3.0, kBandSlope); // 12/24/36/48
@@ -166,13 +166,17 @@ private:
         // the first tenth of its travel.
         float freq = 20.0f * powf(1000.0f, n(kBandFreq));
         float q    = 0.1f + n(kBandQ) * 9.9f;
-        static const int kTypes[4] = { MBD_FILTER_LOW_PASS, MBD_FILTER_HIGH_PASS,
-                                       MBD_FILTER_BAND_PASS, MBD_FILTER_PEAK };
+        // The engine's actual filter set. There is no bandpass type: a band is
+        // selected by combining a lowpass and a highpass, or by peaking, which
+        // is how the app's editor does it too.
+        static const int kTypes[5] = { MBD_FILTER_LOW_PASS, MBD_FILTER_HIGH_PASS,
+                                       MBD_FILTER_PEAKING, MBD_FILTER_LOW_SHELF,
+                                       MBD_FILTER_HIGH_SHELF };
         float slope = 12.0f * (step(kBandSlope, 3) + 1);   // 12, 24, 36, 48 dB/oct
 
         // {freq, gain-or-slope, Q, type} - the gain slot carries the slope for
         // cutoff types, which is how the engine's own editor encodes it.
-        float band[4] = { freq, slope, q, (float)kTypes[step(kBandType, 3)] };
+        float band[4] = { freq, slope, q, (float)kTypes[step(kBandType, 4)] };
         MultibandDistSetBands(&mLib, band, 1);
 
         MultibandDistSetParam(&mLib,
