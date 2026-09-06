@@ -1,0 +1,30 @@
+name: Build VST3 plugin
+
+on:
+  push:
+    branches: [ viper-extras ]
+    paths: [ 'vst/**', '.github/workflows/build-vst.yml' ]
+  workflow_dispatch:
+
+jobs:
+  windows:
+    # FL Studio needs a Windows binary, and cross-compiling the VST3 SDK is
+    # more trouble than simply building where it will run.
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -S vst -B build/vst -A x64
+
+      - name: Build
+        run: cmake --build build/vst --config Release
+
+      - name: Show what was produced
+        run: Get-ChildItem -Recurse build/vst -Include *.vst3 | Select-Object FullName, Length
+        shell: pwsh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: RV4ABassExciter-VST3-Windows
+          path: build/vst/VST3/Release/*.vst3
