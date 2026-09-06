@@ -32,16 +32,18 @@ smtg_enable_vst3_sdk()
 # in directly - without it the build compiles cleanly then fails at link with
 # every method unresolved. Only this one file: it pulls in the edit controller
 # itself, so adding that separately defines everything twice instead.
-set(SDK_EXTRA ${vst3sdk_SOURCE_DIR}/public.sdk/source/vst/vstsinglecomponenteffect.cpp)
+# No SDK_EXTRA any more: the plugins use the conventional processor/controller
+# split, whose sources are already in the `sdk` target. Compiling the
+# single-component source in as well defined the edit controller twice.
 
 # One bundle per effect rather than one plugin with a mode switch: hosts list
 # them separately, and a user reaching for "dynamic bass" should not have to
 # know it lives inside something called an exciter.
-smtg_add_vst3plugin(RV4ABassExciter src/plugin.cpp src/BassExciterDsp.h ${SDK_EXTRA})
+smtg_add_vst3plugin(RV4ABassExciter src/plugin.cpp src/BassExciterDsp.h)
 target_include_directories(RV4ABassExciter PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(RV4ABassExciter PRIVATE sdk)
 
-smtg_add_vst3plugin(RV4ADynamicSystem src/plugin_dynamicbass.cpp src/DynamicBassDsp.h ${SDK_EXTRA})
+smtg_add_vst3plugin(RV4ADynamicSystem src/plugin_dynamicbass.cpp src/DynamicBassDsp.h)
 target_include_directories(RV4ADynamicSystem PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(RV4ADynamicSystem PRIVATE sdk)
 
@@ -52,7 +54,7 @@ smtg_add_vst3plugin(RV4AMultibandDistortion
     src/engine/multibandDist.c
     src/engine/digitalFilters.c
     src/engine/jdsp_lock.c
-    ${SDK_EXTRA})
+   )
 target_include_directories(RV4AMultibandDistortion PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_SOURCE_DIR}/src/engine)
 target_link_libraries(RV4AMultibandDistortion PRIVATE sdk)
