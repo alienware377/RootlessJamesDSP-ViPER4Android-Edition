@@ -77,6 +77,8 @@ typedef struct {
 #ifdef __cplusplus
 extern "C" {
 #endif
+void jdsp_lock(void *jdsp);
+void jdsp_unlock(void *jdsp);
 void MultibandDistSetBands(JamesDSPLib *jdsp, const float *bands, int count);
 void MultibandDistSetParam(JamesDSPLib *jdsp, int routing, int model,
     float drivePct, float biasPct, float shapePct, float bits, float downsamplePct,
