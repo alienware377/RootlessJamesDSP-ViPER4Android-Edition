@@ -8,14 +8,26 @@ on:
 
 jobs:
   windows:
-    # FL Studio needs a Windows binary, and cross-compiling the VST3 SDK is
-    # more trouble than simply building where it will run.
+    # FL Studio needs a Windows binary, and cross-compiling the VST3 SDK is more
+    # trouble than simply building where it will run.
+    #
+    # Both architectures: FL Studio 20 ships as 32-bit and 64-bit, and a 32-bit
+    # host cannot load a 64-bit plugin - it may crash scanning it rather than
+    # skip it cleanly, which reads as a broken plugin.
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            cmake_arch: x64
+          - arch: x86
+            cmake_arch: Win32
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure
-        run: cmake -S vst -B build/vst -A x64
+      - name: Configure (${{ matrix.arch }})
+        run: cmake -S vst -B build/vst -A ${{ matrix.cmake_arch }}
 
       - name: Build
         run: cmake --build build/vst --config Release
@@ -26,5 +38,5 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: RV4ABassExciter-VST3-Windows
+          name: RV4A-VST3-Windows-${{ matrix.arch }}
           path: build/vst/VST3/Release/*.vst3
